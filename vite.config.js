@@ -41,21 +41,6 @@ export default defineConfig(({ mode }) => ({
       injectManifest: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
         globIgnores: ["config.js"],
-        manifestTransforms: [
-          (entries) => ({
-            manifest: entries.map((entry) =>
-              // this matches the build step in the Makefile.
-              // since ntfy needs the ability to serve another page on /index.html,
-              // it's renamed and served from server.go as app.html as well.
-              entry.url === "index.html"
-                ? {
-                    ...entry,
-                    url: "app.html",
-                  }
-                : entry
-            ),
-          }),
-        ],
       },
       // The actual prod manifest is served from the go server, see server.go handleWebManifest.
       manifest: mode === "development" && {

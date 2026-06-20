@@ -436,7 +436,7 @@ if (!import.meta.env.DEV) {
   // and is served by the go web server. It is needed for the single-page-app to work.
   // https://developer.chrome.com/docs/workbox/modules/workbox-routing/#how-to-register-a-navigation-route
   registerRoute(
-    new NavigationRoute(createHandlerBoundToURL("/app.html"), {
+    new NavigationRoute(createHandlerBoundToURL("/index.html"), {
       allowlist: [
         // the app root itself, could be /, or not
         new RegExp(`^${config.app_root}$`),
