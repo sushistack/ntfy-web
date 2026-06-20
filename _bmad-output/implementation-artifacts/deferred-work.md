@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of 1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region (2026-06-20)
+
+- `role="status"` + `aria-live="assertive"` semantic conflict in LiveRegion — spec mandates `role="status"` unconditionally; explicit `aria-live` attribute overrides implicit role value in most ATs; acceptable until Story 2.x accessibility audit
+- `politeness` prop in LiveRegion has no runtime validation — invalid `aria-live` values silently ignored by ATs; add validation if LiveRegion becomes a public API boundary
+- `StatePanel` renders empty colored icon tile when `icon` prop is null/undefined — spec assumes icon is always provided by consumer; guard with `{icon && ...}` if null icon becomes a real consumer pattern
+
 ## Deferred from: code review of 1-4-design-tokens-as-single-source-web-android-manifest (2026-06-20)
 
 - `--leading-*` in fixed `px` instead of unitless ratios — WCAG 1.4.12 risk at 200% browser zoom (fixed px doesn't scale with font-size); defer to Story 5.3 accessibility audit

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (1-5~1-8 done after code-review)
+last_updated: 2026-06-20 (2-1 review)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -52,17 +52,17 @@ development_status:
   1-6-ui-display-primitives-button-card-chip: done
   1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: done
   1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: done
-  1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: review
+  1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: done
   epic-1-retrospective: optional
 
   # Epic 2: First Run — Jay Gets In
   epic-2: in-progress
-  2-1-responsive-app-shell-provider-scaffold: ready-for-dev
-  2-2-theme-switch-light-dark-system: ready-for-dev
+  2-1-responsive-app-shell-provider-scaffold: review
+  2-2-theme-switch-light-dark-system: in-progress
   2-3-connection-indicator-state-hasdata: ready-for-dev
   2-4-server-auth-entry-with-conditional-login: ready-for-dev
   2-5-subscribe-to-a-topic: ready-for-dev
-  2-6-first-run-state-panels-with-korean-voice: backlog
+  2-6-first-run-state-panels-with-korean-voice: ready-for-dev
   epic-2-retrospective: optional
 
   # Epic 3: Notification Experience — Receive · Read · Act
