@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (1-9 created)
+last_updated: 2026-06-20 (1-6 in-progress)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -45,13 +45,13 @@ development_status:
   # Epic 1: Foundation & Design System
   epic-1: in-progress
   1-1-spike-emotion-layer-coexistence-poc: done
-  1-2-characterization-snapshot-message-dedup-ordering: review
-  1-3-install-ui-stack-and-wire-tailwind-v4-path-aliases: review
-  1-4-design-tokens-as-single-source-web-android-manifest: ready-for-dev
+  1-2-characterization-snapshot-message-dedup-ordering: done
+  1-3-install-ui-stack-and-wire-tailwind-v4-path-aliases: done
+  1-4-design-tokens-as-single-source-web-android-manifest: review
   1-5-self-hosted-fonts-sw-fix-and-fouc-free-theme-bootstrap: ready-for-dev
-  1-6-ui-display-primitives-button-card-chip: ready-for-dev
-  1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: ready-for-dev
-  1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: ready-for-dev
+  1-6-ui-display-primitives-button-card-chip: in-progress
+  1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: in-progress
+  1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: in-progress
   1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: ready-for-dev
   epic-1-retrospective: optional
 
