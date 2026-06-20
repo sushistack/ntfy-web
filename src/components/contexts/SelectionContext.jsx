@@ -4,7 +4,7 @@ import { useMatch } from "react-router-dom";
 const SelectionContext = createContext(null);
 
 // Routes that are not topic paths — prevent /:topic wildcard from matching them
-const RESERVED_PATHS = new Set(["settings", "login"]);
+const RESERVED_PATHS = new Set(["settings", "login", "all", "signup", "account"]);
 
 export const SelectionProvider = ({ children }) => {
   const detailMatch = useMatch("/:topic/:msgId");
