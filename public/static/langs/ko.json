@@ -135,6 +135,7 @@
     "priority_low": "낮음",
     "priority_default": "기본",
     "priority_high": "높음",
+    "data_boundary_error_generic": "잠시 오류가 생겼어요.",
     "error_boundary_title": "이런, ntfy가 충돌했습니다",
     "error_boundary_button_copy_stack_trace": "스택 트레이스 복사",
     "error_boundary_stack_trace": "스택 트레이스",
