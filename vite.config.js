@@ -4,6 +4,11 @@ import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => ({
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/app/test-setup.js"],
+  },
   build: {
     outDir: "build",
     assetsDir: "static/media",
