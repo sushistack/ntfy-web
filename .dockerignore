@@ -1,0 +1,8 @@
+node_modules
+build
+.git
+.github
+e2e
+_bmad-output
+.env
+*.log
