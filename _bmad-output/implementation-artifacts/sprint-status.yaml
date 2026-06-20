@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (4-4 done)
+last_updated: 2026-06-20 (5-1 done)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -79,16 +79,16 @@ development_status:
 
   # Epic 4: Topics & Publishing — Jay Sends
   epic-4: in-progress
-  4-1-manage-subscriptions-rename-clear-unsubscribe: review
-  4-2-mute-unmute-a-topic: review
-  4-3-publish-a-message: review
+  4-1-manage-subscriptions-rename-clear-unsubscribe: done
+  4-2-mute-unmute-a-topic: done
+  4-3-publish-a-message: done
   4-4-optimistic-publish-queue: done
   epic-4-retrospective: optional
 
   # Epic 5: Settings, PWA & Migration Cleanup
   epic-5: in-progress
-  5-1-settings-surface-sectioned-form: review
+  5-1-settings-surface-sectioned-form: done
   5-2-pwa-browser-notifications-permission: review
-  5-3-accessibility-light-theme-contrast-verification-pass: ready-for-dev
+  5-3-accessibility-light-theme-contrast-verification-pass: in-progress
   5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: ready-for-dev
   epic-5-retrospective: optional
