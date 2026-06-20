@@ -448,5 +448,18 @@
     "notification_card_unread_label": "Unread",
     "notification_card_mute_toggle_label": "Mute notifications",
     "notification_card_unmute_toggle_label": "Unmute notifications",
-    "notification_card_overflow_label": "More options"
+    "notification_card_overflow_label": "More options",
+    "card_overflow_trigger_label": "More notification options",
+    "card_overflow_mark_read": "Mark as read",
+    "card_overflow_copy": "Copy",
+    "card_overflow_delete": "Delete",
+    "card_overflow_delete_confirm_body": "Delete this notification?",
+    "card_overflow_delete_confirm_action": "Delete",
+    "card_overflow_delete_confirm_cancel": "Cancel",
+    "card_body_expand": "Show more",
+    "card_body_collapse": "Show less",
+    "empty_state_no_messages_topic_desc": "No messages in this topic yet. They'll appear here as they arrive.",
+    "empty_state_no_messages_all_desc": "No notifications",
+    "feed_notifications_list": "Notification list",
+    "feed_sticky_header_label": "Current topic"
 }
