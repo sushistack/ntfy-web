@@ -106,7 +106,7 @@
   "publish_queue_retry_label": "알림 재전송",
   "emoji_picker_search_placeholder": "이모지 검색",
   "emoji_picker_search_clear": "검색 초기화",
-  "sidebar_add_topic": "＋ 토픽 구독",
+  "sidebar_add_topic": "토픽 구독",
   "sidebar_all_notifications": "모든 알림",
   "sidebar_aria_label": "구독 목록",
   "sidebar_settings": "설정",
