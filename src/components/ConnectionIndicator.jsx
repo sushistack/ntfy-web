@@ -22,14 +22,17 @@ const ConnectionIndicator = () => {
   const { t } = useTranslation();
   const { connectionState } = useConnection();
   const prevStateRef = useRef(null);
-  const [announcement, setAnnouncement] = useState("");
+  const [announcement, setAnnouncement] = useState({ message: "", sequence: 0 });
 
   const isAnimating = connectionState === "connecting" || connectionState === "reconnecting";
   const label = t(LABEL_KEY[connectionState] ?? LABEL_KEY.offline);
 
   useEffect(() => {
     if (prevStateRef.current !== null && prevStateRef.current !== connectionState) {
-      setAnnouncement(label);
+      setAnnouncement((current) => ({
+        message: label,
+        sequence: current.sequence + 1,
+      }));
     }
     prevStateRef.current = connectionState;
   }, [connectionState, label]);
@@ -37,11 +40,15 @@ const ConnectionIndicator = () => {
   return (
     <div className="flex items-center gap-1.5">
       <span
-        className={cn("w-2 h-2 rounded-full bg-current", DOT_COLORS[connectionState] ?? "text-muted", isAnimating && "motion-safe:animate-pulse")}
+        className={cn(
+          "w-2 h-2 rounded-full bg-current",
+          DOT_COLORS[connectionState] ?? "text-muted",
+          isAnimating && "motion-safe:animate-pulse"
+        )}
         aria-hidden="true"
       />
       <span className="text-xs font-medium">{label}</span>
-      <LiveRegion message={announcement} />
+      <LiveRegion message={announcement.message} announcementKey={announcement.sequence} />
     </div>
   );
 };
