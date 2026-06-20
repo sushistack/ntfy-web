@@ -38,3 +38,8 @@
 
 - NotificationCard.jsx: `prefersReducedMotion` captured once at render time, not reactive to OS preference changes mid-session; spec only requires correct value on mount
 - NotificationCard.jsx: `dragRef.current.isDragging` read during render for `contentStyle` — ref mutation doesn't trigger re-render, single-tick transition flicker at swipe start; sub-perceptual on modern devices
+
+## Deferred from: code review of 4-4-optimistic-publish-queue (2026-06-20)
+
+- PublishQueueContext.jsx: Zombie "sending" entry if TCP drops mid-flight without an HTTP error — entry stays as "sending" forever with no timeout or cleanup; inherent network limitation, out of scope for v1
+- QueueSlots.jsx: RetryBar retry button has no disabled state — double-clicking sends two concurrent requests; cosmetic race condition, acceptable for v1
