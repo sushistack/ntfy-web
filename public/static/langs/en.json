@@ -413,6 +413,7 @@
   "priority_default": "default",
   "priority_high": "high",
   "priority_max": "max",
+  "data_boundary_error_generic": "Something went wrong.",
   "error_boundary_title": "Oh no, ntfy crashed",
   "error_boundary_description": "This should obviously not happen. Very sorry about this.<br/>If you have a minute, please <githubLink>report this on GitHub</githubLink>, or let us know via <discordLink>Discord</discordLink> or <matrixLink>Matrix</matrixLink>.",
   "error_boundary_button_copy_stack_trace": "Copy stack trace",
