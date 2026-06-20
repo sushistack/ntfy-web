@@ -568,13 +568,13 @@ So that I can respond without leaving the feed (FR10).
 **And** **Given** the request fails, **Then** the card's **error slot** (frozen in 3.1) shows "실패 — 재시도" and retry runs in place — never a full-screen dead end.
 **And** buttons follow the achromatic system (primary white / secondary ghost, UX-DR6); strings via `t()`.
 
-### Story 3.8: Mobile card swipe gesture  *([ASSUMPTION] — confirm or scope-out)*
+### Story 3.8: Mobile card swipe gesture
 
 As Jay on mobile,
 I want to swipe a card to reveal quick actions,
 So that read/delete are faster than opening the overflow menu (UX-DR17).
 
-`Depends-on:` 3.1, 3.4. **Touched:** `message/NotificationCard.jsx` gesture layer (no signature change). **Est:** small. **Status: [ASSUMPTION]** — tap remains the primary path; this is an accelerator only. **Confirm with Jay before implementing, or scope-out.**
+`Depends-on:` 3.1, 3.4. **Touched:** `message/NotificationCard.jsx` gesture layer (no signature change). **Est:** small. Tap remains the primary path; this is an accelerator only.
 
 **Acceptance Criteria**
 
@@ -583,7 +583,6 @@ So that read/delete are faster than opening the overflow menu (UX-DR17).
 **Then** 읽음 표시 / 삭제 are revealed (delete asks a confirm), feeling native.
 **And** tap still opens detail (swipe is never the only way to reach an action, NFR3).
 **And** the gesture respects `prefers-reduced-motion` and does not trap focus or reorder tab order.
-**And** if Jay scopes this out, the work is removed and overflow (3.4) remains the action path.
 
 
 ---
