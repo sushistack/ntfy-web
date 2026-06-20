@@ -1,0 +1,140 @@
+<title>ntfy-web — All-notifications feed · green detail pane · subscribe dialog</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :root{
+    --bg:#0C0D0F; --surface:#16181B; --surface-2:#1C1F23; --border:#23262B;
+    --text:#E8EAED; --muted:#8B9197; --green:#42D392; --amber:#F5A95C; --coral:#FF6B6E;
+  }
+  body{ font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; background:#08090A; color:var(--text); line-height:1.5; padding:22px; }
+  .note{ max-width:1280px; margin:0 auto 16px; font-size:14px; color:#aeb4ba; } .note b{color:#fff}
+  .cap{ max-width:1280px; margin:22px auto 8px; font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+  svg.i{ width:15px; height:15px; stroke:currentColor; stroke-width:1.8; fill:none; flex:none; vertical-align:-2px; }
+
+  .shell{ max-width:1280px; margin:0 auto; height:600px; display:grid; grid-template-columns:240px 1fr 360px;
+          background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; position:relative; }
+
+  /* sidebar */
+  .side{ background:#0A0B0C; border-right:1px solid var(--border); padding:14px 10px; display:flex; flex-direction:column; }
+  .brand{ display:flex; align-items:center; gap:9px; padding:6px 10px 16px; } .brand .logo{ width:24px;height:24px;border-radius:7px;background:var(--green) } .brand b{ font-size:15px;font-weight:700 }
+  .sl{ font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; padding:8px 10px 6px; }
+  .ti{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px; font-size:13.5px; color:#C2C7CC; cursor:pointer; }
+  .ti:hover{ background:var(--surface) } .ti.active{ background:var(--surface-2); color:#fff; font-weight:600 }
+  .ti .ic{ width:7px;height:7px;border-radius:999px;background:#4a5158 } .ti.active .ic{ background:var(--green); box-shadow:0 0 7px var(--green) }
+  .ti .n{ margin-left:auto; font-size:11px; color:var(--muted) }
+  .foot{ margin-top:auto } .fi{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:9px; font-size:13.5px; color:#C2C7CC }
+
+  /* feed */
+  .feed{ overflow-y:auto; padding:20px 24px; } .feed::-webkit-scrollbar{width:9px} .feed::-webkit-scrollbar-thumb{background:#23262b;border-radius:9px}
+  .fh{ margin-bottom:16px } .fh h1{ font-size:22px; font-weight:700 } .fh .sub{ color:var(--muted); font-size:13px }
+  .list{ display:flex; flex-direction:column; gap:12px; }
+  .card{ position:relative; background:var(--surface); border:1px solid var(--border); border-radius:0 14px 14px 0; overflow:hidden; cursor:pointer; }
+  .card.sel{ background:var(--surface-2) } /* selected = slightly brighter surface, no colored border */ .card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px }
+  .card.p5::before{ background:var(--coral); box-shadow:0 0 10px #FF6B6E55 } .card.p4::before{ background:var(--amber); box-shadow:0 0 10px #F5A95C44 } .card.p3::before{ background:transparent }
+  .ch{ display:flex; align-items:center; gap:8px; padding:12px 14px 10px 16px }
+  .pb{ font-size:9.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:3px 7px; border-radius:6px }
+  .p5 .pb{ background:var(--coral); color:#1A0E0E } .p4 .pb{ background:var(--amber); color:#241403 }
+  .ch h3{ font-size:15px; font-weight:600 } .dot{ width:8px;height:8px;border-radius:999px;background:var(--green);box-shadow:0 0 7px var(--green);margin-left:auto }
+  .cb{ padding:0 16px; font-size:13.5px; color:#C2C7CC; line-height:1.55 }
+  .meta{ display:flex; align-items:center; padding:11px 16px 14px; font-size:11.5px }
+  .topic{ padding:3px 10px; border-radius:999px; font-weight:600 }
+  .t-srv{ background:#143A2D; color:#7CE6B4 } .t-met{ background:#3A2A14; color:#E8C07C } .t-ci{ background:#1C2A3A; color:#8CB8E6 } .t-iot{ background:#2A1C3A; color:#C29CE6 }
+  .time{ margin-left:auto; color:var(--muted) }
+
+  /* GREEN detail pane */
+  .detail{ background:#121417; border-left:1px solid var(--border); overflow-y:auto; padding:22px } .detail::-webkit-scrollbar{width:9px} .detail::-webkit-scrollbar-thumb{background:#23262b;border-radius:9px}
+  .dh{ display:flex; align-items:center; gap:8px; margin-bottom:12px } .dh .sp{ margin-left:auto; display:flex; gap:6px; color:var(--muted) }
+  .detail h2{ font-size:19px; font-weight:600; margin:4px 0 14px }
+  .kv{ display:grid; grid-template-columns:auto 1fr; gap:8px 16px; font-size:13.5px } .kv dt{ color:var(--muted) } .kv dd.bad{ color:#FF8C8E; font-weight:600 } .kv dd.ok{ color:var(--green) }
+  .sec{ font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; margin:20px 0 8px }
+  .dbody{ font-size:14px; color:#C2C7CC; line-height:1.7; max-width:60ch }
+  .attach{ display:flex; align-items:center; gap:11px; padding:11px; border:1px solid var(--border); border-radius:12px; background:var(--surface) } .attach .th{ width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,#2a2e33,#3a4047) } .attach .fn{font-size:13px} .attach .fs{font-size:11.5px;color:var(--muted)}
+  .tags{ display:flex; gap:7px; flex-wrap:wrap } .tag{ font-size:12px; padding:2px 10px; border-radius:999px; border:1px solid #2C3036; color:var(--muted) }
+  .dacts{ display:flex; gap:10px; margin-top:16px } .btn{ font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; background:#F4F5F6; color:#15171A } .ghost{ background:transparent; color:#C2C7CC; box-shadow:inset 0 0 0 1px #2C3036 }
+
+  /* subscribe dialog */
+  .dlgwrap{ max-width:1280px; margin:0 auto; height:440px; position:relative; background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .scrim{ position:absolute; inset:0; background:#000B; display:flex; align-items:center; justify-content:center }
+  .ghost-shell{ position:absolute; inset:0; opacity:.25; padding:20px; display:flex; gap:14px } .ghost-shell .gc{ flex:1; background:var(--surface); border:1px solid var(--border); border-radius:12px }
+  .dlg{ width:420px; background:#121417; border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,.6) }
+  .dlg h2{ font-size:18px; font-weight:700; margin-bottom:4px } .dlg .lead{ font-size:13px; color:var(--muted); margin-bottom:18px }
+  .fld{ margin-bottom:14px } .fld label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px }
+  .inp{ width:100%; background:#0C0D0F; border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text); font-size:14px; display:flex; align-items:center; justify-content:space-between }
+  .muted2{ color:var(--muted); font-size:12px }
+  .adv{ font-size:12.5px; color:var(--green); font-weight:600; margin:4px 0 16px; cursor:pointer }
+  .dlgacts{ display:flex; gap:10px; justify-content:flex-end; margin-top:8px } .dlgacts .btn{ padding:9px 16px }
+</style>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="bell"><path d="M6 8a4 4 0 0 1 8 0c0 4 2 5 2 5H4s2-1 2-5M8.5 16a1.5 1.5 0 0 0 3 0"/></g>
+  <g id="dots"><circle cx="5" cy="10" r="1"/><circle cx="10" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></g>
+  <g id="back"><path d="M12 4l-6 6 6 6"/></g>
+</defs></svg>
+
+<div class="note"><b>스펙-only 화면 3종 (그린)</b> — ① 전체 알림 피드(여러 토픽 합쳐진 스트림, 토픽 칩으로 출처 구분) ② 데스크톱 디테일 우측 패널(그린) ③ 구독 다이얼로그.</div>
+
+<div class="cap">① 전체 알림 피드 + ② 디테일 우측 패널</div>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><div class="logo"></div><b>ntfy</b></div>
+    <div class="sl">구독</div>
+    <div class="ti"><span class="ic"></span>server-alerts<span class="n">3</span></div>
+    <div class="ti"><span class="ic"></span>metrics<span class="n">12</span></div>
+    <div class="ti"><span class="ic"></span>ci</div>
+    <div class="ti"><span class="ic"></span>home-iot<span class="n">🔕</span></div>
+    <div class="foot"><div class="ti active"><span class="ic"></span>⊞ 전체 알림<span class="n">27</span></div><div class="fi">⚙ 설정</div></div>
+  </aside>
+
+  <main class="feed">
+    <div class="fh"><h1>전체 알림</h1><div class="sub">모든 토픽 · 27개 · 연결됨</div></div>
+    <div class="list">
+      <div class="card p5 sel">
+        <div class="ch"><span class="pb">Urgent</span><h3>백업 실패</h3><span class="dot"></span></div>
+        <div class="cb">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+        <div class="meta"><span class="topic t-srv">server-alerts</span><span class="time">2분 전</span></div>
+      </div>
+      <div class="card p4">
+        <div class="ch"><span class="pb">High</span><h3>web-01 CPU 91%</h3><span class="dot"></span></div>
+        <div class="cb">지난 5분 평균 부하가 임계치를 넘었습니다.</div>
+        <div class="meta"><span class="topic t-met">metrics</span><span class="time">11분 전</span></div>
+      </div>
+      <div class="card p3">
+        <div class="ch"><h3>배포 완료</h3><span class="dot" style="background:#4a5158;box-shadow:none"></span></div>
+        <div class="cb">ntfy-web v1.2.0 프로덕션 반영됨.</div>
+        <div class="meta"><span class="topic t-ci">ci</span><span class="time">1시간 전</span></div>
+      </div>
+      <div class="card p3">
+        <div class="ch"><h3>현관문 잠김</h3><span class="dot" style="background:#4a5158;box-shadow:none"></span></div>
+        <div class="cb">스마트락이 자동 잠금되었습니다.</div>
+        <div class="meta"><span class="topic t-iot">home-iot</span><span class="time">3시간 전</span></div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="detail">
+    <div class="dh"><span class="pb p5" style="background:var(--coral);color:#1A0E0E">Urgent</span><span class="sp"><svg class="i"><use href="#bell"/></svg><svg class="i"><use href="#dots"/></svg></span></div>
+    <h2>백업 실패</h2>
+    <dl class="kv"><dt>호스트</dt><dd>web-01</dd><dt>작업</dt><dd>nas-backup</dd><dt>상태</dt><dd class="bad">FAILED</dd><dt>디스크</dt><dd class="bad">98% 사용</dd><dt>시각</dt><dd>03:14 (12분)</dd></dl>
+    <div class="sec">메시지</div>
+    <div class="dbody">nas-backup 작업이 03:14에 중단됐습니다. 대상 볼륨의 가용 공간이 부족합니다(2.1GB 필요 / 0.4GB 남음). 재시도하기 전에 오래된 스냅샷을 정리하세요.</div>
+    <div class="sec">첨부</div>
+    <div class="attach"><div class="th"></div><div><div class="fn">backup-2026-06-20.log</div><div class="fs">48 KB · 텍스트</div></div></div>
+    <div class="sec">태그</div>
+    <div class="tags"><span class="tag">backup</span><span class="tag">nas</span></div>
+    <div class="dacts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+  </aside>
+</div>
+
+<div class="cap">③ 구독 다이얼로그</div>
+<div class="dlgwrap">
+  <div class="ghost-shell"><div class="gc"></div><div class="gc"></div><div class="gc"></div></div>
+  <div class="scrim">
+    <div class="dlg">
+      <h2>토픽 구독</h2>
+      <div class="lead">구독하면 이 토픽의 알림이 피드에 도착합니다.</div>
+      <div class="fld"><label>토픽 이름</label><div class="inp"><span class="muted2">예: server-alerts</span></div></div>
+      <div class="fld"><label>서버</label><div class="inp">https://ntfy.mydomain.dev<span class="muted2">기본값</span></div></div>
+      <div class="adv">＋ 인증 추가 (보호된 토픽인 경우)</div>
+      <div class="dlgacts"><button class="btn ghost">취소</button><button class="btn">구독</button></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+<title>ntfy-web — Settings + empty/error states</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :root{
+    --bg:#0C0D0F; --surface:#16181B; --surface-2:#1C1F23; --border:#23262B;
+    --text:#E8EAED; --muted:#8B9197; --green:#42D392; --amber:#F5A95C; --coral:#FF6B6E;
+  }
+  body{ font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; background:#08090A; color:var(--text); padding:26px; line-height:1.5; }
+  .note{ max-width:1100px; margin:0 auto 22px; font-size:14px; color:#aeb4ba; } .note b{color:#fff}
+  svg.i{ width:16px; height:16px; stroke:currentColor; stroke-width:1.8; fill:none; }
+  h2.t{ max-width:1100px; margin:28px auto 12px; font-size:13px; font-weight:700; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+
+  /* ---- Settings (Beszel pattern) ---- */
+  .settings{ max-width:1100px; margin:0 auto; display:grid; grid-template-columns:220px 1fr; gap:0;
+             background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; min-height:560px; }
+  .snav{ background:#0A0B0C; border-right:1px solid var(--border); padding:14px 10px; }
+  .si{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:9px; font-size:13.5px; color:#C2C7CC; cursor:pointer; }
+  .si:hover{ background:var(--surface); } .si.active{ background:var(--surface-2); color:#fff; font-weight:600; }
+  .sbody{ padding:26px 30px; }
+  .sbody h1{ font-size:22px; font-weight:700; margin-bottom:2px; }
+  .sbody .lead{ color:var(--muted); font-size:13px; margin-bottom:8px; }
+  .grp{ padding:20px 0; border-bottom:1px solid var(--border); }
+  .grp:last-child{ border-bottom:none; }
+  .grp h3{ font-size:15px; font-weight:600; margin-bottom:3px; }
+  .grp .hint{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
+  .fields{ display:flex; gap:16px; flex-wrap:wrap; }
+  .fld{ flex:1; min-width:200px; } .fld label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .ctrl{ width:100%; display:flex; align-items:center; justify-content:space-between; background:#0C0D0F; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:14px; color:var(--text); }
+  .ctrl .chev{ color:var(--muted); }
+  .seg{ display:inline-flex; background:#0C0D0F; border:1px solid var(--border); border-radius:10px; padding:3px; }
+  .seg span{ padding:7px 16px; border-radius:7px; font-size:13px; color:var(--muted); cursor:pointer; }
+  .seg span.on{ background:var(--surface-2); color:#fff; font-weight:600; }
+  .row2{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; }
+  .row2 .lab{ font-size:14px; } .row2 .desc{ font-size:12px; color:var(--muted); }
+  .tog{ width:42px; height:24px; border-radius:999px; background:#2C3036; position:relative; flex:none; }
+  .tog.on{ background:var(--green); } .tog::after{ content:""; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:999px; background:#fff; transition:.2s; }
+  .tog.on::after{ left:21px; }
+  .save{ margin-top:22px; display:flex; align-items:center; gap:8px; padding:11px 18px; border-radius:11px; border:none; background:#F4F5F6; color:#15171A; font-size:14px; font-weight:700; }
+
+  /* ---- States ---- */
+  .states{ max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .state{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:34px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px; min-height:240px; justify-content:center; }
+  .ill{ width:64px; height:64px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
+  .ill svg{ width:30px; height:30px; stroke-width:1.6; fill:none; }
+  .state h4{ font-size:16px; font-weight:600; } .state p{ font-size:13px; color:var(--muted); max-width:200px; }
+  .state .cta{ margin-top:14px; padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600; border:none; }
+  .cta.green{ background:var(--green); color:#06231A; } .cta.white{ background:#F4F5F6; color:#15171A; } .cta.ghost{ background:transparent; color:#C2C7CC; box-shadow:inset 0 0 0 1px #2C3036; }
+  .ill.g{ background:#42D39218; color:var(--green); } .ill.m{ background:#8B919718; color:var(--muted); } .ill.c{ background:#FF6B6E18; color:var(--coral); } .ill.a{ background:#F5A95C18; color:var(--amber); }
+  .pulse{ animation:p 1.4s ease-in-out infinite; } @keyframes p{0%,100%{opacity:.4}50%{opacity:1}}
+</style>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="cog"><circle cx="12" cy="12" r="3.4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g>
+  <g id="bell"><path d="M7 9a5 5 0 0 1 10 0c0 5 2.5 6 2.5 6h-15S7 14 7 9M10 19a2 2 0 0 0 4 0"/></g>
+  <g id="globe"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></g>
+  <g id="palette"><path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-1.5 1-2 2-2H18a3 3 0 0 0 3-3c0-5-4-8.5-9-8.5"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="8" r="1"/><circle cx="16" cy="11" r="1"/></g>
+  <g id="link"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" /></g>
+  <g id="plug"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5"/></g>
+  <g id="inbox"><path d="M3 12h5l2 3h4l2-3h5M3 12l3-8h12l3 8v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></g>
+  <g id="add"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></g>
+  <g id="warn"><path d="M12 3l9 16H3zM12 10v4M12 17v.5"/></g>
+  <g id="spin"><path d="M12 3a9 9 0 1 0 9 9"/></g>
+  <g id="save"><path d="M5 4h11l3 3v13H5zM8 4v5h7M8 14h8v6H8z"/></g>
+</defs></svg>
+
+<div class="note"><b>설정 + 빈/에러 상태</b> — 그린 테마, Beszel 설정 패턴(좌 아이콘 내비 · 섹션 폼 · 회색 활성 · 흰 Save). 상태는 친근한 단색 아이콘 일러스트 + 한 줄 안내 + 주 액션. 토글 ON = 그린.</div>
+
+<h2 class="t">설정 화면</h2>
+<div class="settings">
+  <nav class="snav">
+    <div class="si active"><svg class="i"><use href="#cog"/></svg>일반</div>
+    <div class="si"><svg class="i"><use href="#plug"/></svg>서버 · 인증</div>
+    <div class="si"><svg class="i"><use href="#palette"/></svg>모양 · 테마</div>
+    <div class="si"><svg class="i"><use href="#bell"/></svg>알림 · 소리</div>
+    <div class="si"><svg class="i"><use href="#inbox"/></svg>보존 · 삭제</div>
+  </nav>
+  <div class="sbody">
+    <h1>일반</h1>
+    <div class="lead">앱 동작과 표시 옵션을 설정합니다.</div>
+
+    <div class="grp">
+      <h3>언어</h3><div class="hint">인터페이스 표시 언어.</div>
+      <div class="fld" style="max-width:340px"><label>표시 언어</label><div class="ctrl">한국어<span class="chev">⌄</span></div></div>
+    </div>
+
+    <div class="grp">
+      <h3>테마</h3><div class="hint">밝게 / 어둡게 / 시스템 설정 따라가기.</div>
+      <div class="seg"><span>라이트</span><span class="on">다크</span><span>시스템</span></div>
+    </div>
+
+    <div class="grp">
+      <h3>서버 연결</h3><div class="hint">자체 호스팅 ntfy 서버 주소와 인증.</div>
+      <div class="fields">
+        <div class="fld"><label>서버 URL</label><div class="ctrl">https://ntfy.mydomain.dev</div></div>
+        <div class="fld"><label>인증 방식</label><div class="ctrl">토큰<span class="chev">⌄</span></div></div>
+      </div>
+    </div>
+
+    <div class="grp">
+      <h3>알림</h3><div class="hint">브라우저 알림과 소리.</div>
+      <div class="row2"><div><div class="lab">브라우저 알림</div><div class="desc">데스크톱 알림 표시 (권한 필요)</div></div><div class="tog on"></div></div>
+      <div class="row2"><div><div class="lab">알림 소리</div><div class="desc">새 메시지 도착 시 재생</div></div><div class="tog on"></div></div>
+      <div class="fld" style="max-width:340px;margin-top:6px"><label>소리</label><div class="ctrl">Pop<span class="chev">⌄</span></div></div>
+    </div>
+
+    <button class="save"><svg class="i" style="width:16px;height:16px"><use href="#save"/></svg> 설정 저장</button>
+  </div>
+</div>
+
+<h2 class="t">빈 / 연결 상태</h2>
+<div class="states">
+  <div class="state">
+    <div class="ill c"><svg viewBox="0 0 24 24" stroke="currentColor"><use href="#plug"/></svg></div>
+    <h4>서버에 연결할 수 없음</h4><p>ntfy 서버에 닿지 못했어요. 주소와 네트워크를 확인해 주세요.</p>
+    <button class="cta white">다시 연결</button>
+  </div>
+  <div class="state">
+    <div class="ill a"><svg viewBox="0 0 24 24" stroke="currentColor" class="pulse"><use href="#spin"/></svg></div>
+    <h4>연결 중…</h4><p>서버와 연결하고 있어요. 잠시만요.</p>
+  </div>
+  <div class="state">
+    <div class="ill g"><svg viewBox="0 0 24 24" stroke="currentColor"><use href="#add"/></svg></div>
+    <h4>아직 구독한 토픽이 없어요</h4><p>토픽을 구독하면 여기에 알림이 도착합니다.</p>
+    <button class="cta green">＋ 토픽 구독</button>
+  </div>
+  <div class="state">
+    <div class="ill m"><svg viewBox="0 0 24 24" stroke="currentColor"><use href="#inbox"/></svg></div>
+    <h4>알림이 없어요</h4><p>이 토픽에 아직 메시지가 없습니다. 도착하면 바로 보여드릴게요.</p>
+    <button class="cta ghost">알림 보내보기</button>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<title>ntfy-web — Neutral dark, spacious card, differentiated chips (v2)</title>
+<style>
+  /* ============ ntfy-web palette v2 — NEUTRAL dark (no brown), roomier card ============
+     Changes from v1: brown undertone removed (cool-neutral charcoal); card padding/gaps up;
+     priority chip (top) = squared solid badge, topic/tag chips (bottom) = pill — distinct shapes.
+     Brand teal locked #338574 (light) / #6FD3BC (dark). Priority amber/coral locked.
+     ⚠ = proposed (not pinned in PRD).
+
+     LIGHT (neutral)              DARK 1 — standard            DARK 2 — deeper/higher-contrast
+     bg     #F3F4F6 ⚠            bg     #15171A ⚠              bg     #0F1113 ⚠
+     surface#FFFFFF ⚠ (1px brd)  surface#1E2125 ⚠             surface#1A1D21 ⚠
+     text   #1C1E21 ⚠            text   #E7E9EC ⚠             text   #ECEEF1 ⚠
+     muted  #6B7177 ⚠            muted  #9AA0A6 ⚠             muted  #939AA1 ⚠
+     border #E4E6E9 ⚠            border #2A2E33 ⚠             border #25282D ⚠
+     brand  #338574              brand  #6FD3BC               brand  #6FD3BC
+     prio-hi#E8943A              prio-hi#F5A95C               prio-hi#F5A95C
+     prio-mx#E5484D              prio-mx#FF6B6E               prio-mx#FF6B6E
+  ================================================================================ */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         background: #0c0d0f; color: #ddd; padding: 24px; line-height: 1.5; }
+  .note { max-width: 1100px; margin: 0 auto 20px; font-size: 14px; color: #bbb; }
+  .note b { color: #fff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; max-width: 1180px; margin: 0 auto; }
+  .panel { border-radius: 16px; padding: 20px; }
+  .phead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  .phead h2 { font-size: 16px; font-weight: 700; }
+  .phead .reg { font-size: 12px; opacity: .7; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .chip { font-size: 10px; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(128,128,128,.35); }
+
+  /* Hero notification card — roomier */
+  .card { position: relative; border-radius: 16px; padding: 20px; padding-left: 22px; overflow: hidden; margin-bottom: 14px; }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; }
+
+  /* TOP row: priority = squared solid badge (distinct from pills) */
+  .ctop { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .pbadge { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+            padding:3px 8px; border-radius:6px; color:#fff; }
+  .dot { width:9px; height:9px; border-radius:999px; margin-left:auto; }
+
+  .card h3 { font-size:18px; font-weight:600; margin-bottom:6px; line-height:1.35; }
+  .card .body { font-size:14px; opacity:.82; line-height:1.6; }
+
+  /* BOTTOM row: topic = soft pill, tag = outlined pill — both rounded, contrast w/ squared badge */
+  .meta { display:flex; align-items:center; gap:10px; margin-top:18px; font-size:12px; flex-wrap:wrap; }
+  .topic { padding:3px 12px; border-radius:999px; font-weight:600; }
+  .time { opacity:.6; }
+  .tag { padding:3px 10px; border-radius:999px; border:1px solid; background:transparent; opacity:.9; }
+  .acts { display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid; }
+  .btn { font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; }
+
+  /* ---- LIGHT ---- */
+  .light { background:#F3F4F6; color:#1C1E21; }
+  .light .chip { background:#fff; }
+  .light .card { background:#fff; border:1px solid #E4E6E9; box-shadow:0 1px 2px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04); }
+  .light .card.p5::before { background:#E5484D; }
+  .light .card.p4::before { background:#E8943A; }
+  .light .card.p3::before { background:transparent; }
+  .light .p5 .pbadge { background:#E5484D; }
+  .light .p4 .pbadge { background:#E8943A; }
+  .light .dot { background:#338574; }
+  .light .topic { background:#DCEEE9; color:#1F6E5E; }
+  .light .tag { border-color:#D6D9DD; color:#6B7177; }
+  .light .meta, .light .time { color:#6B7177; }
+  .light .acts { border-color:#ECEef1; }
+  .light .btn { background:#338574; color:#fff; }
+  .light .btn.ghost { background:transparent; color:#338574; box-shadow:inset 0 0 0 1px #338574; }
+
+  /* ---- DARK 1 standard (neutral, no brown) ---- */
+  .d1 { background:#15171A; color:#E7E9EC; }
+  .d1 .chip { background:#1E2125; }
+  .d1 .card { background:#1E2125; border:1px solid #2A2E33; box-shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 16px rgba(0,0,0,.3); }
+  .d1 .card.p5::before { background:#FF6B6E; box-shadow:0 0 10px #FF6B6E55; }
+  .d1 .card.p4::before { background:#F5A95C; box-shadow:0 0 10px #F5A95C44; }
+  .d1 .p5 .pbadge { background:#FF6B6E; color:#1A0E0E; }
+  .d1 .p4 .pbadge { background:#F5A95C; color:#241403; }
+  .d1 .dot { background:#6FD3BC; box-shadow:0 0 8px #6FD3BC88; }
+  .d1 .topic { background:#173A34; color:#7FE0CB; }
+  .d1 .tag { border-color:#343A40; color:#9AA0A6; }
+  .d1 .meta, .d1 .time { color:#9AA0A6; }
+  .d1 .acts { border-color:#2A2E33; }
+  .d1 .btn { background:#6FD3BC; color:#06231D; }
+  .d1 .btn.ghost { background:transparent; color:#6FD3BC; box-shadow:inset 0 0 0 1px #6FD3BC55; }
+
+  /* ---- DARK 2 deeper / higher contrast ---- */
+  .d2 { background:#0F1113; color:#ECEEF1; }
+  .d2 .chip { background:#1A1D21; }
+  .d2 .card { background:#1A1D21; border:1px solid #25282D; box-shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 20px rgba(0,0,0,.4); }
+  .d2 .card.p5::before { background:#FF6B6E; box-shadow:0 0 12px #FF6B6E66; }
+  .d2 .card.p4::before { background:#F5A95C; box-shadow:0 0 12px #F5A95C55; }
+  .d2 .p5 .pbadge { background:#FF6B6E; color:#1A0E0E; }
+  .d2 .p4 .pbadge { background:#F5A95C; color:#241403; }
+  .d2 .dot { background:#6FD3BC; box-shadow:0 0 9px #6FD3BC99; }
+  .d2 .topic { background:#143430; color:#82E3CE; }
+  .d2 .tag { border-color:#2E3338; color:#939AA1; }
+  .d2 .meta, .d2 .time { color:#939AA1; }
+  .d2 .acts { border-color:#25282D; }
+  .d2 .btn { background:#6FD3BC; color:#06231D; }
+  .d2 .btn.ghost { background:transparent; color:#6FD3BC; box-shadow:inset 0 0 0 1px #6FD3BC55; }
+</style>
+
+<div class="note">
+  <b>ntfy-web v2 — 중립 다크(갈색 제거) · 카드 여백 ↑ · 칩 모양 차별화</b><br>
+  바뀐 점: ① 갈색 언더톤 제거 → 쿨/중립 차콜 &nbsp; ② 카드 패딩·줄간격 늘림 &nbsp;
+  ③ <b>상단 우선순위 = 각진 솔리드 배지</b>, <b>하단 토픽/태그 = 둥근 필</b>(차별화).<br>
+  라이트 1 + 다크 2종(표준 / 더 깊게). 브랜드 틸·우선순위 색은 확정, ⚠는 제안값.
+</div>
+
+<div class="grid">
+
+  <!-- LIGHT -->
+  <div class="panel light">
+    <div class="phead"><h2>Light</h2><span class="reg">중립, 깨끗함</span></div>
+    <div class="chips"><span class="chip">bg #F3F4F6⚠</span><span class="chip">surface #FFFFFF⚠</span><span class="chip">brand #338574</span><span class="chip">prio-hi #E8943A</span><span class="chip">prio-max #E5484D</span></div>
+    <div class="card p5">
+      <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+      <h3>백업 실패</h3><div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족. 재시도 전에 오래된 스냅샷을 정리하세요.</div>
+      <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span><span class="tag">backup</span></div>
+      <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+    </div>
+    <div class="card p4">
+      <div class="ctop"><span class="pbadge">High</span><span class="dot"></span></div>
+      <h3>CPU 사용률 90%</h3><div class="body">web-01 지난 5분 평균 부하가 임계치를 넘었습니다.</div>
+      <div class="meta"><span class="topic">metrics</span><span class="time">11분 전</span></div>
+    </div>
+    <div class="card p3">
+      <h3>배포 완료</h3><div class="body">ntfy-web v1.2.0 프로덕션 반영됨.</div>
+      <div class="meta"><span class="topic">ci</span><span class="time">1시간 전</span></div>
+    </div>
+  </div>
+
+  <!-- DARK 1 -->
+  <div class="panel d1">
+    <div class="phead"><h2>Dark 1 — 표준</h2><span class="reg">중립 차콜, 균형</span></div>
+    <div class="chips"><span class="chip">bg #15171A⚠</span><span class="chip">surface #1E2125⚠</span><span class="chip">brand #6FD3BC</span><span class="chip">prio-hi #F5A95C</span><span class="chip">prio-max #FF6B6E</span></div>
+    <div class="card p5">
+      <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+      <h3>백업 실패</h3><div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족. 재시도 전에 오래된 스냅샷을 정리하세요.</div>
+      <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span><span class="tag">backup</span></div>
+      <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+    </div>
+    <div class="card p4">
+      <div class="ctop"><span class="pbadge">High</span><span class="dot"></span></div>
+      <h3>CPU 사용률 90%</h3><div class="body">web-01 지난 5분 평균 부하가 임계치를 넘었습니다.</div>
+      <div class="meta"><span class="topic">metrics</span><span class="time">11분 전</span></div>
+    </div>
+    <div class="card p3">
+      <h3>배포 완료</h3><div class="body">ntfy-web v1.2.0 프로덕션 반영됨.</div>
+      <div class="meta"><span class="topic">ci</span><span class="time">1시간 전</span></div>
+    </div>
+  </div>
+
+  <!-- DARK 2 -->
+  <div class="panel d2">
+    <div class="phead"><h2>Dark 2 — 더 깊게</h2><span class="reg">고대비, 카드가 더 뜸</span></div>
+    <div class="chips"><span class="chip">bg #0F1113⚠</span><span class="chip">surface #1A1D21⚠</span><span class="chip">brand #6FD3BC</span><span class="chip">prio-hi #F5A95C</span><span class="chip">prio-max #FF6B6E</span></div>
+    <div class="card p5">
+      <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+      <h3>백업 실패</h3><div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족. 재시도 전에 오래된 스냅샷을 정리하세요.</div>
+      <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span><span class="tag">backup</span></div>
+      <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+    </div>
+    <div class="card p4">
+      <div class="ctop"><span class="pbadge">High</span><span class="dot"></span></div>
+      <h3>CPU 사용률 90%</h3><div class="body">web-01 지난 5분 평균 부하가 임계치를 넘었습니다.</div>
+      <div class="meta"><span class="topic">metrics</span><span class="time">11분 전</span></div>
+    </div>
+    <div class="card p3">
+      <h3>배포 완료</h3><div class="body">ntfy-web v1.2.0 프로덕션 반영됨.</div>
+      <div class="meta"><span class="topic">ci</span><span class="time">1시간 전</span></div>
+    </div>
+  </div>
+
+</div>

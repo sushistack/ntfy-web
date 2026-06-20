@@ -1,0 +1,198 @@
+<title>ntfy-web — Mobile layout (feed · detail · publish)</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :root{
+    --bg:#0C0D0F; --surface:#16181B; --surface-2:#1C1F23; --border:#23262B;
+    --text:#E8EAED; --muted:#8B9197; --green:#42D392; --amber:#F5A95C; --coral:#FF6B6E;
+  }
+  body { font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         background:#08090A; color:var(--text); padding:26px; line-height:1.5; }
+  .note{ max-width:1000px; margin:0 auto 22px; font-size:14px; color:#aeb4ba; } .note b{color:#fff}
+  .rail{ display:flex; gap:28px; justify-content:center; flex-wrap:wrap; }
+  .cap{ text-align:center; font-size:12px; color:var(--muted); margin-top:10px; }
+  svg.i{ width:15px; height:15px; stroke:currentColor; stroke-width:1.8; fill:none; flex:none; vertical-align:-2px; }
+
+  /* phone frame */
+  .phone{ width:340px; height:720px; background:var(--bg); border:1px solid #2a2e33; border-radius:30px;
+          overflow:hidden; position:relative; box-shadow:0 20px 50px rgba(0,0,0,.5); display:flex; flex-direction:column; }
+  .status{ height:30px; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); }
+  .status::before{ content:"9:41"; }
+
+  /* top app bar */
+  .tbar{ display:flex; align-items:center; gap:12px; padding:8px 16px 12px; }
+  .tbar .mn{ color:var(--text); padding:4px; }
+  .tbar h1{ font-size:19px; font-weight:700; }
+  .tbar .conn{ margin-left:auto; width:8px; height:8px; border-radius:999px; background:var(--green); box-shadow:0 0 7px var(--green); }
+  .tbar .av{ width:30px; height:30px; border-radius:999px; background:var(--surface-2); }
+
+  .scroll{ flex:1; overflow-y:auto; padding:0 14px 90px; display:flex; flex-direction:column; gap:12px; }
+  .scroll::-webkit-scrollbar{display:none}
+
+  /* card (compact mobile) */
+  .card{ position:relative; background:var(--surface); border:1px solid var(--border); border-radius:0 14px 14px 0; overflow:hidden; }
+  .card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .card.p5::before{ background:var(--coral); box-shadow:0 0 10px #FF6B6E55; }
+  .card.p4::before{ background:var(--amber); box-shadow:0 0 10px #F5A95C44; }
+  .card.p3::before{ background:transparent; }
+  .chead{ display:flex; align-items:center; gap:8px; padding:12px 14px 10px 16px; }
+  .pbadge{ font-size:9.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; padding:3px 7px; border-radius:6px; }
+  .p5 .pbadge{ background:var(--coral); color:#1A0E0E; } .p4 .pbadge{ background:var(--amber); color:#241403; }
+  .chead h3{ font-size:15px; font-weight:600; }
+  .dot{ width:8px; height:8px; border-radius:999px; background:var(--green); box-shadow:0 0 7px var(--green); margin-left:auto; }
+  .cbody{ padding:0 16px; }
+  .pgraf{ font-size:13.5px; color:#C2C7CC; line-height:1.55; }
+  .kv{ display:flex; flex-direction:column; gap:9px; }
+  .row{ display:grid; grid-template-columns:16px 64px 1fr; align-items:center; gap:9px; font-size:13px; }
+  .row .ico{ color:var(--muted); display:flex; } .row .k{ color:var(--muted); }
+  .row .v{ display:flex; align-items:center; gap:8px; }
+  .meter{ flex:1; height:6px; border-radius:999px; background:#262A2F; overflow:hidden; max-width:130px; }
+  .meter>span{ display:block; height:100%; background:var(--green); border-radius:999px; }
+  .meter.warn>span{ background:var(--amber); } .meter.crit>span{ background:var(--coral); }
+  .pct{ min-width:44px; font-variant-numeric:tabular-nums; } .pct.crit{ color:#FF8C8E; font-weight:600; }
+  .tags{ display:flex; gap:6px; flex-wrap:wrap; padding:0 16px; margin-top:10px; }
+  .tag{ font-size:11.5px; padding:2px 9px; border-radius:999px; border:1px solid #2C3036; color:var(--muted); }
+  .meta{ display:flex; align-items:center; padding:10px 16px 14px; font-size:11.5px; }
+  .topic{ padding:3px 10px; border-radius:999px; font-weight:600; background:#143A2D; color:#7CE6B4; }
+  .time{ margin-left:auto; color:var(--muted); }
+
+  /* bottom nav */
+  .bnav{ position:absolute; left:0; right:0; bottom:0; height:62px; background:#0A0B0CEE; backdrop-filter:blur(8px);
+         border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 26px; }
+  .bn{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; color:var(--muted); }
+  .bn.on{ color:var(--green); }
+  .bn svg{ width:21px; height:21px; }
+  /* FAB */
+  .fab{ position:absolute; right:18px; bottom:78px; width:54px; height:54px; border-radius:18px; background:var(--green);
+        display:flex; align-items:center; justify-content:center; box-shadow:0 8px 22px #42D39255; color:#06231A; }
+  .fab svg{ width:24px; height:24px; stroke-width:2.2; }
+
+  /* detail */
+  .dbar{ display:flex; align-items:center; gap:14px; padding:8px 16px 12px; }
+  .dbar .bk{ padding:4px; } .dbar .sp{ margin-left:auto; display:flex; gap:6px; color:var(--muted); }
+  .dscroll{ flex:1; overflow-y:auto; padding:6px 18px 24px; } .dscroll::-webkit-scrollbar{display:none}
+  .dscroll h2{ font-size:21px; font-weight:600; margin:6px 0 14px; }
+  .sec{ font-size:10.5px; font-weight:700; color:var(--muted); letter-spacing:.05em; text-transform:uppercase; margin:20px 0 8px; }
+  .dbody{ font-size:14px; color:#C2C7CC; line-height:1.7; }
+  .attach{ display:flex; align-items:center; gap:11px; padding:11px; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+  .attach .th{ width:38px; height:38px; border-radius:8px; background:linear-gradient(135deg,#2a2e33,#3a4047); }
+  .attach .fn{ font-size:13px; } .attach .fs{ font-size:11.5px; color:var(--muted); }
+  .dacts{ position:absolute; left:0; right:0; bottom:0; display:flex; gap:10px; padding:14px 16px; background:#0A0B0CEE; border-top:1px solid var(--border); }
+  .btn{ flex:1; font-size:14px; font-weight:600; padding:11px; border-radius:11px; border:none; background:#F4F5F6; color:#15171A; }
+  .ghost{ background:transparent; color:#C2C7CC; box-shadow:inset 0 0 0 1px #2C3036; }
+
+  /* publish bottom sheet */
+  .scrim{ position:absolute; inset:0; background:#000A; }
+  .sheet{ position:absolute; left:0; right:0; bottom:0; background:#121316; border:1px solid var(--border); border-bottom:none;
+          border-radius:20px 20px 0 0; padding:8px 18px 20px; }
+  .grab{ width:38px; height:4px; border-radius:999px; background:#3a4047; margin:6px auto 14px; }
+  .sheet h2{ font-size:17px; font-weight:700; margin-bottom:16px; }
+  .fld{ margin-bottom:14px; } .fld label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .inp{ width:100%; background:#0C0D0F; border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text); font-size:14px; }
+  .prio{ display:flex; gap:8px; } .pc{ flex:1; text-align:center; font-size:12px; font-weight:600; padding:8px; border-radius:9px; border:1px solid var(--border); color:var(--muted); }
+  .pc.sel{ border-color:var(--coral); color:#FF8C8E; background:#FF6B6E12; }
+  .send{ width:100%; margin-top:6px; padding:13px; border-radius:12px; border:none; background:var(--green); color:#06231A; font-size:15px; font-weight:700; }
+</style>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="i-cpu"><rect x="6" y="6" width="8" height="8" rx="1"/><path d="M9 2v3M11 2v3M9 15v3M11 15v3M2 9h3M2 11h3M15 9h3M15 11h3"/></g>
+  <g id="i-mem"><rect x="3" y="6" width="14" height="8" rx="1"/><path d="M6 14v2M10 14v2M14 14v2"/></g>
+  <g id="i-disk"><circle cx="10" cy="10" r="7"/><circle cx="10" cy="10" r="2"/></g>
+  <g id="i-host"><rect x="3" y="4" width="14" height="10" rx="1.5"/><path d="M7 17h6M10 14v3"/></g>
+  <g id="i-menu"><path d="M3 6h14M3 10h14M3 14h14"/></g>
+  <g id="i-back"><path d="M12 4l-6 6 6 6"/></g>
+  <g id="i-bell"><path d="M6 8a4 4 0 0 1 8 0c0 4 2 5 2 5H4s2-1 2-5M8.5 16a1.5 1.5 0 0 0 3 0"/></g>
+  <g id="i-dots"><circle cx="5" cy="10" r="1"/><circle cx="10" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></g>
+  <g id="i-list"><path d="M3 5h14M3 10h14M3 15h14"/></g>
+  <g id="i-grid"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></g>
+  <g id="i-cog"><circle cx="10" cy="10" r="3"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.2 4.2l1.4 1.4M14.4 14.4l1.4 1.4M15.8 4.2l-1.4 1.4M5.6 14.4l-1.4 1.4"/></g>
+  <g id="i-plus"><path d="M10 4v12M4 10h12"/></g>
+</defs></svg>
+
+<div class="note"><b>ntfy-web 모바일</b> — 그린 테마 그대로. 상단 앱바 + 하단 내비 + 발행 FAB(그린=액센트 모먼트), 디테일은 풀스크린 라우트, 발행은 바텀시트.</div>
+
+<div class="rail">
+
+  <!-- FEED -->
+  <div>
+  <div class="phone">
+    <div class="status"></div>
+    <div class="tbar"><span class="mn"><svg class="i" style="width:22px;height:22px"><use href="#i-menu"/></svg></span><h1>server-alerts</h1><span class="conn"></span><span class="av"></span></div>
+    <div class="scroll">
+      <div class="card p4">
+        <div class="chead"><span class="pbadge">High</span><h3>web-01 리소스 경고</h3><span class="dot"></span></div>
+        <div class="cbody"><div class="kv">
+          <div class="row"><span class="ico"><svg class="i"><use href="#i-cpu"/></svg></span><span class="k">CPU</span><span class="v"><span class="pct crit">91%</span><span class="meter crit"><span style="width:91%"></span></span></span></div>
+          <div class="row"><span class="ico"><svg class="i"><use href="#i-mem"/></svg></span><span class="k">메모리</span><span class="v"><span class="pct">72%</span><span class="meter warn"><span style="width:72%"></span></span></span></div>
+          <div class="row"><span class="ico"><svg class="i"><use href="#i-disk"/></svg></span><span class="k">디스크</span><span class="v"><span class="pct">38%</span><span class="meter"><span style="width:38%"></span></span></span></div>
+        </div></div>
+        <div class="tags"><span class="tag">metrics</span></div>
+        <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span></div>
+      </div>
+      <div class="card p5">
+        <div class="chead"><span class="pbadge">Urgent</span><h3>백업 실패</h3><span class="dot"></span></div>
+        <div class="cbody"><div class="pgraf">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div></div>
+        <div class="tags"><span class="tag">backup</span><span class="tag">nas</span></div>
+        <div class="meta"><span class="topic">server-alerts</span><span class="time">9분 전</span></div>
+      </div>
+      <div class="card p3">
+        <div class="chead"><h3>배포 완료</h3><span class="dot" style="background:#4a5158;box-shadow:none"></span></div>
+        <div class="cbody"><div class="pgraf">ntfy-web v1.2.0 프로덕션 반영됨.</div></div>
+        <div class="meta"><span class="topic">ci</span><span class="time">1시간 전</span></div>
+      </div>
+    </div>
+    <div class="fab"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor"><use href="#i-plus"/></svg></div>
+    <div class="bnav">
+      <div class="bn on"><svg fill="none" stroke="currentColor" viewBox="0 0 20 20"><use href="#i-list"/></svg>구독</div>
+      <div class="bn"><svg fill="none" stroke="currentColor" viewBox="0 0 20 20"><use href="#i-grid"/></svg>전체</div>
+      <div class="bn"><svg fill="none" stroke="currentColor" viewBox="0 0 20 20"><use href="#i-cog"/></svg>설정</div>
+    </div>
+  </div>
+  <div class="cap">피드 — 상단바 · 카드 · 하단내비 · 발행 FAB</div>
+  </div>
+
+  <!-- DETAIL -->
+  <div>
+  <div class="phone">
+    <div class="status"></div>
+    <div class="dbar"><span class="bk"><svg class="i" style="width:22px;height:22px"><use href="#i-back"/></svg></span>
+      <span class="pbadge" style="background:var(--coral);color:#1A0E0E">Urgent</span>
+      <span class="sp"><svg class="i"><use href="#i-bell"/></svg><svg class="i"><use href="#i-dots"/></svg></span></div>
+    <div class="dscroll">
+      <h2>백업 실패</h2>
+      <div class="kv">
+        <div class="row"><span class="ico"><svg class="i"><use href="#i-host"/></svg></span><span class="k">호스트</span><span class="v">web-01</span></div>
+        <div class="row"><span class="ico"><svg class="i"><use href="#i-disk"/></svg></span><span class="k">디스크</span><span class="v"><span class="pct crit">98%</span><span class="meter crit"><span style="width:98%"></span></span></span></div>
+      </div>
+      <div class="sec">메시지</div>
+      <div class="dbody">nas-backup 작업이 03:14에 중단됐습니다. 대상 볼륨의 가용 공간이 부족합니다(2.1GB 필요 / 0.4GB 남음). 재시도하기 전에 오래된 스냅샷을 정리하세요.</div>
+      <div class="sec">첨부</div>
+      <div class="attach"><div class="th"></div><div><div class="fn">backup-2026-06-20.log</div><div class="fs">48 KB · 텍스트</div></div></div>
+      <div class="sec">태그</div>
+      <div class="tags" style="padding:0"><span class="tag">backup</span><span class="tag">nas</span></div>
+    </div>
+    <div class="dacts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+  </div>
+  <div class="cap">디테일 — 풀스크린, 하단 고정 액션</div>
+  </div>
+
+  <!-- PUBLISH -->
+  <div>
+  <div class="phone">
+    <div class="status"></div>
+    <div class="tbar" style="opacity:.4"><span class="mn"><svg class="i" style="width:22px;height:22px"><use href="#i-menu"/></svg></span><h1>server-alerts</h1></div>
+    <div class="scroll" style="opacity:.35"><div class="card p3"><div class="chead"><h3>배포 완료</h3></div><div class="cbody"><div class="pgraf">ntfy-web v1.2.0 …</div></div><div class="meta"><span class="topic">ci</span></div></div></div>
+    <div class="scrim"></div>
+    <div class="sheet">
+      <div class="grab"></div>
+      <h2>알림 보내기</h2>
+      <div class="fld"><label>토픽</label><div class="inp">server-alerts</div></div>
+      <div class="fld"><label>제목</label><div class="inp">&nbsp;</div></div>
+      <div class="fld"><label>내용</label><div class="inp" style="height:64px">&nbsp;</div></div>
+      <div class="fld"><label>우선순위</label><div class="prio"><span class="pc">낮음</span><span class="pc">보통</span><span class="pc">높음</span><span class="pc sel">긴급</span></div></div>
+      <button class="send">보내기</button>
+    </div>
+  </div>
+  <div class="cap">발행 — 바텀시트 (FAB → 열림)</div>
+  </div>
+
+</div>

@@ -1,0 +1,103 @@
+<title>ntfy-web — Card body variants (paragraph / key-value / list) + fixed meta</title>
+<style>
+  /* ====== Card body study on approved neutral-dark card ======
+     NEW: body supports 3 shapes — (A) paragraph, (B) key-value rows, (C) bullet list.
+     FIXED: tags no longer sit right of the time. Meta row = topic (left) · time (far right);
+            tags moved to their own row below. Left card edge squared (radius right-only).
+     Button accent still TBD → shown teal as placeholder. */
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         background:#15171A; color:#E7E9EC; padding:24px; line-height:1.5; }
+  .note { max-width:1080px; margin:0 auto 20px; font-size:14px; color:#aeb4ba; }
+  .note b{color:#fff} .note code{background:#23262b;padding:1px 5px;border-radius:4px;font-size:12px}
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(340px,1fr)); gap:18px; max-width:1120px; margin:0 auto; }
+
+  .card { position:relative; background:#1E2125; border:1px solid #2A2E33; border-radius:0 16px 16px 0;
+          padding:20px; padding-left:22px; overflow:hidden;
+          box-shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 16px rgba(0,0,0,.3); }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:#FF6B6E; box-shadow:0 0 10px #FF6B6E55; }
+  .vlabel { font-size:11px; font-weight:700; color:#9AA0A6; margin-bottom:12px; letter-spacing:.04em; }
+  .ctop { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .pbadge { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; background:#FF6B6E; color:#1A0E0E; }
+  .dot { width:9px; height:9px; border-radius:999px; margin-left:auto; background:#6FD3BC; box-shadow:0 0 8px #6FD3BC88; }
+  h3 { font-size:18px; font-weight:600; margin-bottom:10px; }
+
+  .body { font-size:14px; opacity:.85; line-height:1.6; }
+
+  /* (B) key-value rows */
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:8px 18px; font-size:13.5px; }
+  .kv dt { color:#9AA0A6; white-space:nowrap; }
+  .kv dd { color:#E7E9EC; }
+  .kv dd.bad { color:#FF8C8E; font-weight:600; }
+  .kv dd.ok { color:#6FD3BC; }
+
+  /* (C) bullet list */
+  .list { list-style:none; font-size:13.5px; display:flex; flex-direction:column; gap:7px; }
+  .list li { position:relative; padding-left:16px; color:#D5D8DC; }
+  .list li::before { content:""; position:absolute; left:2px; top:8px; width:5px; height:5px; border-radius:999px; background:#6FD3BC; }
+
+  /* tags — own row, separated from meta */
+  .tags { display:flex; gap:7px; flex-wrap:wrap; margin-top:14px; }
+  .tag { font-size:12px; padding:3px 10px; border-radius:999px; border:1px solid #343A40; color:#9AA0A6; }
+
+  /* meta — topic left, time pushed far right */
+  .meta { display:flex; align-items:center; margin-top:14px; font-size:12px; }
+  .topic { padding:3px 12px; border-radius:999px; font-weight:600; background:#173A34; color:#7FE0CB; }
+  .time { margin-left:auto; color:#9AA0A6; }
+
+  .acts { display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #2A2E33; }
+  /* achromatic buttons: primary = white fill, secondary = neutral ghost */
+  .btn { font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; background:#F4F5F6; color:#15171A; }
+  .ghost { background:transparent; color:#C7CBD0; box-shadow:inset 0 0 0 1px #343A40; }
+</style>
+
+<div class="note"><b>카드 본문 3종 + 메타/태그 수정</b><br>
+본문이 <b>문단 / key-value / 리스트</b> 형태를 지원합니다. 태그는 더 이상 시간 오른쪽에 끼지 않고 <b>별도 줄</b>로 내려갔고, 메타는 <code>토픽(좌) · 시간(우측 끝)</code>으로 정리. 버튼은 무채색 — 강조=흰색, 보조=중립 고스트.</div>
+
+<div class="grid">
+
+  <!-- A paragraph -->
+  <div class="card">
+    <div class="vlabel">A · 문단 (자유 텍스트 / 마크다운)</div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+    <h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됐습니다 — 디스크 용량 부족. 재시도하기 전에 오래된 스냅샷을 정리하세요.</div>
+    <div class="tags"><span class="tag">backup</span><span class="tag">nas</span></div>
+    <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+  </div>
+
+  <!-- B key-value -->
+  <div class="card">
+    <div class="vlabel">B · key–value (구조화된 값)</div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+    <h3>백업 실패</h3>
+    <dl class="kv">
+      <dt>호스트</dt><dd>web-01</dd>
+      <dt>작업</dt><dd>nas-backup</dd>
+      <dt>상태</dt><dd class="bad">FAILED</dd>
+      <dt>디스크</dt><dd class="bad">98% 사용</dd>
+      <dt>소요</dt><dd>03:14 (12분)</dd>
+    </dl>
+    <div class="tags"><span class="tag">backup</span><span class="tag">nas</span></div>
+    <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div>
+  </div>
+
+  <!-- C list -->
+  <div class="card">
+    <div class="vlabel">C · 리스트 (여러 항목)</div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div>
+    <h3>야간 점검 결과</h3>
+    <ul class="list">
+      <li>nas-backup — 실패 (디스크 부족)</li>
+      <li>db-dump — 완료 (2.1GB)</li>
+      <li>cert-renew — 완료, 90일 연장</li>
+      <li>log-rotate — 건너뜀</li>
+    </ul>
+    <div class="tags"><span class="tag">cron</span><span class="tag">nightly</span></div>
+    <div class="meta"><span class="topic">server-alerts</span><span class="time">2분 전</span></div>
+    <div class="acts"><button class="btn">전체 보기</button><button class="btn ghost">재시도</button></div>
+  </div>
+
+</div>

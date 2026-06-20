@@ -1,0 +1,80 @@
+<title>ntfy-web — Action button accent options</title>
+<style>
+  /* ====== Button-accent study on the approved neutral-dark card (surface #1E2125) ======
+     Brand teal #6FD3BC stays for nav/links/unread-dot. These are candidates for the
+     ACTION BUTTON accent only (view/http/retry). Pick one → becomes `accent` token.
+       1 Teal (current)  #6FD3BC      2 Indigo  #8B9CFF      3 Violet  #A78BFA
+       4 Sky      #5FB0F5             5 Rose    #FF8FA3      6 Amber   #F5B45C
+     Filled btn = accent bg + dark text; ghost btn = accent text + 1px accent border. ⚠ all proposed. */
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         background:#15171A; color:#E7E9EC; padding:24px; line-height:1.5; }
+  .note { max-width:1080px; margin:0 auto 20px; font-size:14px; color:#aeb4ba; }
+  .note b { color:#fff; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(330px,1fr)); gap:18px; max-width:1120px; margin:0 auto; }
+
+  .card { position:relative; background:#1E2125; border:1px solid #2A2E33; border-radius:0 16px 16px 0;
+          padding:20px; padding-left:22px; overflow:hidden;
+          box-shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 16px rgba(0,0,0,.3); }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:#FF6B6E; box-shadow:0 0 10px #FF6B6E55; }
+  .label { font-size:11px; font-weight:700; color:#9AA0A6; margin-bottom:12px; letter-spacing:.04em; }
+  .label .hex { color:#6b7177; font-weight:500; }
+  .ctop { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .pbadge { font-size:10px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; background:#FF6B6E; color:#1A0E0E; }
+  .dot { width:9px; height:9px; border-radius:999px; margin-left:auto; background:#6FD3BC; box-shadow:0 0 8px #6FD3BC88; }
+  h3 { font-size:18px; font-weight:600; margin-bottom:6px; }
+  .body { font-size:14px; opacity:.82; line-height:1.6; }
+  .meta { display:flex; align-items:center; gap:10px; margin-top:18px; font-size:12px; color:#9AA0A6; }
+  .topic { padding:3px 12px; border-radius:999px; font-weight:600; background:#173A34; color:#7FE0CB; }
+  .acts { display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #2A2E33; }
+  .btn { font-size:13px; font-weight:600; padding:8px 14px; border-radius:10px; border:none; cursor:pointer; }
+  .ghost { background:transparent; }
+
+  /* accents */
+  .a1 .btn{background:#6FD3BC;color:#06231D} .a1 .ghost{color:#6FD3BC;box-shadow:inset 0 0 0 1px #6FD3BC55}
+  .a2 .btn{background:#8B9CFF;color:#0B1030} .a2 .ghost{color:#9CABFF;box-shadow:inset 0 0 0 1px #8B9CFF55}
+  .a3 .btn{background:#A78BFA;color:#160B30} .a3 .ghost{color:#B9A3FF;box-shadow:inset 0 0 0 1px #A78BFA55}
+  .a4 .btn{background:#5FB0F5;color:#04203A} .a4 .ghost{color:#7BC0F8;box-shadow:inset 0 0 0 1px #5FB0F555}
+  .a5 .btn{background:#FF8FA3;color:#350912} .a5 .ghost{color:#FFA3B4;box-shadow:inset 0 0 0 1px #FF8FA355}
+  .a6 .btn{background:#F5B45C;color:#2A1803} .a6 .ghost{color:#F7C078;box-shadow:inset 0 0 0 1px #F5B45C55}
+</style>
+
+<div class="note"><b>액션 버튼 액센트 후보</b> — Jay님이 승인한 중립 다크 카드 위. 브랜드 틸은 내비/링크/안읽음 점에 그대로 두고, <b>버튼만</b> 별도 액센트로. 마음에 드는 번호를 골라주세요.</div>
+
+<div class="grid">
+  <div class="card a1"><div class="label">1 · Teal (현재) <span class="hex">#6FD3BC</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+
+  <div class="card a2"><div class="label">2 · Indigo <span class="hex">#8B9CFF</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+
+  <div class="card a3"><div class="label">3 · Violet <span class="hex">#A78BFA</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+
+  <div class="card a4"><div class="label">4 · Sky <span class="hex">#5FB0F5</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+
+  <div class="card a5"><div class="label">5 · Rose <span class="hex">#FF8FA3</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+
+  <div class="card a6"><div class="label">6 · Amber <span class="hex">#F5B45C</span></div>
+    <div class="ctop"><span class="pbadge">Urgent</span><span class="dot"></span></div><h3>백업 실패</h3>
+    <div class="body">nas-backup 작업이 03:14에 중단됨 — 디스크 용량 부족.</div>
+    <div class="meta"><span class="topic">server-alerts</span><span>2분 전</span></div>
+    <div class="acts"><button class="btn">로그 보기</button><button class="btn ghost">재시도</button></div></div>
+</div>
