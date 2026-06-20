@@ -8,6 +8,6 @@ export const NEW = {
   feed: false,
   detail: false,
   dialogs: false,
-  settings: false,
+  settings: true,
   auth: false,
 };

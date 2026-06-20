@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
+import { createContext, useContext, useReducer, useEffect, useRef } from "react";
 import api from "@/app/Api";
 import { useConnection, CONN_STATES } from "./ConnectionContext";
 
@@ -41,12 +41,16 @@ export const PublishQueueProvider = ({ children }) => {
   const [state, dispatch] = useReducer(publishQueueReducer, { entries: [] });
   const { connectionState } = useConnection();
 
+  // Always-current ref so the reconnect effect never reads stale closure state.
+  const entriesRef = useRef(state.entries);
+  useEffect(() => { entriesRef.current = state.entries; });
+
   const _sendEntry = async (entry) => {
     try {
       await api.publish(entry.baseUrl, entry.topic, entry.body, {
         title: entry.title || undefined,
         priority: entry.priority !== 3 ? entry.priority : undefined,
-        tags: entry.tags || undefined,
+        tags: entry.tags?.trim() || undefined,
       });
       dispatch({ type: CLEAR_ENTRY, id: entry.id });
     } catch {
@@ -57,7 +61,7 @@ export const PublishQueueProvider = ({ children }) => {
   const enqueue = (payload) => {
     const id = crypto.randomUUID();
     const entryState = connectionState === CONN_STATES.CONNECTED ? "sending" : "queued";
-    const entry = { id, ...payload, state: entryState };
+    const entry = { id, ...payload, state: entryState, enqueuedAt: Math.floor(Date.now() / 1000) };
     dispatch({ type: ADD_ENTRY, entry });
     if (connectionState === CONN_STATES.CONNECTED) {
       _sendEntry(entry);
@@ -77,7 +81,7 @@ export const PublishQueueProvider = ({ children }) => {
 
   useEffect(() => {
     if (connectionState !== CONN_STATES.CONNECTED) return;
-    const queued = state.entries.filter((e) => e.state === "queued");
+    const queued = entriesRef.current.filter((e) => e.state === "queued");
     if (queued.length === 0) return;
     queued.forEach((entry) => {
       dispatch({ type: SET_SENDING, id: entry.id });

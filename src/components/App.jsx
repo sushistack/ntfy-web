@@ -19,6 +19,7 @@ import PublishDialog from "./PublishDialog";
 import Messaging from "./Messaging";
 import Login from "./Login";
 import ServerAuthForm from "./ServerAuthForm";
+import SettingsPage from "./SettingsPage";
 import initI18n from "../app/i18n"; // Translations!
 import prefs from "../app/Prefs";
 import RTLCacheProvider from "./RTLCacheProvider";
@@ -195,7 +196,7 @@ const NewShell = () => {
                   <Route path={routes.subscriptionExternal} element={<ContentRegion />} />
                 </>
               )}
-              <Route path={routes.settings} element={<ServerAuthForm />} />
+              <Route path={routes.settings} element={NEW.settings ? <SettingsPage /> : <ServerAuthForm />} />
             </Routes>
           </div>
         </main>
