@@ -48,12 +48,12 @@ const ServerAuthForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
       <div className="flex flex-col gap-1">
-        <span className="text-body-sm font-medium text-foreground">{t("server_auth_form_server_url_label")}</span>
+        <span className="text-body-sm font-medium text-text">{t("server_auth_form_server_url_label")}</span>
         <p className="text-body-sm text-muted break-all">{config.base_url}</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-body-sm font-medium text-foreground">{t("server_auth_form_auth_type_label")}</span>
+        <span className="text-body-sm font-medium text-text">{t("server_auth_form_auth_type_label")}</span>
         <TabsRoot
           value={authType}
           onValueChange={(v) => {
@@ -69,12 +69,12 @@ const ServerAuthForm = () => {
           <TabsContent value={AUTH_TYPE.TOKEN}>
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex flex-col gap-1">
-                <label htmlFor="saf-username-token" className="text-body-sm font-medium text-foreground">
+                <label htmlFor="saf-username-token" className="text-body-sm font-medium text-text">
                   {t("server_auth_form_username_label")}
                 </label>
                 <input
                   id="saf-username-token"
-                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -83,12 +83,12 @@ const ServerAuthForm = () => {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label htmlFor="saf-token" className="text-body-sm font-medium text-foreground">
+                <label htmlFor="saf-token" className="text-body-sm font-medium text-text">
                   {t("server_auth_form_token_label")}
                 </label>
                 <input
                   id="saf-token"
-                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="password"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
@@ -102,12 +102,12 @@ const ServerAuthForm = () => {
           <TabsContent value={AUTH_TYPE.PASSWORD}>
             <div className="flex flex-col gap-3 pt-2">
               <div className="flex flex-col gap-1">
-                <label htmlFor="saf-username-pw" className="text-body-sm font-medium text-foreground">
+                <label htmlFor="saf-username-pw" className="text-body-sm font-medium text-text">
                   {t("server_auth_form_username_label")}
                 </label>
                 <input
                   id="saf-username-pw"
-                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -116,12 +116,12 @@ const ServerAuthForm = () => {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label htmlFor="saf-password" className="text-body-sm font-medium text-foreground">
+                <label htmlFor="saf-password" className="text-body-sm font-medium text-text">
                   {t("server_auth_form_password_label")}
                 </label>
                 <input
                   id="saf-password"
-                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="password"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
@@ -140,7 +140,7 @@ const ServerAuthForm = () => {
         </p>
       )}
 
-      <Button variant="primary" type="submit" disabled={saving}>
+      <Button variant="primary" type="submit" disabled={saving} className="w-full">
         {t("server_auth_form_save_button")}
       </Button>
     </form>

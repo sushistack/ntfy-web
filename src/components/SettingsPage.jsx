@@ -20,8 +20,8 @@ const LANGUAGES = [
 ];
 
 const SectionHeading = ({ title, hint }) => (
-  <div className="mb-6">
-    <h2 className="text-heading-sm font-semibold text-foreground">{title}</h2>
+  <div className="mb-7">
+    <h2 className="text-subtitle font-semibold text-text">{title}</h2>
     {hint && <p className="text-body-sm text-muted mt-0.5">{hint}</p>}
     <div className="mt-3 border-t border-border" />
   </div>
@@ -31,11 +31,11 @@ const SettingRow = ({ label, hint, children, forId }) => (
   <div className={cn("flex justify-between gap-4 py-3 border-b border-border last:border-0", hint ? "items-start" : "items-center")}>
     <div>
       {forId ? (
-        <label htmlFor={forId} className="text-body-sm text-foreground cursor-pointer">
+        <label htmlFor={forId} className="text-body-sm text-text cursor-pointer">
           {label}
         </label>
       ) : (
-        <span className="text-body-sm text-foreground">{label}</span>
+        <span className="text-body-sm text-text">{label}</span>
       )}
       {hint && <p className="text-xs text-muted mt-0.5">{hint}</p>}
     </div>
@@ -46,7 +46,7 @@ const SettingRow = ({ label, hint, children, forId }) => (
 const SelectControl = ({ value, onChange, children, id }) => (
   <select
     id={id}
-    className="rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-focus-ring appearance-none min-w-36"
+    className="rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring appearance-none min-w-36"
     value={value}
     onChange={onChange}
   >
@@ -351,9 +351,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex h-full bg-surface">
-      {/* Left nav */}
-      <nav aria-label={t("nav_button_settings")} className="w-16 md:w-52 shrink-0 border-r border-border p-2 flex flex-col gap-1">
+    <div className="p-4">
+      <div className="settings-shell-panel app-panel-enter grid bg-surface border border-border rounded-none overflow-hidden">
+        {/* Left nav */}
+        <nav aria-label={t("nav_button_settings")} className="border-r border-border p-2 flex flex-col gap-1">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -362,20 +363,23 @@ export default function SettingsPage() {
             onClick={() => setActiveSection(item.id)}
             aria-current={activeSection === item.id ? "page" : undefined}
             className={cn(
-              "flex items-center gap-3 w-full px-3 py-2 rounded-md text-body-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-              activeSection === item.id ? "bg-surface-2 text-foreground font-medium" : "text-muted hover:bg-surface-2/50"
+              "flex items-center gap-3 w-full px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+              "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
+              "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
+              activeSection === item.id ? "bg-surface-2 text-text font-medium shadow-elev-1" : "text-muted"
             )}
           >
             <NavIcon section={item.id} />
-            <span className="hidden md:inline" aria-hidden="true">
+            <span aria-hidden="true">
               {t(item.labelKey)}
             </span>
           </button>
         ))}
-      </nav>
+        </nav>
 
-      {/* Content pane */}
-      <div className="flex-1 overflow-y-auto p-6 max-w-2xl">{renderContent()}</div>
+        {/* Content pane */}
+        <div key={activeSection} className="min-w-0 overflow-y-auto px-8 py-8 app-content-enter">{renderContent()}</div>
+      </div>
     </div>
   );
 }

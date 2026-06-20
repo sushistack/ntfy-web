@@ -6,3 +6,40 @@
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: none; }
 }
+
+@keyframes app-panel-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes app-content-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@layer components {
+  .settings-shell-panel {
+    grid-template-columns: 208px minmax(0, 1fr);
+    max-width: 684px;
+    min-height: 232px;
+  }
+
+  .app-panel-enter {
+    animation: app-panel-in 180ms ease-out both;
+  }
+
+  .app-content-enter {
+    animation: app-content-in 160ms ease-out both;
+  }
+
+  .publish-dialog-content {
+    max-width: 512px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-panel-enter,
+  .app-content-enter {
+    animation: none;
+  }
+}

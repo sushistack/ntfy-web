@@ -84,7 +84,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           aria-label={t("publish_dialog_topic_label")}
-          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          className="w-full h-10 bg-surface-2 border border-control-border rounded-sm px-3 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -98,7 +98,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           aria-label={t("publish_dialog_title_label")}
-          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          className="w-full h-10 bg-surface-2 border border-control-border rounded-sm px-3 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -112,7 +112,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={body}
           onChange={(e) => setBody(e.target.value)}
           aria-label={t("publish_dialog_body_label")}
-          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text resize-none focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          className="w-full min-h-24 bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text resize-none focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -127,7 +127,10 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
               type="button"
               onClick={() => setPriority(value)}
               aria-pressed={priority === value}
-              className={cn("flex-1 border", priority === value ? PRIORITY_SELECTED_CLASSES[value] : PRIORITY_UNSELECTED_CLASS)}
+              className={cn(
+                "h-6 flex-1 justify-center rounded-badge border text-caption font-bold uppercase",
+                priority === value ? PRIORITY_SELECTED_CLASSES[value] : PRIORITY_UNSELECTED_CLASS
+              )}
             >
               {t(labelKey)}
             </Chip>
@@ -145,7 +148,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           aria-label={t("publish_dialog_tags_label")}
-          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          className="w-full h-10 bg-surface-2 border border-control-border rounded-sm px-3 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -183,7 +186,12 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent title={t("publish_dialog_title")}>{formContent}</DialogContent>
+      <DialogContent
+        title={t("publish_dialog_title")}
+        className="publish-dialog-content rounded-md bg-surface px-8 py-9"
+      >
+        {formContent}
+      </DialogContent>
     </Dialog>
   );
 };
