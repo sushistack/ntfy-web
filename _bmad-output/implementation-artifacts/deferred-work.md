@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of 2-1-responsive-app-shell-provider-scaffold (2026-06-20)
+
+- "Add topic" button in Sidebar has no `onClick` handler — Story 2.5 wires the SubscribeDialog action
+- BottomNav "/all" path has no registered route — React Router will match `/:topic` and treat "all" as a topic name until routing is properly wired in a later story
+- `require_login` auth redirect absent from `NewShell` path — Story 2.4 handles conditional login/auth entry; guarded by `NEW.shell = false` until then
+- `msgDetail: "/:topic/:msgId"` is structurally ambiguous with `subscriptionExternal: "/:baseUrl/:topic"` (both two-segment dynamic paths) — cannot distinguish at the router level without additional path structure; resolve when `<Routes>` tree is wired in Story 3.5
+
 ## Deferred from: code review of 1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region (2026-06-20)
 
 - `role="status"` + `aria-live="assertive"` semantic conflict in LiveRegion — spec mandates `role="status"` unconditionally; explicit `aria-live` attribute overrides implicit role value in most ATs; acceptable until Story 2.x accessibility audit

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (2-1 review)
+last_updated: 2026-06-20 (2-1 done)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -57,9 +57,9 @@ development_status:
 
   # Epic 2: First Run — Jay Gets In
   epic-2: in-progress
-  2-1-responsive-app-shell-provider-scaffold: review
-  2-2-theme-switch-light-dark-system: in-progress
-  2-3-connection-indicator-state-hasdata: ready-for-dev
+  2-1-responsive-app-shell-provider-scaffold: done
+  2-2-theme-switch-light-dark-system: review
+  2-3-connection-indicator-state-hasdata: review
   2-4-server-auth-entry-with-conditional-login: ready-for-dev
   2-5-subscribe-to-a-topic: ready-for-dev
   2-6-first-run-state-panels-with-korean-voice: ready-for-dev
