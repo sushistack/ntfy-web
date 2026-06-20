@@ -10,7 +10,6 @@ import { useSelection } from "@/components/contexts/SelectionContext";
 import { usePublishQueue } from "@/components/contexts/PublishQueueContext";
 import subscriptionManager from "../app/SubscriptionManager";
 import { NotificationCard } from "./message/NotificationCard";
-import CardBody from "./message/CardBody";
 import { NotificationActions } from "./message/NotificationActions";
 import { NoMessagesTopicPanel, NoMessagesAllPanel } from "./message/EmptyStates";
 import { useActiveTopic } from "./hooks";
@@ -18,6 +17,19 @@ import { SendingIndicator, RetryBar } from "./message/QueueSlots";
 import { findArrivingNotifications } from "./feedAnnouncements";
 
 const PAGE_SIZE = 20;
+
+const getMessagePreview = (notification) =>
+  (notification.message ?? "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ");
+
+const FeedPreview = ({ notification }) => (
+  <p className="py-1 text-body-sm leading-body-sm text-muted line-clamp-2">
+    {getMessagePreview(notification)}
+  </p>
+);
 
 const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, isMuted, onMuteToggle }) => {
   const { t } = useTranslation();
@@ -41,11 +53,12 @@ const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, i
       showTopicChip={showTopicChip}
       isSelected={isSelected}
       isMuted={isMuted}
+      showTags={false}
       onMuteToggle={handleMuteToggle}
       onTap={(n) => navigate(`/${n.topic}/${n.id}`)}
       body={
         <>
-          <CardBody notification={notification} />
+          <FeedPreview notification={notification} />
           <NotificationActions notification={notification} onError={setActionError} />
         </>
       }
@@ -155,7 +168,7 @@ const Feed = () => {
           scrollThreshold={0.7}
           scrollableTarget="main"
         >
-          <ul aria-label={t("feed_notifications_list")}>
+          <ul aria-label={t("feed_notifications_list")} className="flex flex-col gap-3">
             {optimisticEntries.map((entry) => {
               const optSub = isAllFeed
                 ? allSubscriptions.find((s) => s.baseUrl === entry.baseUrl && s.topic === entry.topic)
@@ -181,6 +194,7 @@ const Feed = () => {
                     notification={syntheticNotification}
                     subscriptionName={isAllFeed ? optSub?.displayName || optSub?.topic : undefined}
                     showTopicChip={isAllFeed}
+                    showTags={false}
                     isSelected={false}
                     onTap={() => {}}
                     body={null}

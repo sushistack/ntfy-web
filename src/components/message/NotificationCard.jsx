@@ -61,11 +61,11 @@ export function NotificationCard({
   error,
   onMuteToggle,
   isMuted,
+  showTags = true,
 }) {
   const { t, i18n } = useTranslation();
   const priority = notification.priority ?? 3;
   const tags = unmatchedTags(notification.tags);
-  const hasBody = body != null;
 
   // Swipe gesture state
   const cardRef = useRef(null);
@@ -256,7 +256,7 @@ export function NotificationCard({
         {/* Header band */}
         <div className="flex items-center gap-2 px-4 pt-3 pb-2 pl-5">
           <PriorityBadge priority={priority} />
-          <p className="flex-1 text-subtitle font-semibold text-text truncate">
+          <p className="flex-1 text-body font-semibold text-text truncate">
             {notification.title || notification.message}
           </p>
           {notification.new === 1 && (
@@ -275,7 +275,7 @@ export function NotificationCard({
             }}
             aria-label={t(isMuted ? "notification_card_unmute_toggle_label" : "notification_card_mute_toggle_label")}
             aria-pressed={isMuted ?? false}
-            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-colors"
+            className="p-1 rounded-sm text-muted hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-all duration-150 ease-out motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
           >
             <BellIcon />
           </button>
@@ -283,15 +283,13 @@ export function NotificationCard({
             type="button"
             onClick={(e) => e.stopPropagation()}
             aria-label={t("notification_card_overflow_label")}
-            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-colors"
+            className="p-1 rounded-sm text-muted hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-all duration-150 ease-out motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
           >
             <MoreIcon />
           </button>
         </div>
 
         {/* Divider — only when body slot is filled */}
-        {hasBody && <div className="h-px bg-border mx-4" />}
-
         {/* Body / slot area */}
         <div className="px-4">
           {body}
@@ -300,7 +298,7 @@ export function NotificationCard({
         </div>
 
         {/* Tags row */}
-        {tags.length > 0 && (
+        {showTags && tags.length > 0 && (
           <div className="flex flex-wrap gap-1 px-4 pt-1">
             {tags.map((tag) => (
               <TagChip key={tag} label={tag} />

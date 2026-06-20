@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslation } from "react-i18next";
 import Feed from "@/components/Feed";
@@ -71,15 +71,23 @@ const MsgDetailRoute = () => {
     <>
       {!isDesktop && <DetailPane />}
       <div className="hidden lg:block">
-        <Feed />
+        <FeedRoute />
       </div>
     </>
   );
 };
 
+const FeedRoute = () => (
+  <div className="max-w-feed mx-auto px-4 py-6">
+    <Feed />
+  </div>
+);
+
 // Desktop right pane — hidden when no notification is selected
 const DetailRegion = () => {
   const { msgId } = useSelection();
+  const location = useLocation();
+  if (location.pathname === routes.settings) return null;
   return <div className="hidden lg:block w-detail-pane border-l border-border overflow-y-auto">{msgId && <DetailPane />}</div>;
 };
 
@@ -105,16 +113,14 @@ const NewShell = () => {
 
           {/* Feed/content column — tabIndex={-1} allows programmatic focus for a11y back navigation */}
           <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto outline-none">
-            <div className="max-w-feed mx-auto px-4 py-6">
-              <Routes>
-                <Route path={routes.app} element={<Feed />} />
-                {/* /:topic/:msgId must come BEFORE /:topic — more specific first in RR6 */}
-                <Route path={routes.msgDetail} element={<MsgDetailRoute />} />
-                <Route path={routes.subscription} element={<Feed />} />
-                <Route path={routes.subscriptionExternal} element={<Feed />} />
-                <Route path={routes.settings} element={<SettingsPage />} />
-              </Routes>
-            </div>
+            <Routes>
+              <Route path={routes.app} element={<FeedRoute />} />
+              {/* /:topic/:msgId must come BEFORE /:topic — more specific first in RR6 */}
+              <Route path={routes.msgDetail} element={<MsgDetailRoute />} />
+              <Route path={routes.subscription} element={<FeedRoute />} />
+              <Route path={routes.subscriptionExternal} element={<FeedRoute />} />
+              <Route path={routes.settings} element={<SettingsPage />} />
+            </Routes>
           </main>
 
           {/* Detail region — desktop right pane */}
