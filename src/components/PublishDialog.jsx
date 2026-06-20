@@ -20,8 +20,8 @@ const PRIORITIES = [
 const PRIORITY_SELECTED_CLASSES = {
   2: "border-border text-muted",
   3: "border-border text-text",
-  4: "border-[var(--color-priority-high)] text-[var(--color-priority-high)] bg-[var(--color-priority-high)]/10",
-  5: "border-[var(--color-priority-max)] text-[var(--color-priority-max)] bg-[var(--color-priority-max)]/10",
+  4: "border-priority-high text-priority-high bg-priority-high/10",
+  5: "border-priority-max text-priority-max bg-priority-max/10",
 };
 
 const PRIORITY_UNSELECTED_CLASS = "border-border text-muted bg-transparent";
@@ -61,7 +61,12 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
       title: title.trim(),
       body,
       priority,
-      tags: tags.trim() ? tags.split(",").map((tag) => tag.trim()).filter(Boolean) : undefined,
+      tags: tags.trim()
+        ? tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        : undefined,
     });
     onOpenChange(false);
     resetForm();
@@ -79,7 +84,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           aria-label={t("publish_dialog_topic_label")}
-          className="w-full bg-surface-2 border border-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -93,7 +98,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           aria-label={t("publish_dialog_title_label")}
-          className="w-full bg-surface-2 border border-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -107,14 +112,12 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={body}
           onChange={(e) => setBody(e.target.value)}
           aria-label={t("publish_dialog_body_label")}
-          className="w-full bg-surface-2 border border-border rounded-sm px-3 py-2 text-body-sm text-text resize-none focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text resize-none focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-caption font-semibold text-muted uppercase tracking-wide">
-          {t("publish_dialog_priority_label")}
-        </span>
+        <span className="text-caption font-semibold text-muted uppercase tracking-wide">{t("publish_dialog_priority_label")}</span>
         <div className="flex gap-2" role="group" aria-label={t("publish_dialog_priority_label")}>
           {PRIORITIES.map(({ value, labelKey }) => (
             <Chip
@@ -124,10 +127,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
               type="button"
               onClick={() => setPriority(value)}
               aria-pressed={priority === value}
-              className={cn(
-                "flex-1 border",
-                priority === value ? PRIORITY_SELECTED_CLASSES[value] : PRIORITY_UNSELECTED_CLASS
-              )}
+              className={cn("flex-1 border", priority === value ? PRIORITY_SELECTED_CLASSES[value] : PRIORITY_UNSELECTED_CLASS)}
             >
               {t(labelKey)}
             </Chip>
@@ -145,7 +145,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           aria-label={t("publish_dialog_tags_label")}
-          className="w-full bg-surface-2 border border-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+          className="w-full bg-surface-2 border border-control-border rounded-sm px-3 py-2 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
         />
       </div>
 
@@ -163,12 +163,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
             </Button>
           </DialogClose>
         )}
-        <Button
-          size="sm"
-          onClick={handleSubmit}
-          disabled={!body.trim() || !validTopic(topic)}
-          aria-label={t("publish_dialog_send")}
-        >
+        <Button size="sm" onClick={handleSubmit} disabled={!body.trim() || !validTopic(topic)} aria-label={t("publish_dialog_send")}>
           {t("publish_dialog_send")}
         </Button>
       </div>
@@ -178,10 +173,8 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={handleOpenChange}>
-        <SheetContent side="bottom" className="p-6 max-h-[90dvh] overflow-y-auto">
-          <RadixDialog.Title className="text-subtitle font-semibold text-text mb-4">
-            {t("publish_dialog_title")}
-          </RadixDialog.Title>
+        <SheetContent side="bottom" className="p-6 max-h-dialog overflow-y-auto">
+          <RadixDialog.Title className="text-subtitle font-semibold text-text mb-4">{t("publish_dialog_title")}</RadixDialog.Title>
           {formContent}
         </SheetContent>
       </Sheet>
@@ -190,9 +183,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent title={t("publish_dialog_title")}>
-        {formContent}
-      </DialogContent>
+      <DialogContent title={t("publish_dialog_title")}>{formContent}</DialogContent>
     </Dialog>
   );
 };

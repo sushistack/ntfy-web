@@ -1,4 +1,4 @@
-import { Dialog, VisuallyHidden } from "radix-ui";
+import { Dialog } from "radix-ui";
 import { cn } from "./utils";
 
 const DialogRoot = Dialog.Root;
@@ -12,6 +12,7 @@ const DialogOverlay = ({ className, ...props }) => (
       "fixed inset-0 bg-overlay z-overlay",
       "data-[state=open]:animate-in data-[state=closed]:animate-out",
       "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "motion-reduce:animate-none",
       className
     )}
     {...props}
@@ -29,17 +30,12 @@ const DialogContent = ({ className, children, title, ...props }) => (
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "motion-reduce:animate-none",
         className
       )}
       {...props}
     >
-      {title ? (
-        <Dialog.Title className="text-subtitle font-semibold text-text mb-2">{title}</Dialog.Title>
-      ) : (
-        <VisuallyHidden.Root>
-          <Dialog.Title>Dialog</Dialog.Title>
-        </VisuallyHidden.Root>
-      )}
+      <Dialog.Title className="text-subtitle font-semibold text-text mb-2">{title}</Dialog.Title>
       {children}
     </Dialog.Content>
   </DialogPortal>

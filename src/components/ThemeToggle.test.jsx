@@ -87,4 +87,21 @@ describe("ThemeToggle", () => {
     expect(group).toBeTruthy();
     expect(group.getAttribute("aria-label")).toBe("theme_toggle_label");
   });
+
+  it("uses the control-border token and focus-ring token", () => {
+    render();
+    const group = container.querySelector("[role='radiogroup']");
+    const buttons = container.querySelectorAll("button");
+    expect(group.className).toContain("border-control-border");
+    buttons.forEach((button) => {
+      expect(button.className).toContain("focus-visible:ring-focus-ring");
+    });
+  });
+
+  it("uses a contrast-safe fill for the selected option", () => {
+    render();
+    const selected = container.querySelector("[aria-checked='true']");
+    expect(selected.className).toContain("bg-accent-ui");
+    expect(selected.className).toContain("text-accent-on-surface");
+  });
 });

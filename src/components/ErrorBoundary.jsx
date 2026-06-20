@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Link, Button } from "@mui/material";
 import { Trans, withTranslation } from "react-i18next";
 import { copyToClipboard } from "../app/utils";
 
+/* eslint-disable jsx-a11y/control-has-associated-label, jsx-a11y/anchor-has-content -- Trans supplies the localized link text. */
 class ErrorBoundaryImpl extends React.Component {
   constructor(props) {
     super(props);
@@ -58,15 +58,15 @@ class ErrorBoundaryImpl extends React.Component {
   renderUnsupportedIndexedDB() {
     const { t } = this.props;
     return (
-      <div style={{ margin: "20px" }}>
+      <div className="m-5">
         <h2>{t("error_boundary_unsupported_indexeddb_title")} 😮</h2>
-        <p style={{ maxWidth: "600px" }}>
+        <p className="max-w-xl">
           <Trans
             i18nKey="error_boundary_unsupported_indexeddb_description"
             components={{
-              githubLink: <Link href="https://github.com/binwiederhier/ntfy/issues/208" />,
-              discordLink: <Link href="https://discord.gg/cT7ECsZj9w" />,
-              matrixLink: <Link href="https://matrix.to/#/#ntfy:matrix.org" />,
+              githubLink: <a href="https://github.com/binwiederhier/ntfy/issues/208" target="_blank" rel="noopener noreferrer" />,
+              discordLink: <a href="https://discord.gg/cT7ECsZj9w" target="_blank" rel="noopener noreferrer" />,
+              matrixLink: <a href="https://matrix.to/#/#ntfy:matrix.org" target="_blank" rel="noopener noreferrer" />,
             }}
           />
         </p>
@@ -77,26 +77,34 @@ class ErrorBoundaryImpl extends React.Component {
   renderError() {
     const { t } = this.props;
     return (
-      <div style={{ margin: "20px" }}>
+      <div className="m-5">
         <h2>{t("error_boundary_title")} 😮</h2>
         <p>
           <Trans
             i18nKey="error_boundary_description"
             components={{
-              githubLink: <Link href="https://github.com/binwiederhier/ntfy/issues" />,
-              discordLink: <Link href="https://discord.gg/cT7ECsZj9w" />,
-              matrixLink: <Link href="https://matrix.to/#/#ntfy:matrix.org" />,
+              githubLink: <a href="https://github.com/binwiederhier/ntfy/issues" target="_blank" rel="noopener noreferrer" />,
+              discordLink: <a href="https://discord.gg/cT7ECsZj9w" target="_blank" rel="noopener noreferrer" />,
+              matrixLink: <a href="https://matrix.to/#/#ntfy:matrix.org" target="_blank" rel="noopener noreferrer" />,
             }}
           />
         </p>
-        <div style={{ display: "flex", gap: 5 }}>
-          <Button variant="outlined" onClick={() => this.copyStack()}>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            className="border border-control-border rounded-sm px-3 py-2 text-body-sm text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            onClick={() => this.copyStack()}
+          >
             {t("error_boundary_button_copy_stack_trace")}
-          </Button>
+          </button>
 
-          <Button variant="outlined" onClick={() => window.location.reload()}>
+          <button
+            type="button"
+            className="border border-control-border rounded-sm px-3 py-2 text-body-sm text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            onClick={() => window.location.reload()}
+          >
             {t("error_boundary_button_reload_ntfy")}
-          </Button>
+          </button>
         </div>
         <h3>{t("error_boundary_stack_trace")}</h3>
         <pre>{this.state.stack}</pre>

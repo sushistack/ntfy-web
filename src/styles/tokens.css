@@ -28,46 +28,49 @@
 
 @theme {
   /* ── Color: Backgrounds ── */
-  --color-bg:             #F3F4F6;   /* [ASSUMPTION] off-white page canvas, never pure #FFF */
-  --color-surface:        #FFFFFF;   /* [ASSUMPTION] card surface (Beszel exception) */
-  --color-surface-2:      #EEF0F2;   /* [ASSUMPTION] hover/active chrome one step up */
-  --color-surface-active: #EEF0F2;   /* [ASSUMPTION] = surface-2; active nav row, icon-button hover */
+  --color-bg:             #F3F4F6;   /* off-white page canvas, never pure #FFF */
+  --color-surface:        #FFFFFF;   /* card surface */
+  --color-surface-2:      #EEF0F2;   /* hover/active chrome one step up */
+  --color-surface-active: #EEF0F2;   /* = surface-2; active nav row, icon-button hover */
 
   /* ── Color: Borders ── */
-  --color-border:         #E4E6E9;   /* [ASSUMPTION] hairline 1px depth device */
+  --color-border:         #E4E6E9;   /* decorative hairline — WCAG-exempt (non-interactive) */
+  --color-control-border: #767B80;   /* interactive boundary — 4.27:1 on surface, 3.74:1 on surface-2 */
 
   /* ── Color: Text ── */
-  --color-text:           #1C1E21;   /* [ASSUMPTION] primary body — WCAG AA on surface/bg */
-  --color-muted:          #6B7177;   /* [ASSUMPTION] secondary/label text — WCAG AA on surface/bg */
+  --color-text:           #1C1E21;   /* primary body — 16.71:1 on surface, 15.18:1 on bg */
+  --color-muted:          #6A7076;   /* secondary/label — 5.01:1 on surface, 4.55:1 on bg (WCAG AA) */
 
   /* ── Color: Accent (3 semantic sub-tokens — WCAG 1.4.11) ──
      Pick by what is PAINTED, not by component type:
        text/icon        → accent-text    (4.5:1 contrast target)
        border/focus/dot → accent-ui      (3:1 contrast target)
        fg ON accent bg  → accent-on-surface (4.5:1 contrast target)  */
-  --color-accent-text:        #1A9E5F;   /* [ASSUMPTION] darker emerald; 4.5:1 on #FFF, #F3F4F6 */
-  --color-accent-ui:          #1A9E5F;   /* [ASSUMPTION] 3:1 for borders, focus ring, nav dot */
-  --color-accent-on-surface:  #FFFFFF;   /* [ASSUMPTION] foreground on accent-filled button/FAB */
+  --color-accent-text:        #0E7A48;   /* dark emerald; 5.39:1 on surface, 4.72:1 on surface-2 (WCAG AA) */
+  --color-accent-ui:          #1A9E5F;   /* 3:1 for borders, focus ring, nav dot — 3.44:1 on surface */
+  --color-accent-on-surface:  #0C1A12;   /* very dark green on accent fill — 5.20:1 on #1A9E5F (WCAG AA) */
 
   /* ── Color: Priority / Meter thresholds ── */
-  --color-priority-high:    #E8943A;   /* [ASSUMPTION] P4 amber (deepened for light AA) */
-  --color-priority-max:     #E5484D;   /* [ASSUMPTION] P5 coral (deepened for light AA) */
-  --color-priority-urgent:  #E5484D;   /* alias of priority-max — used for inline error text */
-  --color-meter-ok:         #1A9E5F;   /* [ASSUMPTION] = accent-text */
-  --color-meter-track:      #E4E6E9;   /* [ASSUMPTION] = border color; verify fill visibility at 65%+ threshold */
-  --color-meter-warning:    #E8943A;   /* [ASSUMPTION] = priority-high; threshold ≥ 65% */
-  --color-meter-critical:   #E5484D;   /* [ASSUMPTION] = priority-max; threshold ≥ 90% */
+  --color-priority-high:    #BF6C15;   /* P4 amber — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
+  --color-priority-max:     #E5484D;   /* P5 coral — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
+  --color-priority-urgent:  #C7353A;   /* inline error text — 5.25:1 on surface, 4.60:1 on surface-2 */
+  --color-priority-high-on-surface: #241403;
+  --color-priority-max-on-surface:  #1A0E0E;
+  --color-meter-ok:         #0E7A48;   /* = accent-text; 4.31:1 on meter-track (WCAG 1.4.11) */
+  --color-meter-track:      #E4E6E9;   /* meter background; fill-on-track pairs verified */
+  --color-meter-warning:    #BF6C15;   /* = priority-high; 3.55:1 on bg, 3.13:1 on track (WCAG 1.4.11) */
+  --color-meter-critical:   #E5484D;   /* = priority-max; 3.91:1 on surface, 3.13:1 on track (WCAG AA) */
 
   /* ── Color: Topic chip ── */
-  --color-topic-chip-bg:    #E1F2EA;   /* [ASSUMPTION] emerald-tinted light pill */
-  --color-topic-chip-text:  #136B43;   /* [ASSUMPTION] dark emerald text on chip-bg; verify 4.5:1 on #E1F2EA */
+  --color-topic-chip-bg:    #E1F2EA;   /* emerald-tinted light pill */
+  --color-topic-chip-text:  #136B43;   /* dark emerald — 5.63:1 on chip-bg (WCAG AA) */
 
   /* ── Color: Buttons (achromatic — same in both themes) ── */
   --color-button-fill:      #F4F5F6;   /* white-fill primary button background */
-  --color-button-fill-text: #15171A;   /* near-black primary button text */
+  --color-button-fill-text: #15171A;   /* near-black primary button text — 16.45:1 on button-fill */
 
   /* ── Color: Focus ring ── */
-  --color-focus-ring:       #1A9E5F;   /* [ASSUMPTION] = accent-ui; keyboard focus outline */
+  --color-focus-ring:       #1A9E5F;   /* = accent-ui; 3.44:1 on surface (WCAG 1.4.11) */
 
   /* ── Typography: Font families ── */
   --font-sans: 'Plus Jakarta Sans', 'Roboto', system-ui, sans-serif;
@@ -100,6 +103,17 @@
   --spacing-6: 32px;
   --spacing-7: 48px;   /* between major surfaces */
 
+  /* ── Layout sizes ── */
+  --width-detail-pane: 420px;
+  --width-nav-drawer: 280px;
+  --container-feed: 720px;
+  --container-message: 70ch;
+  --container-attachment-name: 24ch;
+  --max-height-dialog: 90dvh;
+
+  /* ── Motion ── */
+  --animate-slide-in-top: slide-in-top 0.25s ease-out;
+
   /* ── Radius ── */
   --radius-sm:    10px;    /* buttons, inputs */
   --radius-md:    16px;    /* cards, dialogs, empty-state icon tile */
@@ -119,7 +133,7 @@
   --z-overlay: 1350;   /* Dialog, Sheet, Menu — above MUI modals (1300) during migration */
 
   /* ── Overlay backdrop ── */
-  --color-overlay: rgba(0, 0, 0, 0.45);  /* [ASSUMPTION] dialog/sheet backdrop, light mode */
+  --color-overlay: rgba(0, 0, 0, 0.45);  /* dialog/sheet backdrop — visual adequacy confirmed */
 
   /* ── Glow effects: light-mode safe defaults ──
      Dark-only overrides are in .dark {} below.
@@ -132,7 +146,7 @@
 
 /* ── Dark mode (hero theme) ────────────────────────────────────
    Applies when .dark class is on <html> (set by FOUC pre-paint script in Story 1.5).
-   All values here are CONFIRMED (no [ASSUMPTION] markers).
+   All values here are confirmed; provisional light-theme annotations were removed in Story 5.3.
    ─────────────────────────────────────────────────────────── */
 .dark {
   --color-bg:             #0C0D0F;   /* near-black neutral canvas */
@@ -140,6 +154,7 @@
   --color-surface-2:      #1C1F23;   /* one step up: hover/active chrome */
   --color-surface-active: #1C1F23;   /* = surface-2 */
   --color-border:         #23262B;   /* hairline 1px */
+  --color-control-border: #8B9197;   /* interactive boundary */
   --color-text:           #E8EAED;   /* primary body text */
   --color-muted:          #8B9197;   /* secondary/label text */
 

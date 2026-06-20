@@ -31,7 +31,9 @@ const SettingRow = ({ label, hint, children, forId }) => (
   <div className={cn("flex justify-between gap-4 py-3 border-b border-border last:border-0", hint ? "items-start" : "items-center")}>
     <div>
       {forId ? (
-        <label htmlFor={forId} className="text-body-sm text-foreground cursor-pointer">{label}</label>
+        <label htmlFor={forId} className="text-body-sm text-foreground cursor-pointer">
+          {label}
+        </label>
       ) : (
         <span className="text-body-sm text-foreground">{label}</span>
       )}
@@ -44,7 +46,7 @@ const SettingRow = ({ label, hint, children, forId }) => (
 const SelectControl = ({ value, onChange, children, id }) => (
   <select
     id={id}
-    className="rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-focus-ring appearance-none min-w-36"
+    className="rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-focus-ring appearance-none min-w-36"
     value={value}
     onChange={onChange}
   >
@@ -71,7 +73,15 @@ const MIN_PRIORITY_OPTIONS = [
 function NavIcon({ section }) {
   if (section === "general") {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
         <circle cx="12" cy="12" r="3" />
         <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
       </svg>
@@ -79,7 +89,15 @@ function NavIcon({ section }) {
   }
   if (section === "server") {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
         <rect x="2" y="3" width="20" height="4" rx="1" />
         <rect x="2" y="10" width="20" height="4" rx="1" />
         <rect x="2" y="17" width="20" height="4" rx="1" />
@@ -91,7 +109,15 @@ function NavIcon({ section }) {
   }
   if (section === "appearance") {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
         <circle cx="12" cy="12" r="9" />
         <path d="M12 3a9 9 0 0 1 0 18" fill="currentColor" />
       </svg>
@@ -99,7 +125,15 @@ function NavIcon({ section }) {
   }
   if (section === "notifications") {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </svg>
@@ -107,7 +141,15 @@ function NavIcon({ section }) {
   }
   if (section === "retention") {
     return (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        aria-hidden="true"
+      >
         <polyline points="3 6 5 6 21 6" />
         <path d="M19 6l-1 14H6L5 6" />
         <path d="M10 11v6m4-6v6" />
@@ -125,11 +167,7 @@ function GeneralSection({ t }) {
     <div>
       <SectionHeading title={t("settings_nav_general")} hint={t("settings_general_hint")} />
       <SettingRow label={t("settings_language_label")} forId="settings-language">
-        <SelectControl
-          id="settings-language"
-          value={currentLang}
-          onChange={(e) => i18n.changeLanguage(e.target.value)}
-        >
+        <SelectControl id="settings-language" value={currentLang} onChange={(e) => i18n.changeLanguage(e.target.value)}>
           {LANGUAGES.map((lang) => (
             <option key={lang.value} value={lang.value}>
               {t(lang.labelKey)}
@@ -195,15 +233,8 @@ export function NotificationPermissionRow({ t }) {
   }
   if (notifier.notRequested()) {
     return (
-      <SettingRow
-        label={t("prefs_notifications_permission_title")}
-        hint={t("prefs_notifications_permission_not_requested_description")}
-      >
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => notifier.maybeRequestPermission()}
-        >
+      <SettingRow label={t("prefs_notifications_permission_title")} hint={t("prefs_notifications_permission_not_requested_description")}>
+        <Button variant="primary" size="sm" onClick={() => notifier.maybeRequestPermission()}>
           {t("prefs_notifications_permission_grant_button")}
         </Button>
       </SettingRow>
@@ -238,11 +269,7 @@ function NotificationsSection({ t }) {
       <SectionHeading title={t("settings_nav_notifications")} hint={t("settings_notifications_hint")} />
       <SettingRow label={t("settings_sound_label")} forId="settings-sound">
         <div className="flex items-center gap-2">
-          <SelectControl
-            id="settings-sound"
-            value={sound}
-            onChange={(e) => prefs.setSound(e.target.value)}
-          >
+          <SelectControl id="settings-sound" value={sound} onChange={(e) => prefs.setSound(e.target.value)}>
             {soundOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
@@ -263,11 +290,7 @@ function NotificationsSection({ t }) {
         </div>
       </SettingRow>
       <SettingRow label={t("settings_min_priority_label")} forId="settings-min-priority">
-        <SelectControl
-          id="settings-min-priority"
-          value={minPriority}
-          onChange={(e) => prefs.setMinPriority(Number(e.target.value))}
-        >
+        <SelectControl id="settings-min-priority" value={minPriority} onChange={(e) => prefs.setMinPriority(Number(e.target.value))}>
           {MIN_PRIORITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {t(opt.labelKey)}
@@ -276,11 +299,7 @@ function NotificationsSection({ t }) {
         </SelectControl>
       </SettingRow>
       <SettingRow label={t("settings_web_push_label")}>
-        <Switch
-          checked={!!webPushEnabled}
-          onCheckedChange={(v) => prefs.setWebPushEnabled(v)}
-          aria-label={t("settings_web_push_label")}
-        />
+        <Switch checked={!!webPushEnabled} onCheckedChange={(v) => prefs.setWebPushEnabled(v)} aria-label={t("settings_web_push_label")} />
       </SettingRow>
     </div>
   );
@@ -293,11 +312,7 @@ function RetentionSection({ t }) {
     <div>
       <SectionHeading title={t("settings_nav_retention")} hint={t("settings_retention_hint")} />
       <SettingRow label={t("settings_delete_after_label")} forId="settings-delete-after">
-        <SelectControl
-          id="settings-delete-after"
-          value={deleteAfter}
-          onChange={(e) => prefs.setDeleteAfter(Number(e.target.value))}
-        >
+        <SelectControl id="settings-delete-after" value={deleteAfter} onChange={(e) => prefs.setDeleteAfter(Number(e.target.value))}>
           {DELETE_AFTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {t(opt.labelKey)}
@@ -338,10 +353,7 @@ export default function SettingsPage() {
   return (
     <div className="flex h-full bg-surface">
       {/* Left nav */}
-      <nav
-        aria-label={t("nav_button_settings")}
-        className="w-16 md:w-52 shrink-0 border-r border-border p-2 flex flex-col gap-1"
-      >
+      <nav aria-label={t("nav_button_settings")} className="w-16 md:w-52 shrink-0 border-r border-border p-2 flex flex-col gap-1">
         {navItems.map((item) => (
           <button
             key={item.id}
@@ -351,21 +363,19 @@ export default function SettingsPage() {
             aria-current={activeSection === item.id ? "page" : undefined}
             className={cn(
               "flex items-center gap-3 w-full px-3 py-2 rounded-md text-body-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-              activeSection === item.id
-                ? "bg-surface-2 text-foreground font-medium"
-                : "text-muted hover:bg-surface-2/50"
+              activeSection === item.id ? "bg-surface-2 text-foreground font-medium" : "text-muted hover:bg-surface-2/50"
             )}
           >
             <NavIcon section={item.id} />
-            <span className="hidden md:inline" aria-hidden="true">{t(item.labelKey)}</span>
+            <span className="hidden md:inline" aria-hidden="true">
+              {t(item.labelKey)}
+            </span>
           </button>
         ))}
       </nav>
 
       {/* Content pane */}
-      <div className="flex-1 overflow-y-auto p-6 max-w-2xl">
-        {renderContent()}
-      </div>
+      <div className="flex-1 overflow-y-auto p-6 max-w-2xl">{renderContent()}</div>
     </div>
   );
 }

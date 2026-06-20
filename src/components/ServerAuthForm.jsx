@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslation } from "react-i18next";
-import config from "../app/config";
-import userManager from "../app/UserManager";
 import { Button } from "@/components/ui/Button";
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import config from "../app/config";
+import userManager from "../app/UserManager";
 
 const AUTH_TYPE = { TOKEN: "token", PASSWORD: "password" };
 
@@ -48,13 +48,19 @@ const ServerAuthForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
       <div className="flex flex-col gap-1">
-        <label className="text-body-sm font-medium text-foreground">{t("server_auth_form_server_url_label")}</label>
+        <span className="text-body-sm font-medium text-foreground">{t("server_auth_form_server_url_label")}</span>
         <p className="text-body-sm text-muted break-all">{config.base_url}</p>
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-body-sm font-medium text-foreground">{t("server_auth_form_auth_type_label")}</label>
-        <TabsRoot value={authType} onValueChange={(v) => { setAuthType(v); setCredential(""); }}>
+        <span className="text-body-sm font-medium text-foreground">{t("server_auth_form_auth_type_label")}</span>
+        <TabsRoot
+          value={authType}
+          onValueChange={(v) => {
+            setAuthType(v);
+            setCredential("");
+          }}
+        >
           <TabsList>
             <TabsTrigger value={AUTH_TYPE.TOKEN}>{t("server_auth_form_auth_type_token")}</TabsTrigger>
             <TabsTrigger value={AUTH_TYPE.PASSWORD}>{t("server_auth_form_auth_type_password")}</TabsTrigger>
@@ -68,7 +74,7 @@ const ServerAuthForm = () => {
                 </label>
                 <input
                   id="saf-username-token"
-                  className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -82,7 +88,7 @@ const ServerAuthForm = () => {
                 </label>
                 <input
                   id="saf-token"
-                  className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="password"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
@@ -101,7 +107,7 @@ const ServerAuthForm = () => {
                 </label>
                 <input
                   id="saf-username-pw"
-                  className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -115,7 +121,7 @@ const ServerAuthForm = () => {
                 </label>
                 <input
                   id="saf-password"
-                  className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+                  className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   type="password"
                   value={credential}
                   onChange={(e) => setCredential(e.target.value)}
@@ -129,10 +135,14 @@ const ServerAuthForm = () => {
       </div>
 
       {error && (
-        <p role="alert" className="text-body-sm text-priority-urgent">{error}</p>
+        <p role="alert" className="text-body-sm text-priority-urgent">
+          {error}
+        </p>
       )}
 
-      <Button variant="primary" type="submit" disabled={saving}>{t("server_auth_form_save_button")}</Button>
+      <Button variant="primary" type="submit" disabled={saving}>
+        {t("server_auth_form_save_button")}
+      </Button>
     </form>
   );
 };

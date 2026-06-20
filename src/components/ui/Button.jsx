@@ -5,14 +5,14 @@ const button = cva(
     "inline-flex items-center justify-center",
     "font-semibold select-none transition-colors",
     "rounded-sm",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
     "disabled:pointer-events-none disabled:opacity-50",
   ],
   {
     variants: {
       variant: {
         primary: "bg-button-fill text-button-fill-text hover:bg-surface-2",
-        ghost: "bg-transparent border border-border text-muted hover:bg-surface-2",
+        ghost: "bg-transparent border border-control-border text-muted hover:bg-surface-2",
       },
       size: {
         sm: "h-8 px-3 text-caption",
@@ -27,8 +27,6 @@ const button = cva(
   }
 );
 
-export function Button({ variant, size, className, ...props }) {
-  return (
-    <button className={cn(button({ variant, size }), className)} {...props} />
-  );
+export function Button({ variant, size, className, type = "button", ...props }) {
+  return <button type={type} className={cn(button({ variant, size }), className)} {...props} />;
 }

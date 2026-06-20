@@ -7,7 +7,7 @@ Example: `accent-on-surface` → `accent_on_surface`
 
 **Web-key rule:** always the full CSS custom property name: `--color-surface`, `--radius-md`, etc.
 
-`[A]` = `[ASSUMPTION]` — unconfirmed light-theme value pending WCAG contrast verification (Story 5.3).
+All light-theme color values were verified against their applicable WCAG AA targets in Story 5.3.
 
 ---
 
@@ -15,27 +15,31 @@ Example: `accent-on-surface` → `accent_on_surface`
 
 | canonical | light | dark | web-key | android-key |
 |---|---|---|---|---|
-| `bg` | `#F3F4F6` `[A]` | `#0C0D0F` | `--color-bg` | `bg` |
-| `surface` | `#FFFFFF` `[A]` | `#16181B` | `--color-surface` | `surface` |
-| `surface-2` | `#EEF0F2` `[A]` | `#1C1F23` | `--color-surface-2` | `surface_2` |
-| `surface-active` | `#EEF0F2` `[A]` | `#1C1F23` | `--color-surface-active` | `surface_active` |
-| `border` | `#E4E6E9` `[A]` | `#23262B` | `--color-border` | `border` |
-| `text` | `#1C1E21` `[A]` | `#E8EAED` | `--color-text` | `text` |
-| `muted` | `#6B7177` `[A]` | `#8B9197` | `--color-muted` | `muted` |
-| `accent-text` | `#1A9E5F` `[A]` | `#42D392` | `--color-accent-text` | `accent_text` |
-| `accent-ui` | `#1A9E5F` `[A]` | `#42D392` | `--color-accent-ui` | `accent_ui` |
-| `accent-on-surface` | `#FFFFFF` `[A]` | `#0C1A12` | `--color-accent-on-surface` | `accent_on_surface` |
-| `priority-high` | `#E8943A` `[A]` | `#F5A95C` | `--color-priority-high` | `priority_high` |
-| `priority-max` | `#E5484D` `[A]` | `#FF6B6E` | `--color-priority-max` | `priority_max` |
-| `meter-ok` | `#1A9E5F` `[A]` | `#42D392` | `--color-meter-ok` | `meter_ok` |
-| `meter-track` | `#E4E6E9` `[A]` | `#262A2F` | `--color-meter-track` | `meter_track` |
-| `meter-warning` | `#E8943A` `[A]` | `#F5A95C` | `--color-meter-warning` | `meter_warning` |
-| `meter-critical` | `#E5484D` `[A]` | `#FF6B6E` | `--color-meter-critical` | `meter_critical` |
-| `topic-chip-bg` | `#E1F2EA` `[A]` | `#143A2D` | `--color-topic-chip-bg` | `topic_chip_bg` |
-| `topic-chip-text` | `#136B43` `[A]` | `#7CE6B4` | `--color-topic-chip-text` | `topic_chip_text` |
+| `bg` | `#F3F4F6` | `#0C0D0F` | `--color-bg` | `bg` |
+| `surface` | `#FFFFFF` | `#16181B` | `--color-surface` | `surface` |
+| `surface-2` | `#EEF0F2` | `#1C1F23` | `--color-surface-2` | `surface_2` |
+| `surface-active` | `#EEF0F2` | `#1C1F23` | `--color-surface-active` | `surface_active` |
+| `border` | `#E4E6E9` | `#23262B` | `--color-border` | `border` |
+| `control-border` | `#767B80` | `#8B9197` | `--color-control-border` | `control_border` |
+| `text` | `#1C1E21` | `#E8EAED` | `--color-text` | `text` |
+| `muted` | `#6A7076` | `#8B9197` | `--color-muted` | `muted` |
+| `accent-text` | `#0E7A48` | `#42D392` | `--color-accent-text` | `accent_text` |
+| `accent-ui` | `#1A9E5F` | `#42D392` | `--color-accent-ui` | `accent_ui` |
+| `accent-on-surface` | `#0C1A12` | `#0C1A12` | `--color-accent-on-surface` | `accent_on_surface` |
+| `priority-high` | `#BF6C15` | `#F5A95C` | `--color-priority-high` | `priority_high` |
+| `priority-max` | `#E5484D` | `#FF6B6E` | `--color-priority-max` | `priority_max` |
+| `priority-urgent` | `#C7353A` | `#FF6B6E` | `--color-priority-urgent` | `priority_urgent` |
+| `priority-high-on-surface` | `#241403` | `#241403` | `--color-priority-high-on-surface` | `priority_high_on_surface` |
+| `priority-max-on-surface` | `#1A0E0E` | `#1A0E0E` | `--color-priority-max-on-surface` | `priority_max_on_surface` |
+| `meter-ok` | `#0E7A48` | `#42D392` | `--color-meter-ok` | `meter_ok` |
+| `meter-track` | `#E4E6E9` | `#262A2F` | `--color-meter-track` | `meter_track` |
+| `meter-warning` | `#BF6C15` | `#F5A95C` | `--color-meter-warning` | `meter_warning` |
+| `meter-critical` | `#E5484D` | `#FF6B6E` | `--color-meter-critical` | `meter_critical` |
+| `topic-chip-bg` | `#E1F2EA` | `#143A2D` | `--color-topic-chip-bg` | `topic_chip_bg` |
+| `topic-chip-text` | `#136B43` | `#7CE6B4` | `--color-topic-chip-text` | `topic_chip_text` |
 | `button-fill` | `#F4F5F6` | `#F4F5F6` | `--color-button-fill` | `button_fill` |
 | `button-fill-text` | `#15171A` | `#15171A` | `--color-button-fill-text` | `button_fill_text` |
-| `focus-ring` | `#1A9E5F` `[A]` | `#42D392` | `--color-focus-ring` | `focus_ring` |
+| `focus-ring` | `#1A9E5F` | `#42D392` | `--color-focus-ring` | `focus_ring` |
 
 ### Accent Sub-Token Decision Table
 
@@ -88,11 +92,19 @@ These tokens are defined only in `.dark {}` and must NOT be applied in light mod
 
 | canonical | light | dark | web-key | android-key |
 |---|---|---|---|---|
-| `overlay` | `rgba(0,0,0,0.45)` `[A]` | `rgba(0,0,0,0.65)` | `--color-overlay` | _(web only)_ |
+| `overlay` | `rgba(0,0,0,0.45)` | `rgba(0,0,0,0.65)` | `--color-overlay` | _(web only)_ |
 | `z-popover` | `50` | `50` | `--z-popover` | _(web only)_ |
 | `z-overlay` | `1350` | `1350` | `--z-overlay` | _(web only)_ |
+| `z-fab` | `40` | `40` | `--z-fab` | _(web only)_ |
+| `width-detail-pane` | `420px` | `420px` | `--width-detail-pane` | _(web only)_ |
+| `width-nav-drawer` | `280px` | `280px` | `--width-nav-drawer` | _(web only)_ |
+| `container-feed` | `720px` | `720px` | `--container-feed` | _(web only)_ |
+| `container-message` | `70ch` | `70ch` | `--container-message` | _(web only)_ |
+| `container-attachment-name` | `24ch` | `24ch` | `--container-attachment-name` | _(web only)_ |
+| `max-height-dialog` | `90dvh` | `90dvh` | `--max-height-dialog` | _(web only)_ |
+| `animate-slide-in-top` | `slide-in-top 0.25s ease-out` | `slide-in-top 0.25s ease-out` | `--animate-slide-in-top` | _(web only)_ |
 
-`[A]` = unconfirmed light-mode value. Android does not use CSS z-index or overlay tokens.
+Android does not use CSS z-index or overlay tokens.
 
 ---
 

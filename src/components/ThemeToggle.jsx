@@ -14,7 +14,7 @@ export function ThemeToggle() {
   const { choice, setChoice } = useTheme();
 
   return (
-    <div role="radiogroup" aria-label={t("theme_toggle_label")} className="flex rounded-full border border-border">
+    <div role="radiogroup" aria-label={t("theme_toggle_label")} className="flex rounded-full border border-control-border">
       {OPTIONS.map(({ value, key }) => (
         <button
           key={value}
@@ -24,9 +24,8 @@ export function ThemeToggle() {
           aria-checked={choice === value}
           className={cn(
             "px-3 py-1 text-caption rounded-full transition-colors",
-            choice === value
-              ? "bg-surface-active text-text"
-              : "text-muted hover:text-text"
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+            choice === value ? "bg-accent-ui text-accent-on-surface" : "text-muted hover:text-text"
           )}
         >
           {t(key)}

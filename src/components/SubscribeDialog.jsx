@@ -21,10 +21,8 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-export const subscribeTopic = async (baseUrl, topic, opts) => {
-  return await subscriptionManager.add(baseUrl, topic, opts);
-  // NOTE: accountApi.addSubscription removed — feature trimmed (no account management)
-};
+// accountApi.addSubscription was removed with account-management cleanup.
+export const subscribeTopic = async (baseUrl, topic, opts) => subscriptionManager.add(baseUrl, topic, opts);
 
 const SubscribeDialog = (props) => {
   const { t } = useTranslation();
@@ -48,9 +46,7 @@ const SubscribeDialog = (props) => {
     props.onSuccess(subscription);
   };
 
-  const dialogTitle = showLoginPage
-    ? t("subscribe_dialog_login_title")
-    : t("subscribe_dialog_subscribe_title");
+  const dialogTitle = showLoginPage ? t("subscribe_dialog_login_title") : t("subscribe_dialog_subscribe_title");
 
   const content = !showLoginPage ? (
     <SubscribePage
@@ -64,12 +60,7 @@ const SubscribeDialog = (props) => {
       onSuccess={handleSuccess}
     />
   ) : (
-    <LoginPage
-      baseUrl={baseUrl}
-      topic={topic}
-      onBack={() => setShowLoginPage(false)}
-      onSuccess={handleSuccess}
-    />
+    <LoginPage baseUrl={baseUrl} topic={topic} onBack={() => setShowLoginPage(false)} onSuccess={handleSuccess} />
   );
 
   if (isMobile) {
@@ -85,9 +76,7 @@ const SubscribeDialog = (props) => {
 
   return (
     <Dialog open={props.open} onOpenChange={(open) => !open && props.onCancel()}>
-      <DialogContent title={dialogTitle}>
-        {content}
-      </DialogContent>
+      <DialogContent title={dialogTitle}>{content}</DialogContent>
     </Dialog>
   );
 };
@@ -134,21 +123,15 @@ const SubscribePage = (props) => {
       )}
       <div className="flex gap-2 mb-4">
         <input
-          autoFocus
           type="text"
           maxLength={64}
           placeholder={t("subscribe_dialog_subscribe_topic_placeholder")}
           value={props.topic}
           onChange={(e) => props.setTopic(e.target.value)}
-          className="flex-1 bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
+          className="flex-1 bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring"
           aria-label={t("subscribe_dialog_subscribe_topic_placeholder")}
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          type="button"
-          onClick={() => props.setTopic(randomAlphanumericString(16))}
-        >
+        <Button variant="ghost" size="sm" type="button" onClick={() => props.setTopic(randomAlphanumericString(16))}>
           {t("subscribe_dialog_subscribe_button_generate_topic_name")}
         </Button>
       </div>
@@ -169,7 +152,7 @@ const SubscribePage = (props) => {
           placeholder={config.base_url}
           value={props.baseUrl}
           onChange={(e) => props.setBaseUrl(e.target.value)}
-          className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-2"
+          className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring mb-2"
           aria-label={t("subscribe_dialog_subscribe_base_url_label")}
         />
       )}
@@ -209,12 +192,11 @@ const LoginPage = (props) => {
     <div className="p-4">
       <p className="text-body-sm text-muted mb-4">{t("subscribe_dialog_login_description")}</p>
       <input
-        autoFocus
         type="text"
         placeholder={t("subscribe_dialog_login_username_label")}
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-3"
+        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring mb-3"
         aria-label={t("subscribe_dialog_login_username_label")}
       />
       <input
@@ -222,7 +204,7 @@ const LoginPage = (props) => {
         placeholder={t("subscribe_dialog_login_password_label")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
+        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring"
         aria-label={t("subscribe_dialog_login_password_label")}
       />
       {error && <p className="text-caption text-priority-urgent mt-2">{error}</p>}

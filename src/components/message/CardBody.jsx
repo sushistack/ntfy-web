@@ -7,7 +7,10 @@ import MarkdownContent from "./MarkdownContent";
 function detectShape(message) {
   if (!message || !message.trim()) return "paragraph";
 
-  const lines = message.trim().split("\n").filter((l) => l.trim());
+  const lines = message
+    .trim()
+    .split("\n")
+    .filter((l) => l.trim());
 
   if (lines.length < 2) return "paragraph";
 
@@ -35,11 +38,12 @@ const parseKvLines = (message) =>
       const [, key, value] = match;
       const percentMatch = value.trim().match(/^(\d+(\.\d+)?)%$/);
       const numericMatch = value.trim().match(/^(\d+(\.\d+)?)$/);
-      const numericValue = percentMatch
-        ? parseFloat(percentMatch[1])
-        : numericMatch
-        ? parseFloat(numericMatch[1])
-        : null;
+      let numericValue = null;
+      if (percentMatch) {
+        numericValue = parseFloat(percentMatch[1]);
+      } else if (numericMatch) {
+        numericValue = parseFloat(numericMatch[1]);
+      }
       const isError = /error|fail|err/i.test(key);
       return { key: key.trim(), value: value.trim(), numericValue, isError };
     });
@@ -85,7 +89,7 @@ const ParagraphBody = ({ message }) => {
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((v) => !v)}
-        className="text-body-sm text-accent-text mt-1"
+        className="text-body-sm text-accent-text mt-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       >
         {expanded ? t("card_body_collapse") : t("card_body_expand")}
       </button>
@@ -95,11 +99,11 @@ const ParagraphBody = ({ message }) => {
 
 const KvBody = ({ lines }) => (
   <dl className="text-body-sm space-y-1 py-2">
-    {lines.map(({ key, value, isError }, i) => (
-      <div key={i} className="flex items-baseline gap-2">
+    {lines.map(({ key, value, isError }, index) => (
+      <div key={`${key}:${value}:${index}`} className="flex items-baseline gap-2">
         <KvIcon keyName={key} />
         <dt className="text-muted font-medium shrink-0">{key}</dt>
-        <dd className={cn("ml-auto", isError ? "text-priority-max" : "text-accent-text")}>{value}</dd>
+        <dd className={cn("ml-auto", isError ? "text-priority-urgent" : "text-accent-text")}>{value}</dd>
       </div>
     ))}
   </dl>
@@ -107,8 +111,8 @@ const KvBody = ({ lines }) => (
 
 const RichKvBody = ({ lines }) => (
   <dl className="text-body-sm space-y-2 py-2">
-    {lines.map(({ key, value, numericValue }, i) => (
-      <div key={i} className="flex flex-col gap-1">
+    {lines.map(({ key, value, numericValue }, index) => (
+      <div key={`${key}:${value}:${index}`} className="flex flex-col gap-1">
         <div className="flex items-baseline gap-2">
           <KvIcon keyName={key} />
           <dt className="text-muted font-medium shrink-0">{key}</dt>
@@ -131,11 +135,7 @@ const CardBody = ({ notification }) => {
     if (shape === "rich-kv") return <RichKvBody lines={lines} />;
     return <KvBody lines={lines} />;
   } catch {
-    return (
-      <p className="text-body-sm text-muted whitespace-pre-wrap py-2">
-        {notification?.message ?? ""}
-      </p>
-    );
+    return <p className="text-body-sm text-muted whitespace-pre-wrap py-2">{notification?.message ?? ""}</p>;
   }
 };
 

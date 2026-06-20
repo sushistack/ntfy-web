@@ -10,8 +10,11 @@ export function PriorityBadge({ priority }) {
   return (
     <Chip
       variant="priority"
-      // layout-nudge: DESIGN.md priority-badge foreground — near-black on saturated bg
-      className={isMax ? "bg-priority-max text-[#1A0E0E]" : "bg-priority-high text-[#241403]"}
+      className={
+        isMax
+          ? "bg-priority-max text-priority-max-on-surface"
+          : "bg-priority-high text-priority-high-on-surface"
+      }
       aria-label={t("notifications_priority_x", { priority })}
     >
       {isMax ? t("notification_card_badge_max") : t("notification_card_badge_high")}

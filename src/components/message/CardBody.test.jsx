@@ -2,6 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import MarkdownContent from "./MarkdownContent";
+import CardBody from "./CardBody";
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (k) => k }),
 }));
@@ -28,11 +31,7 @@ vi.mock("react-remark", async () => {
           if (imgMatch) {
             const [, alt, src] = imgMatch;
             const Img = components.img;
-            setContent(
-              Img
-                ? React.createElement(Img, { src, alt })
-                : React.createElement("img", { src, alt })
-            );
+            setContent(Img ? React.createElement(Img, { src, alt }) : React.createElement("img", { src, alt }));
             return;
           }
 
@@ -41,19 +40,13 @@ vi.mock("react-remark", async () => {
           if (linkMatch) {
             const [, text, href] = linkMatch;
             const A = components.a;
-            setContent(
-              A
-                ? React.createElement(A, { href }, text)
-                : React.createElement("a", { href }, text)
-            );
+            setContent(A ? React.createElement(A, { href }, text) : React.createElement("a", { href }, text));
             return;
           }
 
           // plain text → p
           const P = components.p;
-          setContent(
-            P ? React.createElement(P, null, source) : React.createElement("p", null, source)
-          );
+          setContent(P ? React.createElement(P, null, source) : React.createElement("p", null, source));
         },
         [] // components captured at hook init; stable since componentMap is module-level
       );
@@ -62,9 +55,6 @@ vi.mock("react-remark", async () => {
     },
   };
 });
-
-import MarkdownContent from "./MarkdownContent";
-import CardBody from "./CardBody";
 
 let container;
 let root;
@@ -102,9 +92,7 @@ describe("MarkdownContent — link sanitization (security)", () => {
   });
 
   it("strips data: href", () => {
-    render(
-      <MarkdownContent content="[bad](data:text/html,<script>alert(1)</script>)" />
-    );
+    render(<MarkdownContent content="[bad](data:text/html,<script>alert(1)</script>)" />);
     const link = container.querySelector("a[href]");
     if (link) {
       expect(link.getAttribute("href")).not.toMatch(/^data:/i);
@@ -213,10 +201,10 @@ describe("CardBody — graceful degradation", () => {
 // ─── CardBody — error value styling (AC #1 kv) ───────────────────────────────
 
 describe("CardBody — kv error value coloring", () => {
-  it("applies text-priority-max to error key rows", () => {
+  it("applies accessible priority-urgent text to error key rows", () => {
     // Non-numeric error value → kv (not rich-kv), so KvBody renders with error coloring
     render(<CardBody notification={{ message: "error_message: Failed\nStatus: OK" }} />);
-    const dd = container.querySelector("dd.text-priority-max");
+    const dd = container.querySelector("dd.text-priority-urgent");
     expect(dd).toBeTruthy();
   });
 

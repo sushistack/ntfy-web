@@ -6,8 +6,17 @@ import { formatBytes } from "@/app/utils";
 const SAFE_URL = /^https?:\/\//i;
 
 const DocumentIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
     <polyline points="14 2 14 8 20 8" />
   </svg>
@@ -31,12 +40,12 @@ const AttachmentBox = ({ attachment }) => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={t("notifications_attachment_open_button")}
-        className="block"
+        className="block rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       >
         <img
           src={attachment.url}
           alt={t("notifications_attachment_image")}
-          className="max-h-48 w-auto object-contain rounded-sm bg-surface-muted"
+          className="max-h-48 w-auto object-contain rounded-sm bg-surface-2"
           onError={() => setImgFailed(true)}
         />
       </a>
@@ -48,13 +57,11 @@ const AttachmentBox = ({ attachment }) => {
       href={attachment.url}
       download={attachment.name}
       aria-label={t("detail_attachment_file_download_label", { name: attachment.name })}
-      className="inline-flex items-center gap-2 px-3 py-2 rounded-sm bg-surface-muted border border-border text-body-sm text-text hover:bg-surface-active transition-colors"
+      className="inline-flex items-center gap-2 px-3 py-2 rounded-sm bg-surface-2 border border-control-border text-body-sm text-text hover:bg-surface-active transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
     >
       <DocumentIcon />
-      <span className="truncate max-w-[24ch]">{attachment.name}</span>
-      {attachment.size > 0 && (
-        <span className="text-muted text-caption shrink-0">{formatBytes(attachment.size)}</span>
-      )}
+      <span className="truncate max-w-attachment-name">{attachment.name}</span>
+      {attachment.size > 0 && <span className="text-muted text-caption shrink-0">{formatBytes(attachment.size)}</span>}
     </a>
   );
 };
