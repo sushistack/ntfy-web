@@ -93,11 +93,10 @@ export const useConnectionListeners = (account, subscriptions, users, webPushTop
         }
       };
 
-      connectionManager.registerStateListener((id, state) => subscriptionManager.updateState(id, state));
+      // State listener is now registered by ConnectionProvider (ConnectionContext.jsx)
       connectionManager.registerMessageListener(handleMessage);
 
       return () => {
-        connectionManager.resetStateListener();
         connectionManager.resetMessageListener();
       };
     },
