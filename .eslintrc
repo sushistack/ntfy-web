@@ -1,5 +1,18 @@
 {
   "extends": ["airbnb", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "vite": {
+        "viteConfig": {
+          "resolve": {
+            "alias": {
+              "@": "./src"
+            }
+          }
+        }
+      }
+    }
+  },
   "env": {
     "browser": true
   },

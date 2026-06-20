@@ -1,6 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { defineConfig } from "vite";
+import { fileURLToPath } from "url";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => ({
@@ -8,6 +10,11 @@ export default defineConfig(({ mode }) => ({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/app/test-setup.js"],
+  },
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
   build: {
     outDir: "build",
@@ -18,6 +25,7 @@ export default defineConfig(({ mode }) => ({
     port: 3000,
   },
   plugins: [
+    tailwindcss(),
     react(),
     VitePWA({
       registerType: "autoUpdate",
