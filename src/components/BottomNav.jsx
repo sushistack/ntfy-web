@@ -49,7 +49,9 @@ const BottomNav = () => {
             type="button"
             onClick={() => navigate(path)}
             className={cn(
-              "flex flex-col items-center justify-center flex-1 py-2 gap-1 text-caption transition-colors",
+              "flex flex-col items-center justify-center flex-1 py-2 gap-1 text-caption transition-all duration-150 ease-out",
+              "hover:bg-surface-active hover:text-accent-text active:scale-95",
+              "motion-reduce:transition-none motion-reduce:active:scale-100",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
               isActive ? "text-accent-text" : "text-muted"
             )}

@@ -23,8 +23,9 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
         aria-label={t(drawerOpen ? "app_bar_menu_close" : "app_bar_menu_open")}
         aria-expanded={drawerOpen}
         className={cn(
-          "p-2 rounded-sm text-muted transition-colors",
-          "hover:bg-surface-2",
+          "p-2 rounded-sm text-muted transition-all duration-150 ease-out",
+          "hover:bg-surface-active hover:text-accent-text hover:scale-105 active:scale-95",
+          "motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         )}
       >

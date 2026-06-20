@@ -21,7 +21,9 @@ const PublishFab = ({ onClick }) => {
         "w-14 h-14 rounded-sm bg-accent-ui text-accent-on-surface",
         "shadow-elev-2",
         "flex items-center justify-center",
-        "hover:brightness-110 active:brightness-90 transition",
+        "transition-all duration-150 ease-out",
+        "hover:-translate-y-1 hover:scale-105 hover:brightness-110 active:translate-y-0 active:scale-95 active:brightness-95",
+        "motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       )}
     >

@@ -79,9 +79,15 @@ describe("Button", () => {
     expect(el.className).toContain("focus-visible:ring-2");
   });
 
-  it("does NOT include any accent/green variant", () => {
+  it("primary hover uses accent fill feedback", () => {
     const el = renderButton({});
-    expect(el.className).not.toContain("accent");
-    expect(el.className).not.toContain("#42D392");
+    expect(el.className).toContain("hover:bg-accent-ui");
+    expect(el.className).toContain("hover:text-accent-on-surface");
+  });
+
+  it("includes press motion classes", () => {
+    const el = renderButton({});
+    expect(el.className).toContain("hover:-translate-y-0.5");
+    expect(el.className).toContain("active:scale-95");
   });
 });
