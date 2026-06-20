@@ -1,6 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import { createContext, useCallback, useContext, useMemo, useReducer } from "react";
 import api from "@/app/Api";
-import { useConnection, CONN_STATES } from "./ConnectionContext";
 
 // Action type constants
 const ADD_ENTRY = "ADD_ENTRY";
@@ -37,20 +36,20 @@ export const publishQueueReducer = (state, action) => {
 
 const PublishQueueContext = createContext(null);
 
+const normalizeTags = (tags) => {
+  if (Array.isArray(tags)) return tags.map((tag) => tag.trim()).filter(Boolean).join(",");
+  return tags?.trim() || undefined;
+};
+
 export const PublishQueueProvider = ({ children }) => {
   const [state, dispatch] = useReducer(publishQueueReducer, { entries: [] });
-  const { connectionState } = useConnection();
-
-  // Always-current ref so the reconnect effect never reads stale closure state.
-  const entriesRef = useRef(state.entries);
-  useEffect(() => { entriesRef.current = state.entries; });
 
   const sendEntry = useCallback(async (entry) => {
     try {
       await api.publish(entry.baseUrl, entry.topic, entry.body, {
         title: entry.title || undefined,
         priority: entry.priority !== 3 ? entry.priority : undefined,
-        tags: entry.tags?.trim() || undefined,
+        tags: normalizeTags(entry.tags),
       });
       dispatch({ type: CLEAR_ENTRY, id: entry.id });
     } catch {
@@ -60,13 +59,10 @@ export const PublishQueueProvider = ({ children }) => {
 
   const enqueue = useCallback((payload) => {
     const id = crypto.randomUUID();
-    const entryState = connectionState === CONN_STATES.CONNECTED ? "sending" : "queued";
-    const entry = { id, ...payload, state: entryState, enqueuedAt: Math.floor(Date.now() / 1000) };
+    const entry = { id, ...payload, state: "sending", enqueuedAt: Math.floor(Date.now() / 1000) };
     dispatch({ type: ADD_ENTRY, entry });
-    if (connectionState === CONN_STATES.CONNECTED) {
-      sendEntry(entry);
-    }
-  }, [connectionState, sendEntry]);
+    sendEntry(entry);
+  }, [sendEntry]);
 
   const retry = useCallback((id) => {
     const entry = state.entries.find((e) => e.id === id);
@@ -78,16 +74,6 @@ export const PublishQueueProvider = ({ children }) => {
   const dismiss = useCallback((id) => {
     dispatch({ type: CLEAR_ENTRY, id });
   }, []);
-
-  useEffect(() => {
-    if (connectionState !== CONN_STATES.CONNECTED) return;
-    const queued = entriesRef.current.filter((e) => e.state === "queued");
-    if (queued.length === 0) return;
-    queued.forEach((entry) => {
-      dispatch({ type: SET_SENDING, id: entry.id });
-      sendEntry(entry);
-    });
-  }, [connectionState, sendEntry]);
 
   const value = useMemo(
     () => ({ queue: state.entries, enqueue, retry, dismiss }),
