@@ -1,331 +1,235 @@
 import * as React from "react";
-import { useContext, useState } from "react";
-import {
-  Button,
-  TextField,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Autocomplete,
-  FormControlLabel,
-  FormGroup,
-  useMediaQuery,
-  Switch,
-  useTheme,
-} from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useLiveQuery } from "dexie-react-hooks";
+import { Dialog, DialogContent } from "./ui/Dialog";
+import { Sheet, SheetContent } from "./ui/Sheet";
+import { Button } from "./ui/Button";
+import { Switch } from "./ui/Switch";
 import api from "../app/Api";
 import { randomAlphanumericString, topicUrl, validTopic, validUrl } from "../app/utils";
 import userManager from "../app/UserManager";
 import subscriptionManager from "../app/SubscriptionManager";
 import poller from "../app/Poller";
-import DialogFooter from "./DialogFooter";
-import session from "../app/Session";
-import routes from "./routes";
-import accountApi, { Permission, Role } from "../app/AccountApi";
-import ReserveTopicSelect from "./ReserveTopicSelect";
-import { AccountContext } from "./App";
-import { TopicReservedError, UnauthorizedError } from "../app/errors";
-import { ReserveLimitChip } from "./SubscriptionPopup";
-import prefs from "../app/Prefs";
+import config from "../app/config";
 
-const publicBaseUrl = "https://ntfy.sh";
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 768);
+  React.useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+};
 
 export const subscribeTopic = async (baseUrl, topic, opts) => {
-  const subscription = await subscriptionManager.add(baseUrl, topic, opts);
-  if (session.exists()) {
-    try {
-      await accountApi.addSubscription(baseUrl, topic);
-    } catch (e) {
-      console.log(`[SubscribeDialog] Subscribing to topic ${topic} failed`, e);
-      if (e instanceof UnauthorizedError) {
-        await session.resetAndRedirect(routes.login);
-      }
-    }
-  }
-  return subscription;
+  return await subscriptionManager.add(baseUrl, topic, opts);
+  // NOTE: accountApi.addSubscription removed — feature trimmed (no account management)
 };
 
 const SubscribeDialog = (props) => {
-  const theme = useTheme();
-  const [baseUrl, setBaseUrl] = useState("");
-  const [topic, setTopic] = useState("");
-  const [showLoginPage, setShowLoginPage] = useState(false);
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+  const [baseUrl, setBaseUrl] = React.useState("");
+  const [topic, setTopic] = React.useState("");
+  const [showLoginPage, setShowLoginPage] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!props.open) {
+      setTopic("");
+      setBaseUrl("");
+      setShowLoginPage(false);
+    }
+  }, [props.open]);
 
   const handleSuccess = async () => {
-    console.log(`[SubscribeDialog] Subscribing to topic ${topic}`);
     const actualBaseUrl = baseUrl || config.base_url;
     const subscription = await subscribeTopic(actualBaseUrl, topic, {});
-    poller.pollInBackground(subscription); // Dangle!
+    poller.pollInBackground(subscription); // dangling — intentional, starts background poll
     props.onSuccess(subscription);
   };
 
+  const dialogTitle = showLoginPage
+    ? t("subscribe_dialog_login_title")
+    : t("subscribe_dialog_subscribe_title");
+
+  const content = !showLoginPage ? (
+    <SubscribePage
+      baseUrl={baseUrl}
+      setBaseUrl={setBaseUrl}
+      topic={topic}
+      setTopic={setTopic}
+      subscriptions={props.subscriptions}
+      onCancel={props.onCancel}
+      onNeedsLogin={() => setShowLoginPage(true)}
+      onSuccess={handleSuccess}
+    />
+  ) : (
+    <LoginPage
+      baseUrl={baseUrl}
+      topic={topic}
+      onBack={() => setShowLoginPage(false)}
+      onSuccess={handleSuccess}
+    />
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={props.open} onOpenChange={(open) => !open && props.onCancel()}>
+        <SheetContent side="bottom">
+          <h2 className="text-subtitle font-semibold text-text px-4 pt-4">{dialogTitle}</h2>
+          {content}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
-    <Dialog open={props.open} onClose={props.onCancel} fullScreen={fullScreen}>
-      {!showLoginPage && (
-        <SubscribePage
-          baseUrl={baseUrl}
-          setBaseUrl={setBaseUrl}
-          topic={topic}
-          setTopic={setTopic}
-          subscriptions={props.subscriptions}
-          onCancel={props.onCancel}
-          onNeedsLogin={() => setShowLoginPage(true)}
-          onSuccess={handleSuccess}
-        />
-      )}
-      {showLoginPage && <LoginPage baseUrl={baseUrl} topic={topic} onBack={() => setShowLoginPage(false)} onSuccess={handleSuccess} />}
+    <Dialog open={props.open} onOpenChange={(open) => !open && props.onCancel()}>
+      <DialogContent title={dialogTitle}>
+        {content}
+      </DialogContent>
     </Dialog>
   );
 };
 
 const SubscribePage = (props) => {
   const { t } = useTranslation();
-  const { account } = useContext(AccountContext);
-  const [error, setError] = useState("");
-  const [reserveTopicVisible, setReserveTopicVisible] = useState(false);
-  const [anotherServerVisible, setAnotherServerVisible] = useState(false);
-  const [everyone, setEveryone] = useState(Permission.DENY_ALL);
-  const baseUrl = anotherServerVisible ? props.baseUrl : config.base_url;
-  const { topic } = props;
-  const existingTopicUrls = props.subscriptions.map((s) => topicUrl(s.baseUrl, s.topic));
-  const existingBaseUrls = Array.from(new Set([publicBaseUrl, ...props.subscriptions.map((s) => s.baseUrl)])).filter(
-    (s) => s !== config.base_url
-  );
-  const showReserveTopicCheckbox = config.enable_reservations && !anotherServerVisible && (config.enable_payments || account);
-  const reserveTopicEnabled =
-    session.exists() && (account?.role === Role.ADMIN || (account?.role === Role.USER && (account?.stats.reservations_remaining || 0) > 0));
+  const [error, setError] = React.useState("");
+  const [anotherServerVisible, setAnotherServerVisible] = React.useState(false);
 
-  const webPushEnabled = useLiveQuery(() => prefs.webPushEnabled());
+  const subscribeButtonEnabled = (() => {
+    const effectiveBaseUrl = anotherServerVisible ? props.baseUrl : config.base_url;
+    const topicUrlStr = topicUrl(effectiveBaseUrl, props.topic);
+    const existingTopicUrls = (props.subscriptions ?? []).map((s) => topicUrl(s.baseUrl, s.topic));
+    const isExisting = existingTopicUrls.includes(topicUrlStr);
+    if (anotherServerVisible) {
+      return validTopic(props.topic) && validUrl(props.baseUrl) && !isExisting;
+    }
+    return validTopic(props.topic) && !isExisting;
+  })();
 
   const handleSubscribe = async () => {
-    const user = await userManager.get(baseUrl); // May be undefined
+    const effectiveBaseUrl = anotherServerVisible ? props.baseUrl : config.base_url;
+    const user = await userManager.get(effectiveBaseUrl);
     const username = user ? user.username : t("subscribe_dialog_error_user_anonymous");
-
-    // Check read access to topic
-    const success = await api.topicAuth(baseUrl, topic, user);
+    const success = await api.topicAuth(effectiveBaseUrl, props.topic, user);
     if (!success) {
-      console.log(`[SubscribeDialog] Login to ${topicUrl(baseUrl, topic)} failed for user ${username}`);
       if (user) {
-        setError(
-          t("subscribe_dialog_error_user_not_authorized", {
-            username,
-          })
-        );
+        setError(t("subscribe_dialog_error_user_not_authorized", { username }));
         return;
       }
       props.onNeedsLogin();
       return;
     }
-
-    // Reserve topic (if requested)
-    if (session.exists() && baseUrl === config.base_url && reserveTopicVisible) {
-      console.log(`[SubscribeDialog] Reserving topic ${topic} with everyone access ${everyone}`);
-      try {
-        await accountApi.upsertReservation(topic, everyone);
-      } catch (e) {
-        console.log(`[SubscribeDialog] Error reserving topic`, e);
-        if (e instanceof UnauthorizedError) {
-          await session.resetAndRedirect(routes.login);
-        } else if (e instanceof TopicReservedError) {
-          setError(t("subscribe_dialog_error_topic_already_reserved"));
-          return;
-        }
-      }
-    }
-
-    console.log(`[SubscribeDialog] Successful login to ${topicUrl(baseUrl, topic)} for user ${username}`);
     props.onSuccess();
   };
 
-  const handleUseAnotherChanged = (e) => {
-    props.setBaseUrl("");
-    setAnotherServerVisible(e.target.checked);
-  };
-
-  const subscribeButtonEnabled = (() => {
-    if (anotherServerVisible) {
-      const isExistingTopicUrl = existingTopicUrls.includes(topicUrl(baseUrl, topic));
-      return validTopic(topic) && validUrl(baseUrl) && !isExistingTopicUrl;
-    }
-    const isExistingTopicUrl = existingTopicUrls.includes(topicUrl(config.base_url, topic));
-    return validTopic(topic) && !isExistingTopicUrl;
-  })();
-
-  const updateBaseUrl = (ev, newVal) => {
-    if (validUrl(newVal)) {
-      props.setBaseUrl(newVal.replace(/\/$/, "")); // strip trailing slash after https?://
-    } else {
-      props.setBaseUrl(newVal);
-    }
-  };
-
   return (
-    <>
-      <DialogTitle>{t("subscribe_dialog_subscribe_title")}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{t("subscribe_dialog_subscribe_description")}</DialogContentText>
-        <div style={{ display: "flex", paddingBottom: "8px" }} role="row">
-          <TextField
-            autoFocus
-            margin="dense"
-            id="topic"
-            placeholder={t("subscribe_dialog_subscribe_topic_placeholder")}
-            value={props.topic}
-            onChange={(ev) => props.setTopic(ev.target.value)}
-            type="text"
-            fullWidth
-            variant="standard"
-            inputProps={{
-              maxLength: 64,
-              "aria-label": t("subscribe_dialog_subscribe_topic_placeholder"),
-            }}
-          />
-          <Button
-            onClick={() => {
-              props.setTopic(randomAlphanumericString(16));
-            }}
-            style={{ flexShrink: "0", marginTop: "0.5em" }}
-          >
-            {t("subscribe_dialog_subscribe_button_generate_topic_name")}
-          </Button>
-        </div>
-        {showReserveTopicCheckbox && (
-          <FormGroup>
-            <FormControlLabel
-              variant="standard"
-              control={
-                <Switch
-                  disabled={!reserveTopicEnabled}
-                  checked={reserveTopicVisible}
-                  onChange={(ev) => setReserveTopicVisible(ev.target.checked)}
-                  inputProps={{
-                    "aria-label": t("reserve_dialog_checkbox_label"),
-                  }}
-                />
-              }
-              label={
-                <>
-                  {t("reserve_dialog_checkbox_label")}
-                  <ReserveLimitChip />
-                </>
-              }
-            />
-            {reserveTopicVisible && <ReserveTopicSelect value={everyone} onChange={setEveryone} />}
-          </FormGroup>
-        )}
-        {!reserveTopicVisible && (
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  onChange={handleUseAnotherChanged}
-                  checked={anotherServerVisible}
-                  inputProps={{
-                    "aria-label": t("subscribe_dialog_subscribe_use_another_label"),
-                  }}
-                />
-              }
-              label={t("subscribe_dialog_subscribe_use_another_label")}
-            />
-            {anotherServerVisible && (
-              <Autocomplete
-                freeSolo
-                options={existingBaseUrls}
-                inputValue={props.baseUrl}
-                onInputChange={updateBaseUrl}
-                renderInput={(params) => (
-                  <>
-                    <TextField
-                      {...params}
-                      placeholder={config.base_url}
-                      variant="standard"
-                      aria-label={t("subscribe_dialog_subscribe_base_url_label")}
-                    />
-                    {webPushEnabled && (
-                      <div style={{ width: "100%", color: "#aaa", fontSize: "0.75rem", marginTop: "0.5rem" }}>
-                        {t("subscribe_dialog_subscribe_use_another_background_info")}
-                      </div>
-                    )}
-                  </>
-                )}
-              />
-            )}
-          </FormGroup>
-        )}
-      </DialogContent>
-      <DialogFooter status={error}>
-        <Button onClick={props.onCancel}>{t("subscribe_dialog_subscribe_button_cancel")}</Button>
-        <Button onClick={handleSubscribe} disabled={!subscribeButtonEnabled}>
+    <div className="p-4">
+      <p className="text-body-sm text-muted mb-4">{t("subscribe_dialog_subscribe_description")}</p>
+      <div className="flex gap-2 mb-4">
+        <input
+          autoFocus
+          type="text"
+          maxLength={64}
+          placeholder={t("subscribe_dialog_subscribe_topic_placeholder")}
+          value={props.topic}
+          onChange={(e) => props.setTopic(e.target.value)}
+          className="flex-1 bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
+          aria-label={t("subscribe_dialog_subscribe_topic_placeholder")}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          type="button"
+          onClick={() => props.setTopic(randomAlphanumericString(16))}
+        >
+          {t("subscribe_dialog_subscribe_button_generate_topic_name")}
+        </Button>
+      </div>
+      <div className="flex items-center gap-2 mb-2">
+        <Switch
+          checked={anotherServerVisible}
+          onCheckedChange={(checked) => {
+            props.setBaseUrl("");
+            setAnotherServerVisible(checked);
+          }}
+          aria-label={t("subscribe_dialog_subscribe_use_another_label")}
+        />
+        <span className="text-body-sm text-muted">{t("subscribe_dialog_subscribe_use_another_label")}</span>
+      </div>
+      {anotherServerVisible && (
+        <input
+          type="url"
+          placeholder={config.base_url}
+          value={props.baseUrl}
+          onChange={(e) => props.setBaseUrl(e.target.value)}
+          className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-2"
+          aria-label={t("subscribe_dialog_subscribe_base_url_label")}
+        />
+      )}
+      {error && <p className="text-caption text-priority-urgent mt-2">{error}</p>}
+      <div className="flex justify-end gap-2 mt-4">
+        <Button variant="ghost" type="button" onClick={props.onCancel}>
+          {t("subscribe_dialog_subscribe_button_cancel")}
+        </Button>
+        <Button type="button" disabled={!subscribeButtonEnabled} onClick={handleSubscribe}>
           {t("subscribe_dialog_subscribe_button_subscribe")}
         </Button>
-      </DialogFooter>
-    </>
+      </div>
+    </div>
   );
 };
 
 const LoginPage = (props) => {
   const { t } = useTranslation();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const baseUrl = props.baseUrl ? props.baseUrl : config.base_url;
-  const { topic } = props;
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const baseUrl = props.baseUrl || config.base_url;
+  const loginEnabled = username.trim() !== "" && password !== "";
 
   const handleLogin = async () => {
     const user = { baseUrl, username, password };
-    const success = await api.topicAuth(baseUrl, topic, user);
+    const success = await api.topicAuth(baseUrl, props.topic, user);
     if (!success) {
-      console.log(`[SubscribeDialog] Login to ${topicUrl(baseUrl, topic)} failed for user ${username}`);
       setError(t("subscribe_dialog_error_user_not_authorized", { username }));
       return;
     }
-    console.log(`[SubscribeDialog] Successful login to ${topicUrl(baseUrl, topic)} for user ${username}`);
     await userManager.save(user);
     props.onSuccess();
   };
 
   return (
-    <>
-      <DialogTitle>{t("subscribe_dialog_login_title")}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{t("subscribe_dialog_login_description")}</DialogContentText>
-        <TextField
-          autoFocus
-          margin="dense"
-          id="username"
-          label={t("subscribe_dialog_login_username_label")}
-          value={username}
-          onChange={(ev) => setUsername(ev.target.value)}
-          type="text"
-          fullWidth
-          variant="standard"
-          inputProps={{
-            "aria-label": t("subscribe_dialog_login_username_label"),
-          }}
-        />
-        <TextField
-          margin="dense"
-          id="password"
-          label={t("subscribe_dialog_login_password_label")}
-          type="password"
-          value={password}
-          onChange={(ev) => setPassword(ev.target.value)}
-          fullWidth
-          variant="standard"
-          inputProps={{
-            "aria-label": t("subscribe_dialog_login_password_label"),
-          }}
-        />
-      </DialogContent>
-      <DialogFooter status={error}>
-        <Button onClick={props.onBack}>{t("common_back")}</Button>
-        <Button onClick={handleLogin}>{t("subscribe_dialog_login_button_login")}</Button>
-      </DialogFooter>
-    </>
+    <div className="p-4">
+      <p className="text-body-sm text-muted mb-4">{t("subscribe_dialog_login_description")}</p>
+      <input
+        autoFocus
+        type="text"
+        placeholder={t("subscribe_dialog_login_username_label")}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-3"
+        aria-label={t("subscribe_dialog_login_username_label")}
+      />
+      <input
+        type="password"
+        placeholder={t("subscribe_dialog_login_password_label")}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="w-full bg-transparent border-b border-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
+        aria-label={t("subscribe_dialog_login_password_label")}
+      />
+      {error && <p className="text-caption text-priority-urgent mt-2">{error}</p>}
+      <div className="flex justify-end gap-2 mt-4">
+        <Button variant="ghost" type="button" onClick={props.onBack}>
+          {t("common_back")}
+        </Button>
+        <Button type="button" disabled={!loginEnabled} onClick={handleLogin}>
+          {t("subscribe_dialog_login_button_login")}
+        </Button>
+      </div>
+    </div>
   );
 };
 
