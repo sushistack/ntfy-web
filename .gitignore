@@ -1,7 +1,12 @@
 node_modules
+build/
+.DS_Store
+/blind-hunter-review.html
+/edge-case-review.html
 
 #
 .claude
+
 .agents
 
 #
