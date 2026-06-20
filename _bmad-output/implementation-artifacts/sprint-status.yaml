@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (2-3 done)
+last_updated: 2026-06-20 (3-7 ready-for-dev)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -60,21 +60,21 @@ development_status:
   2-1-responsive-app-shell-provider-scaffold: done
   2-2-theme-switch-light-dark-system: done
   2-3-connection-indicator-state-hasdata: done
-  2-4-server-auth-entry-with-conditional-login: review
-  2-5-subscribe-to-a-topic: review
-  2-6-first-run-state-panels-with-korean-voice: ready-for-dev
+  2-4-server-auth-entry-with-conditional-login: done
+  2-5-subscribe-to-a-topic: done
+  2-6-first-run-state-panels-with-korean-voice: done
   epic-2-retrospective: optional
 
   # Epic 3: Notification Experience — Receive · Read · Act
-  epic-3: backlog
-  3-1-notification-card-shell-slot-contract: backlog
-  3-2-adaptive-card-body-renderer: backlog
-  3-3-feeds-per-topic-all-real-time-with-states: backlog
-  3-4-card-overflow-actions-read-copy-delete: backlog
-  3-5-url-as-source-of-truth-selection-detail-host: backlog
+  epic-3: in-progress
+  3-1-notification-card-shell-slot-contract: review
+  3-2-adaptive-card-body-renderer: ready-for-dev
+  3-3-feeds-per-topic-all-real-time-with-states: ready-for-dev
+  3-4-card-overflow-actions-read-copy-delete: ready-for-dev
+  3-5-url-as-source-of-truth-selection-detail-host: ready-for-dev
   3-6-detail-content-markdown-attachment-metadata: backlog
-  3-7-inline-action-buttons-view-http-broadcast: backlog
-  3-8-mobile-card-swipe-gesture: backlog
+  3-7-inline-action-buttons-view-http-broadcast: ready-for-dev
+  3-8-mobile-card-swipe-gesture: ready-for-dev
   epic-3-retrospective: optional
 
   # Epic 4: Topics & Publishing — Jay Sends

@@ -2,7 +2,7 @@ import * as React from "react";
 import { createContext, Suspense, useContext, useEffect, useState, useMemo } from "react";
 import { Box, Toolbar, CssBaseline, Backdrop, CircularProgress, useMediaQuery, ThemeProvider, createTheme } from "@mui/material";
 import { useLiveQuery } from "dexie-react-hooks";
-import { BrowserRouter, Outlet, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AllSubscriptions, SingleSubscription } from "./Notifications";
 import { darkTheme, lightTheme } from "./theme";
@@ -18,8 +18,7 @@ import { useAccountListener, useBackgroundProcesses, useConnectionListeners, use
 import PublishDialog from "./PublishDialog";
 import Messaging from "./Messaging";
 import Login from "./Login";
-import Signup from "./Signup";
-import Account from "./Account";
+import ServerAuthForm from "./ServerAuthForm";
 import initI18n from "../app/i18n"; // Translations!
 import prefs from "../app/Prefs";
 import RTLCacheProvider from "./RTLCacheProvider";
@@ -30,6 +29,10 @@ import Sidebar, { SidebarContent } from "./Sidebar";
 import AppBarNew from "./AppBar";
 import BottomNav from "./BottomNav";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
+import { useConnection } from "@/components/contexts/ConnectionContext";
+import { NotConnectedPanel, ConnectingPanel, NoSubscriptionsPanel } from "@/components/message/EmptyStates";
+import SubscribeDialog from "./SubscribeDialog";
+import db from "@/app/db";
 
 initI18n();
 
@@ -69,10 +72,8 @@ const LegacyApp = () => {
               <ErrorBoundary>
                 <Routes>
                   <Route path={routes.login} element={<Login />} />
-                  <Route path={routes.signup} element={<Signup />} />
                   <Route element={<Layout />}>
                     <Route path={routes.app} element={<AllSubscriptions />} />
-                    <Route path={routes.account} element={<Account />} />
                     <Route path={routes.settings} element={<Preferences />} />
                     <Route path={routes.subscription} element={<SingleSubscription />} />
                     <Route path={routes.subscriptionExternal} element={<SingleSubscription />} />
@@ -84,6 +85,39 @@ const LegacyApp = () => {
         </BrowserRouter>
       </RTLCacheProvider>
     </Suspense>
+  );
+};
+
+/* ── ContentRegion — state panel decision tree (Story 2.6) ── */
+const ContentRegion = () => {
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
+  const navigate = useNavigate();
+  const { connectionState, hasData } = useConnection();
+  const subscriptions = useLiveQuery(() => db.subscriptions.toArray(), []) ?? [];
+
+  const panel = (() => {
+    if (connectionState === "offline") {
+      return <NotConnectedPanel onSettings={() => navigate(routes.settings)} />;
+    }
+    if ((connectionState === "connecting" || connectionState === "reconnecting") && !hasData) {
+      return <ConnectingPanel />;
+    }
+    if (connectionState === "connected" && subscriptions.length === 0) {
+      return <NoSubscriptionsPanel onSubscribe={() => setSubscribeOpen(true)} />;
+    }
+    return null; // Feed renders here in E3
+  })();
+
+  return (
+    <>
+      {panel}
+      <SubscribeDialog
+        open={subscribeOpen}
+        onSuccess={(sub) => { setSubscribeOpen(false); navigate(routes.forSubscription(sub)); }}
+        onCancel={() => setSubscribeOpen(false)}
+        subscriptions={subscriptions}
+      />
+    </>
   );
 };
 
@@ -107,8 +141,11 @@ const NewShell = () => {
 
         {/* Feed/content column */}
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-[720px] mx-auto px-4">
-            {/* Content region — Story 2.6 fills this with real state panels */}
+          <div className="max-w-[720px] mx-auto px-4 py-6">
+            <Routes>
+              <Route path={routes.app} element={<ContentRegion />} />
+              <Route path={routes.settings} element={<ServerAuthForm />} />
+            </Routes>
           </div>
         </main>
 
