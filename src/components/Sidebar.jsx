@@ -6,10 +6,10 @@ import subscriptionManager from "@/app/SubscriptionManager";
 import { useActiveTopic } from "@/components/hooks";
 import routes from "@/components/routes";
 import { cn } from "@/components/ui/utils";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Menu, MenuTrigger, MenuContent, MenuItem, MenuSeparator } from "@/components/ui/Menu";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
+import SubscribeDialog from "./SubscribeDialog";
 
 /* ── Inline SVG icons (avoids adding @radix-ui/react-icons dep) ── */
 const BellIcon = ({ className }) => (
@@ -25,12 +25,36 @@ const BellOffIcon = ({ className }) => (
 );
 
 const GearIcon = ({ className }) => (
-  <svg className={cn("w-5 h-5", className)} viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
-    <path fillRule="evenodd" d="M7.5 5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM5 7.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z" />
+  <svg
+    className={cn("w-5 h-5", className)}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     <path
-      fillRule="evenodd"
-      d="M6.2 1.2a.5.5 0 0 1 .455-.195l.024.004.838.14c.292.05.495.31.473.605l-.056.72a5.02 5.02 0 0 1 .914.527l.613-.373a.5.5 0 0 1 .627.1l.016.02.56.686a.5.5 0 0 1-.045.686l-.564.493c.089.305.14.626.14.955s-.051.65-.14.955l.564.493a.5.5 0 0 1 .045.686l-.016.02-.56.686a.5.5 0 0 1-.627.1l-.613-.373a5.02 5.02 0 0 1-.914.527l.056.72a.5.5 0 0 1-.473.605l-.838.14a.5.5 0 0 1-.479-.195l-.44-.58a5.06 5.06 0 0 1-1.055 0l-.44.58a.5.5 0 0 1-.479.195l-.838-.14a.5.5 0 0 1-.473-.605l.056-.72a5.02 5.02 0 0 1-.914-.527l-.613.373a.5.5 0 0 1-.627-.1l-.016-.02-.56-.686a.5.5 0 0 1 .045-.686l.564-.493A5.04 5.04 0 0 1 1 7.5c0-.329.051-.65.14-.955l-.564-.493a.5.5 0 0 1-.045-.686l.016-.02.56-.686a.5.5 0 0 1 .627-.1l.613.373a5.02 5.02 0 0 1 .914-.527l-.056-.72a.5.5 0 0 1 .473-.605l.838-.14a.5.5 0 0 1 .479.195l.44.58c.17-.016.34-.024.515-.024s.345.008.515.024l.44-.58Z"
+      d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.72l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
     />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const PlusIcon = ({ className }) => (
+  <svg
+    className={cn("w-5 h-5", className)}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M5 12h14" />
+    <path d="M12 5v14" />
   </svg>
 );
 
@@ -64,6 +88,7 @@ export const SidebarContent = ({ collapsed = false }) => {
   const [renameSub, setRenameSub] = useState(null);
   const [renameValue, setRenameValue] = useState("");
   const [clearSub, setClearSub] = useState(null);
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
 
   const handleSidebarMuteToggle = async (sub) => {
     const next = sub.mutedUntil ? 0 : 1;
@@ -109,14 +134,16 @@ export const SidebarContent = ({ collapsed = false }) => {
   };
 
   return (
-    <nav className="flex flex-col h-full py-2 overflow-y-auto" aria-label={t("sidebar_aria_label")}>
+    <nav className={cn("flex flex-col h-full py-2 overflow-y-auto", collapsed ? "px-1" : "px-2")} aria-label={t("sidebar_aria_label")}>
       {/* All notifications row */}
       <button
         type="button"
         onClick={() => navigate("/")}
         className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-colors w-full text-left",
-          "hover:bg-surface",
+          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
+          collapsed && "justify-center gap-0 px-2",
+          "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
+          "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
           !activeSub && "bg-surface-2"
         )}
@@ -124,6 +151,7 @@ export const SidebarContent = ({ collapsed = false }) => {
         <span
           className={cn(
             "flex-shrink-0 w-1 h-4 rounded-full",
+            collapsed && "hidden",
             !activeSub ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
           )}
           aria-hidden="true"
@@ -150,7 +178,12 @@ export const SidebarContent = ({ collapsed = false }) => {
         return (
           <div
             key={sub.id}
-            className={cn("group relative flex items-center rounded-sm transition-colors", "hover:bg-surface", isActive && "bg-surface-2")}
+            className={cn(
+              "group relative flex items-center rounded-sm transition-all duration-150 ease-out",
+              "hover:translate-x-0.5 hover:bg-surface-active active:translate-x-0",
+              "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
+              isActive && "bg-surface-2"
+            )}
           >
             {/* Navigation area */}
             <button
@@ -158,12 +191,14 @@ export const SidebarContent = ({ collapsed = false }) => {
               onClick={() => navigate(routes.forSubscription(sub))}
               className={cn(
                 "flex flex-1 items-center gap-3 pl-3 py-2 min-w-0 text-left",
+                collapsed && "justify-center gap-0 px-2",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
               )}
             >
               <span
                 className={cn(
                   "flex-shrink-0 w-1 h-4 rounded-full",
+                  collapsed && "hidden",
                   isActive ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
                 )}
                 aria-hidden="true"
@@ -191,7 +226,9 @@ export const SidebarContent = ({ collapsed = false }) => {
                 className={cn(
                   "shrink-0 p-1 rounded-sm transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-                  isMuted ? "text-muted hover:text-text" : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                  isMuted
+                    ? "text-muted hover:text-accent-text hover:bg-surface-2"
+                    : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:text-accent-text hover:bg-surface-2"
                 )}
               >
                 {isMuted ? <BellOffIcon /> : <BellIcon />}
@@ -205,8 +242,9 @@ export const SidebarContent = ({ collapsed = false }) => {
                   <button
                     type="button"
                     className={cn(
-                      "flex-shrink-0 p-2 mr-1 rounded-sm text-muted",
-                      "hover:text-text hover:bg-surface-active",
+                      "flex-shrink-0 p-2 mr-1 rounded-sm text-muted transition-all duration-150 ease-out",
+                      "hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95",
+                      "motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     )}
                     aria-label={t("sub_menu_trigger_label", { name: sub.displayName ?? sub.topic })}
@@ -279,39 +317,48 @@ export const SidebarContent = ({ collapsed = false }) => {
       {!collapsed && (
         <button
           type="button"
+          onClick={() => setSubscribeOpen(true)}
           className={cn(
-            "flex items-center gap-3 px-3 py-2 mt-1 rounded-sm text-body-sm font-medium text-accent-text transition-colors w-full text-left",
-            "hover:bg-surface",
+            "flex items-center gap-3 px-3 py-2 mt-1 rounded-sm text-body-sm font-medium text-accent-text transition-all duration-150 ease-out w-full text-left",
+            "hover:translate-x-0.5 hover:bg-surface-active hover:text-text active:translate-x-0",
+            "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           )}
         >
-          {t("sidebar_add_topic")}
+          <span className="flex-shrink-0 w-1 h-4 rounded-full bg-transparent" aria-hidden="true" />
+          <PlusIcon className="flex-shrink-0" />
+          <span className="truncate">{t("sidebar_add_topic")}</span>
         </button>
       )}
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Theme toggle */}
-      {!collapsed && (
-        <div className="px-3 py-2">
-          <ThemeToggle />
-        </div>
-      )}
-
       {/* Settings */}
       <button
         type="button"
         onClick={() => navigate("/settings")}
         className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-colors w-full text-left",
-          "hover:bg-surface",
+          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
+          "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
+          "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         )}
       >
+        {!collapsed && <span className="flex-shrink-0 w-1 h-4 rounded-full bg-transparent" aria-hidden="true" />}
         <GearIcon className="flex-shrink-0 text-muted" />
         {!collapsed && <span className="text-text">{t("sidebar_settings")}</span>}
       </button>
+
+      <SubscribeDialog
+        open={subscribeOpen}
+        subscriptions={subscriptions}
+        onCancel={() => setSubscribeOpen(false)}
+        onSuccess={(subscription) => {
+          setSubscribeOpen(false);
+          navigate(routes.forSubscription(subscription));
+        }}
+      />
     </nav>
   );
 };

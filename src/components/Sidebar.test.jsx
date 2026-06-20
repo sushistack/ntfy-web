@@ -13,6 +13,7 @@ const mockAll = vi.hoisted(() => vi.fn());
 const mockSetMutedUntil = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const mockNavigate = vi.hoisted(() => vi.fn());
 const mockUseActiveTopic = vi.hoisted(() => vi.fn().mockReturnValue(null));
+const mockSubscribeSuccess = vi.hoisted(() => vi.fn());
 
 vi.mock("@/app/SubscriptionManager", () => ({
   default: {
@@ -82,6 +83,20 @@ vi.mock("@/components/ui/Button", () => ({
   Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
 
+vi.mock("./SubscribeDialog", () => ({
+  default: ({ open, onCancel, onSuccess }) =>
+    open ? (
+      <div role="dialog" aria-label="subscribe-dialog">
+        <button type="button" onClick={onCancel}>
+          cancel-subscribe
+        </button>
+        <button type="button" onClick={() => onSuccess(mockSubscribeSuccess())}>
+          confirm-subscribe
+        </button>
+      </div>
+    ) : null,
+}));
+
 const subA = { id: 1, topic: "alerts", displayName: "My Alerts", new: 0, mutedUntil: 0, internal: false };
 const subB = { id: 2, topic: "backups", displayName: null, new: 3, mutedUntil: 0, internal: false };
 
@@ -98,6 +113,8 @@ beforeEach(() => {
   mockFirst.mockClear();
   mockNavigate.mockClear();
   mockUseActiveTopic.mockReturnValue(null);
+  mockSubscribeSuccess.mockReset();
+  mockSubscribeSuccess.mockReturnValue({ id: 3, topic: "deploys", new: 0, mutedUntil: 0, internal: false });
   mockAll.mockReturnValue([subA]);
 });
 
@@ -297,6 +314,29 @@ describe("SidebarContent — active row highlight", () => {
     const rows = Array.from(container.querySelectorAll("div[class*='group']"));
     const anyActive = rows.some((el) => el.className.includes("bg-surface-2"));
     expect(anyActive).toBe(false);
+  });
+});
+
+/* ── Subscribe ── */
+describe("SidebarContent — subscribe action", () => {
+  it("opens the subscribe dialog from the sidebar action", () => {
+    render(<SidebarContent />);
+    const addButton = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === "sidebar_add_topic"
+    );
+    act(() => addButton.click());
+    expect(container.querySelector('[aria-label="subscribe-dialog"]')).toBeTruthy();
+  });
+
+  it("navigates to the new subscription after subscribe succeeds", async () => {
+    render(<SidebarContent />);
+    const addButton = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === "sidebar_add_topic"
+    );
+    act(() => addButton.click());
+    const confirmButton = container.querySelector('[aria-label="subscribe-dialog"] button:last-child');
+    await act(async () => confirmButton.click());
+    expect(mockNavigate).toHaveBeenCalledWith("/deploys");
   });
 });
 
