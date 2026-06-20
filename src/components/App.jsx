@@ -24,12 +24,19 @@ import initI18n from "../app/i18n"; // Translations!
 import prefs from "../app/Prefs";
 import RTLCacheProvider from "./RTLCacheProvider";
 import session from "../app/Session";
+import { NEW } from "@/config/migration";
+import AppProviders from "./AppProviders";
+import Sidebar, { SidebarContent } from "./Sidebar";
+import AppBarNew from "./AppBar";
+import BottomNav from "./BottomNav";
+import { Sheet, SheetContent } from "@/components/ui/Sheet";
 
 initI18n();
 
 export const AccountContext = createContext(null);
 
-const App = () => {
+/* ── LegacyApp — verbatim copy of the original App function body. Do not refactor. ── */
+const LegacyApp = () => {
   const { i18n } = useTranslation();
   const languageDir = i18n.dir();
   const [account, setAccount] = useState(null);
@@ -79,6 +86,57 @@ const App = () => {
     </Suspense>
   );
 };
+
+/* ── NewShell — responsive 3-column layout wired by Tasks 4–6 ── */
+const NewShell = () => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  return (
+    <div className="flex flex-col h-dvh bg-bg">
+      {/* Mobile top bar — hidden on md+ */}
+      <AppBarNew onMenuOpen={() => setDrawerOpen(true)} drawerOpen={drawerOpen} />
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop sidebar (lg+): full width. Tablet (md→lg): icon-rail. Hidden below md. */}
+        <div className="hidden lg:flex">
+          <Sidebar collapsed={false} />
+        </div>
+        <div className="hidden md:flex lg:hidden">
+          <Sidebar collapsed={true} />
+        </div>
+
+        {/* Feed/content column */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-[720px] mx-auto px-4">
+            {/* Content region — Story 2.6 fills this with real state panels */}
+          </div>
+        </main>
+
+        {/* Detail region — desktop right pane, reserved for Story 3.5 */}
+        <div className="hidden lg:block w-[420px] border-l border-border overflow-y-auto"> {/* layout-nudge: placeholder width; Story 3.5 finalises */}
+          {/* Detail pane placeholder */}
+        </div>
+      </div>
+
+      {/* Mobile bottom nav — hidden on md+ */}
+      <BottomNav />
+
+      {/* Mobile drawer — Sidebar inside Sheet */}
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <SheetContent side="left" className="w-[280px]"> {/* layout-nudge: nav drawer width matches desktop sidebar */}
+          <SidebarContent collapsed={false} />
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+};
+
+/* ── App entry point — branches on migration flag ── */
+const App = () => (NEW.shell ? <AppProviders><NewShell /></AppProviders> : <LegacyApp />);
+
+export default App;
+
+/* ─── Legacy helpers (used only by LegacyApp / Layout) ─────────────────────── */
 
 const updateTitle = (newNotificationsCount) => {
   document.title = newNotificationsCount > 0 ? `(${newNotificationsCount}) ntfy` : "ntfy";
@@ -161,5 +219,3 @@ const Loader = () => (
     <CircularProgress color="success" disableShrink />
   </Backdrop>
 );
-
-export default App;

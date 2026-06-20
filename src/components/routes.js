@@ -9,6 +9,7 @@ const routes = {
   settings: "/settings",
   subscription: "/:topic",
   subscriptionExternal: "/:baseUrl/:topic",
+  msgDetail: "/:topic/:msgId",
   forSubscription: (subscription) => {
     if (subscription.baseUrl !== config.base_url) {
       return `/${shortUrl(subscription.baseUrl)}/${subscription.topic}`;

@@ -8,6 +8,7 @@ const sheetContent = cva(
       side: {
         bottom: "inset-x-0 bottom-0 border-t rounded-t-md",
         right: "inset-y-0 right-0 h-full w-full max-w-sm border-l",
+        left: "inset-y-0 left-0 h-full w-full max-w-sm border-r",
       },
     },
     defaultVariants: { side: "bottom" },
