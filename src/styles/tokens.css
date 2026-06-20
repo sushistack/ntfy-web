@@ -1,0 +1,182 @@
+/* ============================================================
+   ntfy-web design tokens — web source of truth
+   Load order: @import "./tokens.css" BEFORE @import "tailwindcss" in main.css
+   Dark mode: .dark class on <html> (set by FOUC script in Story 1.5)
+   Android sync: see design-tokens.md at project root
+   ============================================================ */
+
+/* ── Self-hosted variable fonts ──────────────────────────────
+   Files live in public/static/fonts/ (served at /static/fonts/).
+   Weight ranges: PJS 200–800, JBM 100–800 (variable wght axis).
+   Roboto @font-face stays in public/static/css/fonts.css as fallback.
+   ─────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/static/fonts/PlusJakartaSans-VariableFont_wght.woff2') format('woff2');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/static/fonts/JetBrainsMono-VariableFont_wght.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* ── Color: Backgrounds ── */
+  --color-bg:             #F3F4F6;   /* [ASSUMPTION] off-white page canvas, never pure #FFF */
+  --color-surface:        #FFFFFF;   /* [ASSUMPTION] card surface (Beszel exception) */
+  --color-surface-2:      #EEF0F2;   /* [ASSUMPTION] hover/active chrome one step up */
+  --color-surface-active: #EEF0F2;   /* [ASSUMPTION] = surface-2; active nav row, icon-button hover */
+
+  /* ── Color: Borders ── */
+  --color-border:         #E4E6E9;   /* [ASSUMPTION] hairline 1px depth device */
+
+  /* ── Color: Text ── */
+  --color-text:           #1C1E21;   /* [ASSUMPTION] primary body — WCAG AA on surface/bg */
+  --color-muted:          #6B7177;   /* [ASSUMPTION] secondary/label text — WCAG AA on surface/bg */
+
+  /* ── Color: Accent (3 semantic sub-tokens — WCAG 1.4.11) ──
+     Pick by what is PAINTED, not by component type:
+       text/icon        → accent-text    (4.5:1 contrast target)
+       border/focus/dot → accent-ui      (3:1 contrast target)
+       fg ON accent bg  → accent-on-surface (4.5:1 contrast target)  */
+  --color-accent-text:        #1A9E5F;   /* [ASSUMPTION] darker emerald; 4.5:1 on #FFF, #F3F4F6 */
+  --color-accent-ui:          #1A9E5F;   /* [ASSUMPTION] 3:1 for borders, focus ring, nav dot */
+  --color-accent-on-surface:  #FFFFFF;   /* [ASSUMPTION] foreground on accent-filled button/FAB */
+
+  /* ── Color: Priority / Meter thresholds ── */
+  --color-priority-high:    #E8943A;   /* [ASSUMPTION] P4 amber (deepened for light AA) */
+  --color-priority-max:     #E5484D;   /* [ASSUMPTION] P5 coral (deepened for light AA) */
+  --color-meter-ok:         #1A9E5F;   /* [ASSUMPTION] = accent-text */
+  --color-meter-track:      #E4E6E9;   /* [ASSUMPTION] = border color; verify fill visibility at 65%+ threshold */
+  --color-meter-warning:    #E8943A;   /* [ASSUMPTION] = priority-high; threshold ≥ 65% */
+  --color-meter-critical:   #E5484D;   /* [ASSUMPTION] = priority-max; threshold ≥ 90% */
+
+  /* ── Color: Topic chip ── */
+  --color-topic-chip-bg:    #E1F2EA;   /* [ASSUMPTION] emerald-tinted light pill */
+  --color-topic-chip-text:  #136B43;   /* [ASSUMPTION] dark emerald text on chip-bg; verify 4.5:1 on #E1F2EA */
+
+  /* ── Color: Buttons (achromatic — same in both themes) ── */
+  --color-button-fill:      #F4F5F6;   /* white-fill primary button background */
+  --color-button-fill-text: #15171A;   /* near-black primary button text */
+
+  /* ── Color: Focus ring ── */
+  --color-focus-ring:       #1A9E5F;   /* [ASSUMPTION] = accent-ui; keyboard focus outline */
+
+  /* ── Typography: Font families ── */
+  --font-sans: 'Plus Jakarta Sans', 'Roboto', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
+
+  /* ── Typography: Font sizes (generate text-* utilities) ── */
+  --text-display:  28px;
+  --text-title:    22px;
+  --text-subtitle: 18px;
+  --text-body:     16px;
+  --text-body-sm:  14px;
+  --text-caption:  12px;
+  --text-mono:     14px;
+
+  /* ── Typography: Line heights (pair with text-* using leading-* or explicit style) ── */
+  --leading-display:  34px;
+  --leading-title:    28px;
+  --leading-subtitle: 24px;
+  --leading-body:     24px;
+  --leading-body-sm:  20px;
+  --leading-caption:  16px;
+  --leading-mono:     20px;
+
+  /* ── Spacing: 4px base scale ── */
+  --spacing-1: 4px;    /* tightest: icon↔label */
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;   /* card internal padding base */
+  --spacing-5: 24px;   /* card internal padding full */
+  --spacing-6: 32px;
+  --spacing-7: 48px;   /* between major surfaces */
+
+  /* ── Radius ── */
+  --radius-sm:    10px;    /* buttons, inputs */
+  --radius-md:    16px;    /* cards, dialogs, empty-state icon tile */
+  --radius-full:  9999px;  /* chips, pill, avatars, toggles, meter tracks */
+  --radius-badge: 6px;     /* priority badge — intentionally squared (sharper than sm) */
+  /* NOTE: card shape (0 16px 16px 0) cannot be a single @theme value.
+     Use @utility rounded-card below, or var(--radius-md) with explicit border-radius. */
+
+  /* ── Elevation / Shadow ── */
+  --shadow-flat:   none;                                                    /* elev-0: border-only */
+  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);                           /* resting card */
+  --shadow-elev-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3); /* hover / dialog */
+
+  /* ── Z-index scale (overlay stacking) ── */
+  --z-popover: 50;     /* Popover, Tooltip — non-modal, above content */
+  --z-overlay: 1350;   /* Dialog, Sheet, Menu — above MUI modals (1300) during migration */
+
+  /* ── Overlay backdrop ── */
+  --color-overlay: rgba(0, 0, 0, 0.45);  /* [ASSUMPTION] dialog/sheet backdrop, light mode */
+
+  /* ── Glow effects: light-mode safe defaults ──
+     Dark-only overrides are in .dark {} below.
+     Declaring `none` here ensures var(--glow-*) resolves to a valid value in light mode,
+     preventing the CSS invalid-at-computed-value bug when glows are stacked with other shadows. */
+  --glow-priority-high: none;
+  --glow-priority-max:  none;
+  --glow-accent-dot:    none;
+}
+
+/* ── Dark mode (hero theme) ────────────────────────────────────
+   Applies when .dark class is on <html> (set by FOUC pre-paint script in Story 1.5).
+   All values here are CONFIRMED (no [ASSUMPTION] markers).
+   ─────────────────────────────────────────────────────────── */
+.dark {
+  --color-bg:             #0C0D0F;   /* near-black neutral canvas */
+  --color-surface:        #16181B;   /* card surface */
+  --color-surface-2:      #1C1F23;   /* one step up: hover/active chrome */
+  --color-surface-active: #1C1F23;   /* = surface-2 */
+  --color-border:         #23262B;   /* hairline 1px */
+  --color-text:           #E8EAED;   /* primary body text */
+  --color-muted:          #8B9197;   /* secondary/label text */
+
+  /* Accent sub-tokens */
+  --color-accent-text:       #42D392;   /* emerald — 4.5:1 on dark bg; brand shared with Android */
+  --color-accent-ui:         #42D392;   /* 3:1 for borders, focus ring, nav dot, unread dot */
+  --color-accent-on-surface: #0C1A12;   /* very dark green on #42D392 fill (FAB label, etc.) */
+
+  /* Priority */
+  --color-priority-high:    #F5A95C;   /* P4 amber */
+  --color-priority-max:     #FF6B6E;   /* P5 coral */
+
+  /* Meter */
+  --color-meter-ok:       #42D392;   /* = accent-text */
+  --color-meter-track:    #262A2F;
+  --color-meter-warning:  #F5A95C;   /* = priority-high; threshold ≥ 65% */
+  --color-meter-critical: #FF6B6E;   /* = priority-max; threshold ≥ 90% */
+
+  /* Topic chip */
+  --color-topic-chip-bg:   #143A2D;   /* soft dark emerald tint */
+  --color-topic-chip-text: #7CE6B4;   /* light emerald text */
+
+  /* Focus ring */
+  --color-focus-ring: #42D392;   /* = accent-ui */
+
+  /* Overlay backdrop */
+  --color-overlay: rgba(0, 0, 0, 0.65);  /* dialog/sheet backdrop, dark hero */
+
+  /* Glow effects (dark-only — do NOT apply in light mode) */
+  --glow-priority-high: 0 0 10px rgba(245, 169, 92, 0.267);  /* amber glow on P4 bar */
+  --glow-priority-max:  0 0 10px rgba(255, 107, 110, 0.333);  /* coral glow on P5 bar */
+  --glow-accent-dot:    0 0 7px #42D392;                       /* status/unread dot glow */
+}
+
+/* ── Custom utility: Notification card signature shape ───────────
+   Left edge is SQUARED so the 4px priority accent bar sits flush;
+   right side keeps the standard 16px radius.
+   Use: <div class="rounded-card"> (no arbitrary value needed)
+   ─────────────────────────────────────────────────────────── */
+@utility rounded-card {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
