@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import subscriptionManager from "../app/SubscriptionManager";
+import { useSelection } from "@/components/contexts/SelectionContext";
 import { disallowedTopic, expandSecureUrl, topicUrl } from "../app/utils";
 import routes from "./routes";
 import connectionManager from "../app/ConnectionManager";
@@ -154,6 +155,8 @@ export const useAutoSubscribe = (subscriptions, selected) => {
     }
   }, [params, subscriptions, selected, hasRun]);
 };
+
+export const useActiveTopic = () => useSelection().topic;
 
 const webPushBroadcastChannel = new BroadcastChannel("web-push-broadcast");
 
@@ -383,4 +386,16 @@ export const useVersionChangeListener = (onVersionChange) => {
       versionChecker.resetListener();
     };
   }, [onVersionChange]);
+};
+
+const mobileMediaQuery = window.matchMedia("(max-width: 767px)");
+
+export const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(mobileMediaQuery.matches);
+  useEffect(() => {
+    const handler = (e) => setIsMobile(e.matches);
+    mobileMediaQuery.addEventListener("change", handler);
+    return () => mobileMediaQuery.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
 };
