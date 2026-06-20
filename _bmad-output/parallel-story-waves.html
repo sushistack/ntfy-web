@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ntfy-web — 스토리 병렬·리뷰 계획표</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 28px 20px;
+  }
+  h1 { font-size: 20px; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+  .subtitle { color: #475569; font-size: 12px; margin-bottom: 28px; }
+
+  /* ── table wrapper ── */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #1e293b; }
+  table { width: 100%; border-collapse: collapse; min-width: 860px; }
+
+  /* ── header ── */
+  thead tr { background: #141825; }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    border-bottom: 1px solid #1e293b;
+    white-space: nowrap;
+  }
+
+  /* ── rows ── */
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #0f1117;
+    vertical-align: middle;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #141825; }
+
+  /* epic group separators */
+  tr.epic-sep td {
+    background: #0c1020;
+    padding: 5px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #334155;
+    border-bottom: 1px solid #1e293b;
+  }
+
+  /* ── column: story id ── */
+  .col-id {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .e1 { color: #818cf8; }
+  .e2 { color: #34d399; }
+  .e3 { color: #fb923c; }
+  .e4 { color: #f472b6; }
+  .e5 { color: #38bdf8; }
+
+  /* ── column: story name ── */
+  .col-name { color: #cbd5e1; }
+  .col-name small { color: #475569; display: block; font-size: 11px; margin-top: 1px; }
+
+  /* ── column: wave ── */
+  .col-wave {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    color: #475569;
+    white-space: nowrap;
+  }
+  .wave-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    background: #1a2035;
+    border: 1px solid #1e293b;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* ── column: 병렬 ── */
+  .col-parallel { white-space: nowrap; }
+  .parallel-tag {
+    display: inline-block;
+    font-family: monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 1px 2px 1px 0;
+    background: #1a2035;
+    border: 1px solid #1e293b;
+    color: #64748b;
+  }
+  .solo { color: #334155; font-size: 11px; }
+
+  /* ── column: review group ── */
+  .col-review { white-space: nowrap; }
+  .rg {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  /* individual reviews */
+  .rg-solo { background: #3b1a1a; border: 1px solid #7f1d1d; color: #fca5a5; }
+  /* wave group reviews */
+  .rg-e1 { background: #1a1a3b; border: 1px solid #312e81; color: #a5b4fc; }
+  .rg-e2 { background: #0d2e1a; border: 1px solid #14532d; color: #86efac; }
+  .rg-e3 { background: #2d1a0a; border: 1px solid #7c2d12; color: #fdba74; }
+  .rg-e4 { background: #2d0a1e; border: 1px solid #831843; color: #f9a8d4; }
+  .rg-e5 { background: #0a1f2d; border: 1px solid #0c4a6e; color: #7dd3fc; }
+  .rg-solo-gate { background: #2d1a00; border: 1px solid #78350f; color: #fcd34d; }
+
+  /* ── badges ── */
+  .badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .b-block  { background: #7f1d1d; color: #fca5a5; }
+  .b-char   { background: #14532d; color: #86efac; }
+  .b-g4     { background: #1e3a5f; color: #93c5fd; }
+  .b-gate   { background: #451a03; color: #fed7aa; }
+  .b-assumption { background: #1a0a2d; color: #c4b5fd; }
+  .b-spike  { background: #0a2040; color: #7dd3fc; }
+
+  /* ── legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #64748b;
+  }
+
+  /* ── stats row ── */
+  .stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: #141825;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; color: #f1f5f9; line-height: 1; }
+  .stat-label { font-size: 11px; color: #475569; margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<h1>ntfy-web — 스토리 병렬·리뷰 계획표</h1>
+<p class="subtitle">Depends-on 체인 기반 · 같은 웨이브 = 동시 진행 가능 · 리뷰 묶음 = 같이 리뷰하는 단위</p>
+
+<div class="stats">
+  <div class="stat"><span class="stat-val">27</span><span class="stat-label">총 스토리</span></div>
+  <div class="stat"><span class="stat-val">14</span><span class="stat-label">리뷰 묶음 수</span></div>
+  <div class="stat"><span class="stat-val">4</span><span class="stat-label">개별 리뷰 (단독)</span></div>
+  <div class="stat"><span class="stat-val">~48%</span><span class="stat-label">리뷰 세션 절감</span></div>
+</div>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>스토리</th>
+      <th>이름</th>
+      <th style="text-align:center">웨이브</th>
+      <th>동시 진행 대상</th>
+      <th>리뷰 묶음</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ── Epic 1 ── -->
+    <tr class="epic-sep"><td colspan="5">E1 · Foundation &amp; Design System — 9 stories · 5 waves · 리뷰 5묶음</td></tr>
+
+    <tr>
+      <td class="col-id e1">1.1 <span class="badge b-block b-spike">SPIKE·BLOCK</span></td>
+      <td class="col-name">Emotion @layer coexistence PoC<small>RED이면 에픽 전체 재계획</small></td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.2</span> (독립)</td>
+      <td class="col-review"><span class="rg rg-solo">🔴 개별 — RG-1.1</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.2 <span class="badge b-char">CHAR</span></td>
+      <td class="col-name">Dedup &amp; ordering 특성화 테스트<small>G6 — 이후 모든 리팩터 안전망</small></td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.1</span> (독립)</td>
+      <td class="col-review"><span class="rg rg-solo">🔴 개별 — RG-1.2</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.3</td>
+      <td class="col-name">Tailwind v4 + Radix 스택 · path alias</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 빌드설정 묶음 — RG-1.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.4</td>
+      <td class="col-name">디자인 토큰 tokens.css + Android 매니페스트</td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 빌드설정 묶음 — RG-1.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.5</td>
+      <td class="col-name">자체 호스팅 폰트 · SW fix · FOUC-free 테마</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.6</span><span class="parallel-tag">1.7</span><span class="parallel-tag">1.8</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 프리미티브 묶음 — RG-1.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.6</td>
+      <td class="col-name">display 프리미티브: Button · Card · Chip</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.5</span><span class="parallel-tag">1.7</span><span class="parallel-tag">1.8</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 프리미티브 묶음 — RG-1.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.7</td>
+      <td class="col-name">overlay 프리미티브: Dialog · Sheet · Menu · Popover · Tooltip</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.5</span><span class="parallel-tag">1.6</span><span class="parallel-tag">1.8</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 프리미티브 묶음 — RG-1.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.8</td>
+      <td class="col-name">form/data 프리미티브: Switch · Tabs · Meter · Skeleton</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="parallel-tag">1.5</span><span class="parallel-tag">1.6</span><span class="parallel-tag">1.7</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 프리미티브 묶음 — RG-1.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e1">1.9</td>
+      <td class="col-name">state-boundary: DataBoundary · StatePanel · LiveRegion<small>FR14 구조 소유자 — 이후 에픽 소비만 가능</small></td>
+      <td class="col-wave"><span class="wave-pill">W5</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e1">E1 상태경계 묶음 — RG-1.C</span></td>
+    </tr>
+
+    <!-- ── Epic 2 ── -->
+    <tr class="epic-sep"><td colspan="5">E2 · First Run — Jay Gets In — 6 stories · 4 waves · 리뷰 3묶음</td></tr>
+
+    <tr>
+      <td class="col-id e2">2.1</td>
+      <td class="col-name">반응형 앱 셸 + AppProviders 스캐폴드<small>migration.js 생성 — 이후 에픽은 flags만 append</small></td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 셸 묶음 — RG-2.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e2">2.2</td>
+      <td class="col-name">테마 전환 — light / dark / system</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="parallel-tag">2.3</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 컨텍스트 묶음 — RG-2.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e2">2.3</td>
+      <td class="col-name">Connection indicator (state × hasData)</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="parallel-tag">2.2</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 컨텍스트 묶음 — RG-2.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e2">2.4</td>
+      <td class="col-name">서버 + 인증 입력 (conditional login)</td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="parallel-tag">2.5</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 첫실행 흐름 묶음 — RG-2.C</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e2">2.5</td>
+      <td class="col-name">토픽 구독 (SubscribeDialog)</td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="parallel-tag">2.4</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 첫실행 흐름 묶음 — RG-2.C</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e2">2.6</td>
+      <td class="col-name">첫 실행 StatePanel — 한국어 보이스</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e2">E2 첫실행 흐름 묶음 — RG-2.C</span></td>
+    </tr>
+
+    <!-- ── Epic 3 ── -->
+    <tr class="epic-sep"><td colspan="5">E3 · Notification Experience — 8 stories · 6 waves · 리뷰 4묶음</td></tr>
+
+    <tr>
+      <td class="col-id e3">3.1 <span class="badge b-g4">G4</span></td>
+      <td class="col-name">카드 셸 + slot 계약 (서명 동결)<small>이후 E4까지 카드 컴포넌트 편집 금지</small></td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-solo">🔴 개별 — RG-3.1</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.2</td>
+      <td class="col-name">Adaptive card body renderer (paragraph / kv / rich-kv)</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="parallel-tag">3.4</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 카드 렌더링 묶음 — RG-3.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.4</td>
+      <td class="col-name">카드 overflow 액션 (읽음 / 복사 / 삭제)</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="parallel-tag">3.2</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 카드 렌더링 묶음 — RG-3.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.3</td>
+      <td class="col-name">Feed (per-topic + all, 실시간, states)</td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="parallel-tag">3.8*</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 피드 묶음 — RG-3.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.8 <span class="badge b-assumption">[ASSUMP]</span></td>
+      <td class="col-name">모바일 카드 스와이프 제스처<small>Jay 확인 전 병렬 슬롯 보류 권장</small></td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="parallel-tag">3.3</span> (조건부)</td>
+      <td class="col-review"><span class="rg rg-e3">E3 피드 묶음 — RG-3.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.5</td>
+      <td class="col-name">URL-as-SoT selection + detail host (S4)</td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 디테일·액션 묶음 — RG-3.C</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.6</td>
+      <td class="col-name">Detail 콘텐츠 (markdown · attachment · metadata)</td>
+      <td class="col-wave"><span class="wave-pill">W5</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 디테일·액션 묶음 — RG-3.C</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e3">3.7</td>
+      <td class="col-name">인라인 액션 버튼 (view / http / broadcast)</td>
+      <td class="col-wave"><span class="wave-pill">W6</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e3">E3 디테일·액션 묶음 — RG-3.C</span></td>
+    </tr>
+
+    <!-- ── Epic 4 ── -->
+    <tr class="epic-sep"><td colspan="5">E4 · Topics &amp; Publishing — 4 stories · 2 waves · 리뷰 2묶음</td></tr>
+
+    <tr>
+      <td class="col-id e4">4.1</td>
+      <td class="col-name">구독 관리 (rename / clear / unsubscribe)</td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="parallel-tag">4.2</span><span class="parallel-tag">4.3</span></td>
+      <td class="col-review"><span class="rg rg-e4">E4 토픽·발행 UI 묶음 — RG-4.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e4">4.2</td>
+      <td class="col-name">토픽 뮤트 / 언뮤트</td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="parallel-tag">4.1</span><span class="parallel-tag">4.3</span></td>
+      <td class="col-review"><span class="rg rg-e4">E4 토픽·발행 UI 묶음 — RG-4.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e4">4.3</td>
+      <td class="col-name">메시지 발행 (Dialog / FAB + Sheet)<small>⚡ E1 직후 선행 착수 가능 (E2/E3 불필요)</small></td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="parallel-tag">4.1</span><span class="parallel-tag">4.2</span></td>
+      <td class="col-review"><span class="rg rg-e4">E4 토픽·발행 UI 묶음 — RG-4.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e4">4.4</td>
+      <td class="col-name">Optimistic publish queue (sending → queued → failed)</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e4">E4 큐 로직 묶음 — RG-4.B</span></td>
+    </tr>
+
+    <!-- ── Epic 5 ── -->
+    <tr class="epic-sep"><td colspan="5">E5 · Settings, PWA &amp; Cleanup — 4 stories · 4 waves · 리뷰 4묶음</td></tr>
+
+    <tr>
+      <td class="col-id e5">5.1</td>
+      <td class="col-name">Settings 화면 — 섹션형 폼 (5개 섹션)</td>
+      <td class="col-wave"><span class="wave-pill">W1</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e5">E5 Settings+PWA 묶음 — RG-5.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e5">5.2</td>
+      <td class="col-name">PWA 브라우저 알림 + 권한</td>
+      <td class="col-wave"><span class="wave-pill">W2</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e5">E5 Settings+PWA 묶음 — RG-5.A</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e5">5.3</td>
+      <td class="col-name">접근성 + 라이트 테마 대비 검증 패스</td>
+      <td class="col-wave"><span class="wave-pill">W3</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-e5">E5 검증 묶음 — RG-5.B</span></td>
+    </tr>
+    <tr>
+      <td class="col-id e5">5.4 <span class="badge b-gate">GATED</span></td>
+      <td class="col-name">MUI/Emotion/RTL 제거 + 트리밍 화면 삭제<small>entry: 모든 migration flag === true &amp; main 1 cycle</small></td>
+      <td class="col-wave"><span class="wave-pill">W4</span></td>
+      <td class="col-parallel"><span class="solo">단독</span></td>
+      <td class="col-review"><span class="rg rg-solo-gate">🟡 개별 (GATED) — RG-5.4</span></td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<div class="legend" style="margin-top: 16px;">
+  <div class="legend-item"><span class="rg rg-solo" style="font-size:10px; padding:1px 6px;">🔴 개별</span> 독립 리뷰 필수 (SPIKE / CHAR / G4)</div>
+  <div class="legend-item"><span class="rg rg-e1" style="font-size:10px; padding:1px 6px;">E1 묶음</span> 웨이브 완료 후 한 번에 리뷰</div>
+  <div class="legend-item"><span class="badge b-assumption">ASSUMP</span> Jay 확인 필요 — scope-out 가능</div>
+  <div class="legend-item"><span style="font-family:monospace; font-size:11px; color:#64748b;">⚡</span> 에픽 경계 넘는 조기 착수 가능</div>
+</div>
+
+</body>
+</html>
