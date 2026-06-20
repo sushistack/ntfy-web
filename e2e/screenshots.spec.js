@@ -73,6 +73,57 @@ test.beforeAll(async () => {
     tags: ["rocket"],
   });
   await apiPublish(TOPIC, "Hello from ntfy — this is a plain message with no title.");
+
+  // Structured cards (tag `card` + JSON body) — showcase kv / chart / sections + categorized tags.
+  await apiPublish(
+    TOPIC,
+    JSON.stringify({
+      type: "kv",
+      rows: [
+        { key: "CPU", value: "12%", meter: 12 },
+        { key: "Memory", value: "71%", status: "warn", meter: 71 },
+        { key: "Disk", value: "96%", status: "error", meter: 96 },
+        { key: "Uptime", value: "22 hours" },
+      ],
+    }),
+    { title: "srv-01 status", tags: ["card"] }
+  );
+  await apiPublish(
+    TOPIC,
+    JSON.stringify({
+      type: "chart",
+      kind: "bar",
+      data: [
+        { label: "Mon", value: 12 },
+        { label: "Tue", value: 34 },
+        { label: "Wed", value: 28 },
+        { label: "Thu", value: 41 },
+        { label: "Fri", value: 19 },
+      ],
+    }),
+    { title: "Weekly errors", tags: ["card"] }
+  );
+  await apiPublish(
+    TOPIC,
+    JSON.stringify({
+      type: "sections",
+      blocks: [
+        { type: "markdown", text: "## Build failed ❌\n`main` nightly stopped at **test**." },
+        {
+          type: "kv",
+          columns: 2,
+          rows: [
+            { key: "Branch", value: "main" },
+            { key: "Stage", value: "test", status: "error" },
+            { key: "Coverage", value: "81%", meter: 81 },
+            { key: "Failed", value: "3 tests", status: "error" },
+          ],
+        },
+        { type: "list", items: ["auth/login — timeout", "api/orders — 500"] },
+      ],
+    }),
+    { title: "nightly build #482", priority: 5, tags: ["card", "service:github", "deploy", "ci", "backend"] }
+  );
 });
 
 // ── MOBILE (primary reference for Android) ────────────────────────────────
@@ -88,15 +139,12 @@ test.describe("mobile", () => {
     await shot(page, "mobile-01-subscriptions-home");
 
     await page.goto(`/${TOPIC}`);
-    await expect(page.getByText("Deploy finished").first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("nightly build #482").first()).toBeVisible({ timeout: 30000 });
     await page.waitForTimeout(800);
     await shot(page, "mobile-02-feed");
 
-    // Detail
-    await page.getByText("Disk space warning").first().click();
-    await page.waitForTimeout(600);
-    await shot(page, "mobile-03-detail");
-    await page.goBack();
+    // Structured cards (kv / chart / sections) are at the top of the feed
+    await shot(page, "mobile-10-structured-cards");
 
     // Drawer (hamburger)
     await page.locator("header button").first().click();
@@ -127,7 +175,7 @@ test.describe("mobile", () => {
     // Dark theme feed
     await setTheme(page, "Dark");
     await page.goto(`/${TOPIC}`);
-    await expect(page.getByText("Deploy finished").first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("nightly build #482").first()).toBeVisible({ timeout: 30000 });
     await page.waitForTimeout(800);
     await shot(page, "mobile-09-feed-dark");
     await setTheme(page, "Light");
@@ -143,13 +191,9 @@ test.describe("desktop", () => {
     await subscribe(page, TOPIC);
 
     await page.goto(`/${TOPIC}`);
-    await expect(page.getByText("Deploy finished").first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("nightly build #482").first()).toBeVisible({ timeout: 30000 });
     await page.waitForTimeout(800);
     await shot(page, "desktop-01-shell");
-
-    await page.getByText("Disk space warning").first().click();
-    await page.waitForTimeout(600);
-    await shot(page, "desktop-02-detail-pane");
 
     await page.goto("/settings");
     await page.waitForTimeout(400);
@@ -157,7 +201,7 @@ test.describe("desktop", () => {
 
     await setTheme(page, "Dark");
     await page.goto(`/${TOPIC}`);
-    await expect(page.getByText("Deploy finished").first()).toBeVisible({ timeout: 30000 });
+    await expect(page.getByText("nightly build #482").first()).toBeVisible({ timeout: 30000 });
     await page.waitForTimeout(800);
     await shot(page, "desktop-04-shell-dark");
     await setTheme(page, "Light");

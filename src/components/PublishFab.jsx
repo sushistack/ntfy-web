@@ -16,8 +16,8 @@ const PublishFab = ({ onClick }) => {
       aria-label={t("publish_fab_label")}
       className={cn(
         "fixed z-fab",
-        "bottom-fab-mobile right-4",
-        "md:bottom-6 md:right-6",
+        "bottom-6 right-4",
+        "md:right-6",
         "w-14 h-14 rounded-sm bg-accent-ui text-accent-on-surface",
         "shadow-elev-2",
         "flex items-center justify-center",

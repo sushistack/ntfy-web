@@ -1,11 +1,10 @@
 import * as React from "react";
 import { useState } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslation } from "react-i18next";
 import Feed from "@/components/Feed";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
-import { useSelection } from "@/components/contexts/SelectionContext";
 import { useBackgroundProcesses, useConnectionListeners, useWebPushTopics } from "./hooks";
 import userManager from "../app/UserManager";
 import subscriptionManager from "../app/SubscriptionManager";
@@ -18,8 +17,6 @@ import initI18n from "../app/i18n";
 import AppProviders from "./AppProviders";
 import Sidebar, { SidebarContent } from "./Sidebar";
 import AppBarNew from "./AppBar";
-import BottomNav from "./BottomNav";
-import DetailPane from "./DetailPane";
 import Messaging from "./Messaging";
 import SettingsPage from "./SettingsPage";
 import Login from "./Login";
@@ -52,46 +49,13 @@ const ShellWiring = () => {
   return null;
 };
 
-// One route split by CSS breakpoint — mobile: DetailPane full-screen, desktop: Feed (DetailRegion handles the pane)
-const lgBreakpointMQ = typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)") : null;
-const useIsDesktop = () => {
-  const [isDesktop, setIsDesktop] = useState(lgBreakpointMQ?.matches ?? false);
-  React.useEffect(() => {
-    if (!lgBreakpointMQ) return undefined;
-    const handler = (e) => setIsDesktop(e.matches);
-    lgBreakpointMQ.addEventListener("change", handler);
-    return () => lgBreakpointMQ.removeEventListener("change", handler);
-  }, []);
-  return isDesktop;
-};
-
-const MsgDetailRoute = () => {
-  const isDesktop = useIsDesktop();
-  return (
-    <>
-      {!isDesktop && <DetailPane />}
-      <div className="hidden lg:block">
-        <FeedRoute />
-      </div>
-    </>
-  );
-};
-
 const FeedRoute = () => (
   <div className="max-w-feed mx-auto px-4 py-6">
     <Feed />
   </div>
 );
 
-// Desktop right pane — hidden when no notification is selected
-const DetailRegion = () => {
-  const { msgId } = useSelection();
-  const location = useLocation();
-  if (location.pathname === routes.settings) return null;
-  return <div className="hidden lg:block w-detail-pane border-l border-border overflow-y-auto">{msgId && <DetailPane />}</div>;
-};
-
-/* ── NewShell — responsive 3-column layout ── */
+/* ── NewShell — responsive layout (feed is the single view; cards render full) ── */
 const NewShell = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -115,20 +79,14 @@ const NewShell = () => {
           <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto outline-none">
             <Routes>
               <Route path={routes.app} element={<FeedRoute />} />
-              {/* /:topic/:msgId must come BEFORE /:topic — more specific first in RR6 */}
-              <Route path={routes.msgDetail} element={<MsgDetailRoute />} />
+              {/* /:topic/:msgId kept as a deep-link target — renders the topic feed (no separate detail view) */}
+              <Route path={routes.msgDetail} element={<FeedRoute />} />
               <Route path={routes.subscription} element={<FeedRoute />} />
               <Route path={routes.subscriptionExternal} element={<FeedRoute />} />
               <Route path={routes.settings} element={<SettingsPage />} />
             </Routes>
           </main>
-
-          {/* Detail region — desktop right pane */}
-          <DetailRegion />
         </div>
-
-        {/* Mobile bottom nav — hidden on md+ */}
-        <BottomNav />
 
         {/* Publish FAB + publish modal — fixed chrome, must be outside overflow-hidden columns */}
         <Messaging />

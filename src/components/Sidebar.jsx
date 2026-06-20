@@ -12,15 +12,24 @@ import { Button } from "@/components/ui/Button";
 import SubscribeDialog from "./SubscribeDialog";
 
 /* ── Inline SVG icons (avoids adding @radix-ui/react-icons dep) ── */
-const BellIcon = ({ className }) => (
-  <svg className={cn("w-5 h-5", className)} viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
-    <path d="M7.5 0a.5.5 0 0 1 .5.5v.549A4.5 4.5 0 0 1 12 5.5V9l1.354 1.354A.5.5 0 0 1 13 11H2a.5.5 0 0 1-.354-.854L3 9V5.5A4.5 4.5 0 0 1 7 1.049V.5a.5.5 0 0 1 .5-.5ZM6 12h3a1.5 1.5 0 0 1-3 0Z" />
-  </svg>
-);
-
 const BellOffIcon = ({ className }) => (
   <svg className={cn("w-5 h-5", className)} viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
     <path d="M1.646 1.646a.5.5 0 0 1 .708 0L13.354 13.354a.5.5 0 0 1-.708.708l-1.293-1.293A3 3 0 0 1 6 13a.5.5 0 1 1 0-1 2 2 0 0 0 1.938-1.496L1.646 2.354a.5.5 0 0 1 0-.708ZM5 6.5V5.56A2.5 2.5 0 0 1 10 5.5v3.44l-5-4.94ZM8.5 12H6a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H8.5Z" />
+  </svg>
+);
+
+const MessageIcon = ({ className }) => (
+  <svg
+    className={cn("w-5 h-5", className)}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
   </svg>
 );
 
@@ -170,11 +179,13 @@ export const SidebarContent = ({ collapsed = false }) => {
       {visibleSubs.map((sub) => {
         const isActive = sub.topic === activeSub;
         const isMuted = (sub.mutedUntil ?? 0) > 0;
-        const topicIcon = isMuted ? (
-          <BellOffIcon className="flex-shrink-0 text-muted" />
-        ) : (
-          <BellIcon className={cn("flex-shrink-0", isActive ? "text-accent-text" : "text-muted")} />
-        );
+        // Left icon = message icon (topic identity). Collapsed rail shows bell-off when muted so mute state stays visible.
+        const topicIcon =
+          collapsed && isMuted ? (
+            <BellOffIcon className="flex-shrink-0 text-muted" />
+          ) : (
+            <MessageIcon className={cn("flex-shrink-0", isActive ? "text-accent-text" : "text-muted")} />
+          );
         return (
           <div
             key={sub.id}
@@ -216,23 +227,16 @@ export const SidebarContent = ({ collapsed = false }) => {
               )}
             </button>
 
-            {/* Mute toggle */}
-            {!collapsed && (
-              <button
-                type="button"
-                onClick={() => handleSidebarMuteToggle(sub)}
-                aria-label={t(isMuted ? "sidebar_topic_unmute_label" : "sidebar_topic_mute_label")}
-                aria-pressed={isMuted}
-                className={cn(
-                  "shrink-0 p-1 rounded-sm transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-                  isMuted
-                    ? "text-muted hover:text-accent-text hover:bg-surface-2"
-                    : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 hover:text-accent-text hover:bg-surface-2"
-                )}
+            {/* Muted indicator — passive icon (not a button); mute toggle lives in the ⋯ menu */}
+            {!collapsed && isMuted && (
+              <span
+                className="shrink-0 text-muted"
+                role="img"
+                aria-label={t("sidebar_topic_muted_indicator")}
+                title={t("sidebar_topic_muted_indicator")}
               >
-                {isMuted ? <BellOffIcon /> : <BellIcon />}
-              </button>
+                <BellOffIcon className="w-4 h-4" />
+              </span>
             )}
 
             {/* Context menu — only in expanded sidebar */}
@@ -253,6 +257,10 @@ export const SidebarContent = ({ collapsed = false }) => {
                   </button>
                 </MenuTrigger>
                 <MenuContent align="start" side="right">
+                  <MenuItem onSelect={() => handleSidebarMuteToggle(sub)}>
+                    {t(isMuted ? "sidebar_topic_unmute_label" : "sidebar_topic_mute_label")}
+                  </MenuItem>
+                  <MenuSeparator />
                   <MenuItem
                     onSelect={() => {
                       setRenameSub(sub);

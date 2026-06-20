@@ -1,8 +1,5 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { cn } from "@/components/ui/utils";
-import { Meter } from "@/components/ui/Meter";
 import MarkdownContent from "./MarkdownContent";
+import StructuredCard, { parseCardSpec, KvView } from "./StructuredCard";
 
 function detectShape(message) {
   if (!message || !message.trim()) return "paragraph";
@@ -48,92 +45,32 @@ const parseKvLines = (message) =>
       return { id: `${key.trim()}:${value.trim()}:${lineIndex}`, key: key.trim(), value: value.trim(), numericValue, isError };
     });
 
-const KV_ICONS = {
-  cpu: "⚙",
-  disk: "💾",
-  memory: "🧠",
-  mem: "🧠",
-  ram: "🧠",
-  load: "📈",
-  uptime: "⏱",
-  status: "●",
-  error: "✕",
-  warning: "⚠",
-  temp: "🌡",
-  temperature: "🌡",
-  ping: "◎",
-  speed: "▶",
-  version: "#",
-  exit: "⏎",
-};
+// Adapt loose `key: value` lines to StructuredCard rows so the heuristic path
+// renders identically to a tagged kv card (icon + value + inline meter).
+const linesToRows = (lines) =>
+  lines.map(({ key, value, numericValue, isError }) => ({
+    key,
+    value,
+    meter: Number.isFinite(numericValue) ? numericValue : undefined,
+    status: isError ? "error" : undefined,
+  }));
 
-const KvIcon = ({ keyName }) => {
-  const icon = KV_ICONS[keyName?.toLowerCase()] ?? "·";
-  return (
-    <span className="font-mono text-body-sm text-muted shrink-0 w-4 text-center" aria-hidden="true">
-      {icon}
-    </span>
-  );
-};
-
-const ParagraphBody = ({ message }) => {
-  const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-
-  return (
-    <div className="py-2">
-      <div className={cn("text-body-sm text-muted", !expanded && "line-clamp-3")}>
-        <MarkdownContent content={message} />
-      </div>
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
-        className="text-body-sm text-accent-text mt-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-      >
-        {expanded ? t("card_body_collapse") : t("card_body_expand")}
-      </button>
-    </div>
-  );
-};
-
-const KvBody = ({ lines }) => (
-  <dl className="text-body-sm space-y-1 py-2">
-    {lines.map(({ id, key, value, isError }) => (
-      <div key={id} className="flex items-baseline gap-2">
-        <KvIcon keyName={key} />
-        <dt className="text-muted font-medium shrink-0">{key}</dt>
-        <dd className={cn("ml-auto", isError ? "text-priority-urgent" : "text-accent-text")}>{value}</dd>
-      </div>
-    ))}
-  </dl>
-);
-
-const RichKvBody = ({ lines }) => (
-  <dl className="text-body-sm space-y-2 py-2">
-    {lines.map(({ id, key, value, numericValue }) => (
-      <div key={id} className="flex flex-col gap-1">
-        <div className="flex items-baseline gap-2">
-          <KvIcon keyName={key} />
-          <dt className="text-muted font-medium shrink-0">{key}</dt>
-          <dd className="ml-auto tabular-nums">{value}</dd>
-        </div>
-        {numericValue !== null && <Meter value={numericValue} label={value} />}
-      </div>
-    ))}
-  </dl>
+const ParagraphBody = ({ message }) => (
+  <div className="py-2 max-w-message leading-body text-body text-text">
+    <MarkdownContent content={message} />
+  </div>
 );
 
 const CardBody = ({ notification }) => {
   try {
+    // Tag-flagged JSON body → real components (kv / list / chart). Untagged → text heuristic.
+    const spec = parseCardSpec(notification);
+    if (spec) return <StructuredCard spec={spec} />;
+
     const { message } = notification;
-    const shape = detectShape(message);
+    if (detectShape(message) === "paragraph") return <ParagraphBody message={message ?? ""} />;
 
-    if (shape === "paragraph") return <ParagraphBody message={message ?? ""} />;
-
-    const lines = parseKvLines(message);
-    if (shape === "rich-kv") return <RichKvBody lines={lines} />;
-    return <KvBody lines={lines} />;
+    return <KvView rows={linesToRows(parseKvLines(message))} />;
   } catch {
     return <p className="text-body-sm text-muted whitespace-pre-wrap py-2">{notification?.message ?? ""}</p>;
   }

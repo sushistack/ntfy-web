@@ -6,4 +6,10 @@ if (!config.base_url || config.base_url === "") {
   config.base_url = window.location.origin;
 }
 
+// User-set server URL (Settings > Server & Auth) overrides the default. See ServerAuthForm.
+const override = localStorage.getItem("base_url");
+if (override) {
+  config.base_url = override;
+}
+
 export default config;

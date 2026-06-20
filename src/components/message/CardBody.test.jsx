@@ -208,9 +208,9 @@ describe("CardBody — kv error value coloring", () => {
     expect(dd).toBeTruthy();
   });
 
-  it("applies text-accent-text to ok value rows", () => {
+  it("renders non-error values in the default readable text color", () => {
     render(<CardBody notification={{ message: "Status: OK\nHost: server1" }} />);
-    const dd = container.querySelector("dd.text-accent-text");
-    expect(dd).toBeTruthy();
+    expect(container.querySelector("dd.text-text")).toBeTruthy();
+    expect(container.querySelector("dd.text-priority-urgent")).toBeNull();
   });
 });

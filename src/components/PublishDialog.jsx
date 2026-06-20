@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { cn } from "@/components/ui/utils";
 import { useIsMobile } from "@/components/hooks";
-import { validTopic } from "@/app/utils";
+import { validTopic, validUrl } from "@/app/utils";
 import { usePublishQueue } from "@/components/contexts/PublishQueueContext";
 import { Dialog as RadixDialog } from "radix-ui";
 
@@ -18,8 +18,8 @@ const PRIORITIES = [
 ];
 
 const PRIORITY_SELECTED_CLASSES = {
-  2: "border-border text-muted",
-  3: "border-border text-text",
+  2: "border-muted text-muted bg-muted/10",
+  3: "border-text text-text bg-text/10",
   4: "border-priority-high text-priority-high bg-priority-high/10",
   5: "border-priority-max text-priority-max bg-priority-max/10",
 };
@@ -31,6 +31,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
   const isMobile = useIsMobile();
   const { enqueue } = usePublishQueue();
 
+  const [server, setServer] = useState(baseUrl ?? "");
   const [topic, setTopic] = useState(initialTopic ?? "");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -38,10 +39,14 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
   const [tags, setTags] = useState("");
 
   useEffect(() => {
-    if (!open) setTopic(initialTopic ?? "");
-  }, [initialTopic, open]);
+    if (!open) {
+      setTopic(initialTopic ?? "");
+      setServer(baseUrl ?? "");
+    }
+  }, [initialTopic, baseUrl, open]);
 
   const resetForm = () => {
+    setServer(baseUrl ?? "");
     setTopic(initialTopic ?? "");
     setTitle("");
     setBody("");
@@ -53,10 +58,12 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
     onOpenChange(isOpen);
   };
 
+  const canSubmit = body.trim() && validTopic(topic) && validUrl(server);
+
   const handleSubmit = () => {
-    if (!body.trim() || !validTopic(topic)) return;
+    if (!canSubmit) return;
     enqueue({
-      baseUrl,
+      baseUrl: server,
       topic,
       title: title.trim(),
       body,
@@ -74,6 +81,21 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
 
   const formContent = (
     <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <label htmlFor="publish-server" className="text-caption font-semibold text-muted uppercase tracking-wide">
+          {t("publish_dialog_base_url_label")}
+        </label>
+        <input
+          id="publish-server"
+          type="url"
+          value={server}
+          onChange={(e) => setServer(e.target.value)}
+          placeholder={t("publish_dialog_base_url_placeholder")}
+          aria-label={t("publish_dialog_base_url_label")}
+          className="w-full h-10 bg-surface-2 border border-control-border rounded-sm px-3 text-body-sm text-text focus:outline-none focus:ring-2 focus:ring-focus-ring"
+        />
+      </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="publish-topic" className="text-caption font-semibold text-muted uppercase tracking-wide">
           {t("publish_dialog_topic_label")}
@@ -166,7 +188,7 @@ const PublishDialog = ({ open, onOpenChange, initialTopic, baseUrl }) => {
             </Button>
           </DialogClose>
         )}
-        <Button size="sm" onClick={handleSubmit} disabled={!body.trim() || !validTopic(topic)} aria-label={t("publish_dialog_send")}>
+        <Button size="sm" onClick={handleSubmit} disabled={!canSubmit} aria-label={t("publish_dialog_send")}>
           {t("publish_dialog_send")}
         </Button>
       </div>

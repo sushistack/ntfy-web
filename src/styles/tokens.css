@@ -193,10 +193,9 @@
 }
 
 /* ── Custom utility: Notification card signature shape ───────────
-   Left edge is SQUARED so the 4px priority accent bar sits flush;
-   right side keeps the standard 16px radius.
+   Squared corners (no radius) — per Jay's call the flat edge reads cleaner.
    Use: <div class="rounded-card"> (no arbitrary value needed)
    ─────────────────────────────────────────────────────────── */
 @utility rounded-card {
-  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-radius: 0;
 }

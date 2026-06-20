@@ -19,8 +19,8 @@ export function Switch({ checked, onCheckedChange, disabled, className, ...props
     >
       <SwitchPrimitive.Thumb
         className={cn(
-          "pointer-events-none block h-5 w-5 rounded-full bg-white shadow-elev-1",
-          "transition-transform motion-reduce:transition-none data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+          "pointer-events-none block h-4 w-4 rounded-full bg-white shadow-elev-1",
+          "transition-transform motion-reduce:transition-none data-[state=checked]:translate-x-[22px] data-[state=unchecked]:translate-x-0.5"
         )}
       />
     </SwitchPrimitive.Root>

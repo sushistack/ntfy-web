@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -10,6 +9,7 @@ import { useSelection } from "@/components/contexts/SelectionContext";
 import { usePublishQueue } from "@/components/contexts/PublishQueueContext";
 import subscriptionManager from "../app/SubscriptionManager";
 import { NotificationCard } from "./message/NotificationCard";
+import CardBody from "./message/CardBody";
 import { NotificationActions } from "./message/NotificationActions";
 import { NoMessagesTopicPanel, NoMessagesAllPanel } from "./message/EmptyStates";
 import { useActiveTopic } from "./hooks";
@@ -18,33 +18,8 @@ import { findArrivingNotifications } from "./feedAnnouncements";
 
 const PAGE_SIZE = 20;
 
-const getMessagePreview = (notification) =>
-  (notification.message ?? "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .join(" ");
-
-const FeedPreview = ({ notification }) => (
-  <p className="py-1 text-body-sm leading-body-sm text-muted line-clamp-2">
-    {getMessagePreview(notification)}
-  </p>
-);
-
-const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, isMuted, onMuteToggle }) => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected }) => {
   const [actionError, setActionError] = useState(null);
-  const [muteError, setMuteError] = useState(false);
-
-  const handleMuteToggle = async () => {
-    setMuteError(false);
-    try {
-      await onMuteToggle?.();
-    } catch {
-      setMuteError(true);
-    }
-  };
 
   return (
     <NotificationCard
@@ -52,25 +27,14 @@ const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, i
       subscriptionName={subscriptionName}
       showTopicChip={showTopicChip}
       isSelected={isSelected}
-      isMuted={isMuted}
-      showTags={false}
-      onMuteToggle={handleMuteToggle}
-      onTap={(n) => navigate(`/${n.topic}/${n.id}`)}
+      onTap={(n) => subscriptionManager.markNotificationRead(n.id)}
       body={
         <>
-          <FeedPreview notification={notification} />
+          <CardBody notification={notification} />
           <NotificationActions notification={notification} onError={setActionError} />
         </>
       }
-      error={
-        muteError ? (
-          <button type="button" onClick={handleMuteToggle} className="text-caption text-priority-high underline py-1">
-            {t("notification_action_failed_retry_label")}
-          </button>
-        ) : (
-          actionError
-        )
-      }
+      error={actionError}
     />
   );
 };
@@ -105,16 +69,9 @@ const Feed = () => {
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
   const seenNotificationsRef = useRef({ scope: null, ids: new Set() });
   const [arrivalAnnouncement, setArrivalAnnouncement] = useState({ message: "", sequence: 0 });
+  const [animatingIds, setAnimatingIds] = useState(() => new Set());
   const visible = notifications.slice(0, displayCount);
   const notificationScope = isAllFeed ? "all" : subscription?.id ?? null;
-
-  // Per-topic mute: all cards share one subscription, so define once outside the map
-  const topicIsMuted = (subscription?.mutedUntil ?? 0) > 0;
-  const handleTopicMuteToggle = async () => {
-    if (!subscription) return;
-    const next = subscription.mutedUntil ? 0 : 1;
-    await subscriptionManager.setMutedUntil(subscription.id, next);
-  };
 
   useEffect(() => {
     setDisplayCount(PAGE_SIZE);
@@ -137,21 +94,15 @@ const Feed = () => {
         message: t("notifications_new_indicator"),
         sequence: current.sequence + 1,
       }));
+      // Slide-in only the notifications that actually just arrived (not whatever sits at index 0)
+      const arrivingIds = arriving.map((n) => n.id);
+      setAnimatingIds((prev) => new Set([...prev, ...arrivingIds]));
     }
   }, [isLoading, notificationScope, notifications, t]);
 
   return (
     <>
       <LiveRegion message={arrivalAnnouncement.message} announcementKey={arrivalAnnouncement.sequence} />
-      {!isAllFeed && subscription && (
-        <div
-          className="sticky top-0 z-10 bg-surface border-b border-border px-5 py-3"
-          role="region"
-          aria-label={t("feed_sticky_header_label")}
-        >
-          <span className="text-body font-semibold text-text">{subscription.displayName || subscription.topic}</span>
-        </div>
-      )}
 
       <DataBoundary
         loading={isLoading}
@@ -168,7 +119,7 @@ const Feed = () => {
           scrollThreshold={0.7}
           scrollableTarget="main"
         >
-          <ul aria-label={t("feed_notifications_list")} className="flex flex-col gap-3">
+          <ul aria-label={t("feed_notifications_list")} className="flex flex-col gap-[1.125rem]">
             {optimisticEntries.map((entry) => {
               const optSub = isAllFeed
                 ? allSubscriptions.find((s) => s.baseUrl === entry.baseUrl && s.topic === entry.topic)
@@ -194,7 +145,6 @@ const Feed = () => {
                     notification={syntheticNotification}
                     subscriptionName={isAllFeed ? optSub?.displayName || optSub?.topic : undefined}
                     showTopicChip={isAllFeed}
-                    showTags={false}
                     isSelected={false}
                     onTap={() => {}}
                     body={null}
@@ -204,26 +154,16 @@ const Feed = () => {
                 </li>
               );
             })}
-            {visible.map((n, index) => {
+            {visible.map((n) => {
               const notifSub = isAllFeed ? subsById[n.subscriptionId] : null;
               const subscriptionName = isAllFeed ? notifSub?.displayName || notifSub?.topic : undefined;
-              const isMuted = isAllFeed ? (notifSub?.mutedUntil ?? 0) > 0 : topicIsMuted;
-              const onMuteToggle = isAllFeed
-                ? async () => {
-                    if (!notifSub) return;
-                    const next = notifSub.mutedUntil ? 0 : 1;
-                    await subscriptionManager.setMutedUntil(notifSub.id, next);
-                  }
-                : handleTopicMuteToggle;
               return (
-                <li key={n.id} className={index === 0 ? "motion-safe:animate-slide-in-top" : undefined}>
+                <li key={n.id} className={animatingIds.has(n.id) ? "motion-safe:animate-slide-in-top" : undefined}>
                   <FeedCard
                     notification={n}
                     subscriptionName={subscriptionName}
                     showTopicChip={isAllFeed}
                     isSelected={n.id === msgId}
-                    isMuted={isMuted}
-                    onMuteToggle={onMuteToggle}
                   />
                 </li>
               );

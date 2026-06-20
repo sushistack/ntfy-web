@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/Button";
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
 import config from "../app/config";
 import userManager from "../app/UserManager";
+import { validUrl } from "../app/utils";
 
 const AUTH_TYPE = { TOKEN: "token", PASSWORD: "password" };
 
 const ServerAuthForm = () => {
   const { t } = useTranslation();
+  const [serverUrl, setServerUrl] = useState(config.base_url);
   const [authType, setAuthType] = useState(AUTH_TYPE.TOKEN);
   const [username, setUsername] = useState("");
   const [credential, setCredential] = useState("");
@@ -31,13 +33,23 @@ const ServerAuthForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!validUrl(serverUrl)) {
+      setError(t("server_auth_form_save_error"));
+      return;
+    }
     setSaving(true);
     try {
+      const baseUrl = serverUrl.replace(/\/+$/, "");
       const userRecord =
         authType === AUTH_TYPE.TOKEN
-          ? { baseUrl: config.base_url, username, token: credential }
-          : { baseUrl: config.base_url, username, password: credential };
+          ? { baseUrl, username, token: credential }
+          : { baseUrl, username, password: credential };
       await userManager.save(userRecord);
+      // Persist the server override and reload so config.base_url re-applies app-wide.
+      if (baseUrl !== config.base_url) {
+        localStorage.setItem("base_url", baseUrl);
+        window.location.reload();
+      }
     } catch (err) {
       setError(t("server_auth_form_save_error"));
     } finally {
@@ -48,8 +60,18 @@ const ServerAuthForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-md">
       <div className="flex flex-col gap-1">
-        <span className="text-body-sm font-medium text-text">{t("server_auth_form_server_url_label")}</span>
-        <p className="text-body-sm text-muted break-all">{config.base_url}</p>
+        <label htmlFor="saf-server-url" className="text-body-sm font-medium text-text">
+          {t("server_auth_form_server_url_label")}
+        </label>
+        <input
+          id="saf-server-url"
+          className="w-full rounded-sm bg-surface-2 border border-control-border px-3 py-2 text-sm text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-focus-ring"
+          type="url"
+          value={serverUrl}
+          onChange={(e) => setServerUrl(e.target.value)}
+          placeholder={t("publish_dialog_base_url_placeholder")}
+          aria-label={t("server_auth_form_server_url_label")}
+        />
       </div>
 
       <div className="flex flex-col gap-2">

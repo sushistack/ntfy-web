@@ -4,16 +4,15 @@ import { Card } from "@/components/ui/Card";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/components/ui/utils";
-import { unmatchedTags, formatShortDateTime } from "@/app/utils";
+import { formatShortDateTime } from "@/app/utils";
 import subscriptionManager from "@/app/SubscriptionManager";
 import { PriorityBadge } from "./PriorityBadge";
-import { TopicChip } from "./TopicChip";
-import { TagChip } from "./TagChip";
+import { CardTags } from "./CardTags";
 
 const REVEAL_MAX = 96;
 const SNAP_THRESHOLD = 72;
 
-const BellIcon = () => (
+const CloseIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="20"
@@ -26,29 +25,19 @@ const BellIcon = () => (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
   </svg>
 );
 
-const MoreIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="12" r="1" />
-    <circle cx="19" cy="12" r="1" />
-    <circle cx="5" cy="12" r="1" />
-  </svg>
-);
+// Left accent bar color per priority — mirrors PriorityBadge (min/low gray, normal white, high amber, max coral)
+const PRIORITY_BAR = {
+  1: "bg-muted",
+  2: "bg-muted",
+  3: "bg-text",
+  4: "bg-priority-high",
+  5: "bg-priority-max",
+};
 
 export function NotificationCard({
   notification,
@@ -59,13 +48,9 @@ export function NotificationCard({
   body,
   pending,
   error,
-  onMuteToggle,
-  isMuted,
-  showTags = true,
 }) {
   const { t, i18n } = useTranslation();
   const priority = notification.priority ?? 3;
-  const tags = unmatchedTags(notification.tags);
 
   // Swipe gesture state
   const cardRef = useRef(null);
@@ -196,62 +181,66 @@ export function NotificationCard({
         isSelected && "bg-surface-active"
       )}
     >
-      {/* Mark-read backing layer (leading, left).
-          Uses inline style for position so test selectors on Tailwind "absolute" don't collide with the accent bar.
-          Button fills the full layer so the entire colored area is tappable. */}
-      <div
-        style={{ position: "absolute", left: 0, top: 0, bottom: 0 }}
-        className="w-24 bg-accent-text"
-      >
-        <button
-          type="button"
-          tabIndex={revealedSide === "mark-read" ? 0 : -1}
-          aria-label={t("swipe_mark_read_label")}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSwipeMarkRead();
-          }}
-          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
-        />
-      </div>
+      {/* Swipe backing layers — only mounted while swiping/revealed. At rest the square
+          content layer doesn't cover the card's rounded corners, so a mounted backing would
+          bleed green/red triangles at the corners (and never shows on desktop, which has no swipe). */}
+      {(swipeOffset !== 0 || revealedSide) && (
+        <>
+          {/* Mark-read backing layer (leading, left).
+              Uses inline style for position so test selectors on Tailwind "absolute" don't collide with the accent bar.
+              Button fills the full layer so the entire colored area is tappable. */}
+          <div
+            style={{ position: "absolute", left: 0, top: 0, bottom: 0 }}
+            className="w-24 bg-accent-text"
+          >
+            <button
+              type="button"
+              tabIndex={revealedSide === "mark-read" ? 0 : -1}
+              aria-label={t("swipe_mark_read_label")}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSwipeMarkRead();
+              }}
+              className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
+            />
+          </div>
 
-      {/* Delete backing layer (trailing, right).
-          Uses inline style for position — same reason as mark-read backing.
-          Button fills the full layer so the entire colored area is tappable. */}
-      <div
-        style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}
-        className="w-24 bg-priority-max"
-      >
-        <button
-          type="button"
-          tabIndex={revealedSide === "delete" ? 0 : -1}
-          aria-label={t("swipe_delete_label")}
-          onClick={(e) => {
-            e.stopPropagation();
-            setDeleteConfirmOpen(true);
-            dragRef.current.isLocked = true;
-          }}
-          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
-        />
-      </div>
+          {/* Delete backing layer (trailing, right).
+              Uses inline style for position — same reason as mark-read backing.
+              Button fills the full layer so the entire colored area is tappable. */}
+          <div
+            style={{ position: "absolute", right: 0, top: 0, bottom: 0 }}
+            className="w-24 bg-priority-max"
+          >
+            <button
+              type="button"
+              tabIndex={revealedSide === "delete" ? 0 : -1}
+              aria-label={t("swipe_delete_label")}
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteConfirmOpen(true);
+                dragRef.current.isLocked = true;
+              }}
+              className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
+            />
+          </div>
+        </>
+      )}
 
       {/* Content layer — slides over backing layers on swipe */}
       <div
         style={contentStyle}
         className={cn("relative bg-surface", isSelected && "bg-surface-active")}
       >
-        {/* Accent bar — P4/P5 only */}
-        {priority >= 4 && (
-          <div
-            className={cn(
-              "absolute left-0 top-0 bottom-0 w-1",
-              priority === 5 ? "bg-priority-max" : "bg-priority-high"
-            )}
-            style={{
-              boxShadow: priority === 5 ? "var(--glow-priority-max)" : "var(--glow-priority-high)",
-            }}
-          />
-        )}
+        {/* Accent bar — colored per priority (min/low gray, normal white, high amber, max coral) */}
+        <div
+          className={cn("absolute left-0 top-0 bottom-0 w-1", PRIORITY_BAR[priority] ?? "bg-text")}
+          style={
+            priority >= 4
+              ? { boxShadow: priority === 5 ? "var(--glow-priority-max)" : "var(--glow-priority-high)" }
+              : undefined
+          }
+        />
 
         {/* Header band */}
         <div className="flex items-center gap-2 px-4 pt-3 pb-2 pl-5">
@@ -271,21 +260,12 @@ export function NotificationCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onMuteToggle?.();
+              setDeleteConfirmOpen(true);
             }}
-            aria-label={t(isMuted ? "notification_card_unmute_toggle_label" : "notification_card_mute_toggle_label")}
-            aria-pressed={isMuted ?? false}
-            className="p-1 rounded-sm text-muted hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-all duration-150 ease-out motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+            aria-label={t("notifications_delete")}
+            className="p-1 rounded-sm text-muted hover:text-priority-max hover:bg-surface-2 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-all duration-150 ease-out motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
           >
-            <BellIcon />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => e.stopPropagation()}
-            aria-label={t("notification_card_overflow_label")}
-            className="p-1 rounded-sm text-muted hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-all duration-150 ease-out motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
-          >
-            <MoreIcon />
+            <CloseIcon />
           </button>
         </div>
 
@@ -297,19 +277,10 @@ export function NotificationCard({
           {error}
         </div>
 
-        {/* Tags row */}
-        {showTags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 px-4 pt-1">
-            {tags.map((tag) => (
-              <TagChip key={tag} label={tag} />
-            ))}
-          </div>
-        )}
-
-        {/* Meta row: topic chip (all-feed only) + timestamp */}
-        <div className="flex items-center justify-between px-4 py-2">
-          {showTopicChip && subscriptionName ? <TopicChip name={subscriptionName} /> : <span />}
-          <span className="text-caption text-muted">
+        {/* Meta row: categorized tags (topic + service + general) + timestamp (always right) */}
+        <div className="flex items-center gap-2 px-4 py-2">
+          <CardTags tags={notification.tags} topicName={showTopicChip ? subscriptionName : undefined} />
+          <span className="text-caption text-muted shrink-0 ml-auto">
             {formatShortDateTime(notification.time, i18n.language)}
           </span>
         </div>

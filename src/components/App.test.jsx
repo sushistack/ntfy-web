@@ -47,8 +47,6 @@ vi.mock("./Sidebar", () => ({
   SidebarContent: () => null,
 }));
 vi.mock("./AppBar", () => ({ default: () => null }));
-vi.mock("./BottomNav", () => ({ default: () => null }));
-vi.mock("./DetailPane", () => ({ default: () => null }));
 vi.mock("./Messaging", () => ({ default: () => null }));
 vi.mock("./SettingsPage", () => ({ default: () => null }));
 vi.mock("./ErrorBoundary", () => ({ default: ({ children }) => children }));

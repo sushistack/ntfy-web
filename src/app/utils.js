@@ -147,11 +147,12 @@ export const hashCode = (s) => {
  */
 export const getKebabCaseLangStr = (language) => (typeof language === "string" && language.length > 0 ? language.replace(/_/g, "-") : "en");
 
-export const formatShortDateTime = (timestamp, language) =>
-  new Intl.DateTimeFormat(getKebabCaseLangStr(language), {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(timestamp * 1000));
+// Fixed YYYY-MM-DD HH:mm:ss (local time), per Jay's request — locale-independent.
+export const formatShortDateTime = (timestamp) => {
+  const d = new Date(timestamp * 1000);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
 
 export const formatShortDate = (timestamp, language) =>
   new Intl.DateTimeFormat(getKebabCaseLangStr(language), { dateStyle: "short" }).format(new Date(timestamp * 1000));
