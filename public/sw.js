@@ -50,6 +50,11 @@ const handlePushMessage = async (data) => {
     return;
   }
 
+  if (subscription.mutedUntil > 0) {
+    console.log("[ServiceWorker] Subscription muted, skipping notification", subscriptionId);
+    return;
+  }
+
   // NOTE: As soon as possible, to avoid this Safari error:
   // > Push event handling completed without showing any notification via
   // > ServiceWorkerRegistration.showNotification(). This may trigger removal of
@@ -439,7 +444,7 @@ if (!import.meta.env.DEV) {
     new NavigationRoute(createHandlerBoundToURL("/index.html"), {
       allowlist: [
         // the app root itself, could be /, or not
-        new RegExp(`^${config.app_root}$`),
+        new RegExp(`^${config.app_root}`),
       ],
     })
   );

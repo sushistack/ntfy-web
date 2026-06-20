@@ -93,7 +93,7 @@ const Feed = () => {
 
   const isLoading = rawNotifications === undefined;
   const notifications = rawNotifications ?? [];
-  const isEmpty = !isLoading && notifications.length === 0;
+  const isEmpty = !isLoading && notifications.length === 0 && optimisticEntries.length === 0;
 
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
   const visible = notifications.slice(0, displayCount);
@@ -154,7 +154,7 @@ const Feed = () => {
                 message: entry.body,
                 priority: entry.priority,
                 tags: entry.tags ? entry.tags.split(",").map((s) => s.trim()).filter(Boolean) : [],
-                time: Math.floor(Date.now() / 1000),
+                time: entry.enqueuedAt,
                 new: 0,
                 subscriptionId: optSub?.id ?? null,
               };
@@ -163,6 +163,7 @@ const Feed = () => {
                   <NotificationCard
                     notification={syntheticNotification}
                     subscriptionName={isAllFeed ? (optSub?.displayName || optSub?.topic) : undefined}
+                    showTopicChip={isAllFeed}
                     isSelected={false}
                     onTap={() => {}}
                     body={null}

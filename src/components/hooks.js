@@ -243,14 +243,14 @@ export const useWebPushTopics = () => {
   return topics;
 };
 
-const matchMedia = window.matchMedia("(display-mode: standalone)");
-const isIOSStandalone = window.navigator.standalone === true;
+const matchMedia = typeof window !== "undefined" ? window.matchMedia("(display-mode: standalone)") : null;
+const isIOSStandalone = typeof window !== "undefined" && window.navigator.standalone === true;
 
 /*
  * Watches the "display-mode" to detect if the app is running as a standalone app (PWA).
  */
 export const useIsLaunchedPWA = () => {
-  const [isStandalone, setIsStandalone] = useState(matchMedia.matches);
+  const [isStandalone, setIsStandalone] = useState(matchMedia?.matches ?? false);
 
   useEffect(() => {
     if (isIOSStandalone) {
@@ -388,11 +388,12 @@ export const useVersionChangeListener = (onVersionChange) => {
   }, [onVersionChange]);
 };
 
-const mobileMediaQuery = window.matchMedia("(max-width: 767px)");
+const mobileMediaQuery = typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)") : null;
 
 export const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(mobileMediaQuery.matches);
+  const [isMobile, setIsMobile] = useState(mobileMediaQuery?.matches ?? false);
   useEffect(() => {
+    if (!mobileMediaQuery) return;
     const handler = (e) => setIsMobile(e.matches);
     mobileMediaQuery.addEventListener("change", handler);
     return () => mobileMediaQuery.removeEventListener("change", handler);
