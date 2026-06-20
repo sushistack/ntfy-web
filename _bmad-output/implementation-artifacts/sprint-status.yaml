@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (3-2, 3-4 review)
+last_updated: 2026-06-20 (3-3, 3-8 done after code review)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -69,20 +69,20 @@ development_status:
   epic-3: in-progress
   3-1-notification-card-shell-slot-contract: done
   3-2-adaptive-card-body-renderer: done
-  3-3-feeds-per-topic-all-real-time-with-states: review
+  3-3-feeds-per-topic-all-real-time-with-states: done
   3-4-card-overflow-actions-read-copy-delete: done
-  3-5-url-as-source-of-truth-selection-detail-host: ready-for-dev
-  3-6-detail-content-markdown-attachment-metadata: ready-for-dev
-  3-7-inline-action-buttons-view-http-broadcast: ready-for-dev
-  3-8-mobile-card-swipe-gesture: in-progress
+  3-5-url-as-source-of-truth-selection-detail-host: review
+  3-6-detail-content-markdown-attachment-metadata: review
+  3-7-inline-action-buttons-view-http-broadcast: review
+  3-8-mobile-card-swipe-gesture: done
   epic-3-retrospective: optional
 
   # Epic 4: Topics & Publishing — Jay Sends
-  epic-4: backlog
-  4-1-manage-subscriptions-rename-clear-unsubscribe: backlog
-  4-2-mute-unmute-a-topic: backlog
-  4-3-publish-a-message: backlog
-  4-4-optimistic-publish-queue: backlog
+  epic-4: in-progress
+  4-1-manage-subscriptions-rename-clear-unsubscribe: in-progress
+  4-2-mute-unmute-a-topic: in-progress
+  4-3-publish-a-message: in-progress
+  4-4-optimistic-publish-queue: ready-for-dev
   epic-4-retrospective: optional
 
   # Epic 5: Settings, PWA & Migration Cleanup

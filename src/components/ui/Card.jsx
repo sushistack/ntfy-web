@@ -1,8 +1,10 @@
+import { forwardRef } from "react";
 import { cn } from "./utils";
 
-export function Card({ className, ...props }) {
+export const Card = forwardRef(function Card({ className, ...props }, ref) {
   return (
     <div
+      ref={ref}
       className={cn(
         "rounded-card",
         "bg-surface",
@@ -15,4 +17,4 @@ export function Card({ className, ...props }) {
       {...props}
     />
   );
-}
+});

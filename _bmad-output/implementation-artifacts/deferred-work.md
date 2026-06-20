@@ -28,3 +28,13 @@
 - Tailwind default color palette not purged — `text-red-500`, `bg-slate-100` etc. remain active alongside token system; ESLint enforcement comes in later story
 - Shadow opacity 40% (`rgba(0,0,0,0.4)`) is high for elevation — Material/HIG use 12-20%; design decision, not a bug
 - `rgba()` whitespace inconsistency between `tokens.css` and `design-tokens.md` — both valid CSS; cosmetic only
+
+## Deferred from: code review of 3-3-feeds-per-topic-all-real-time-with-states (2026-06-20)
+
+- Feed.jsx: `allSubscriptions` useLiveQuery resolves as `[]` on first render — topic chips absent briefly before Dexie resolves; fix when SelectionContext/loading-sentinel lands in Story 3.5
+- Feed.jsx: `slide-in-top` animation always applied to `index === 0` — re-fires on re-renders, not only on new WS-pushed cards; acceptable cosmetic tradeoff for now
+
+## Deferred from: code review of 3-8-mobile-card-swipe-gesture (2026-06-20)
+
+- NotificationCard.jsx: `prefersReducedMotion` captured once at render time, not reactive to OS preference changes mid-session; spec only requires correct value on mount
+- NotificationCard.jsx: `dragRef.current.isDragging` read during render for `contentStyle` — ref mutation doesn't trigger re-render, single-tick transition flicker at swipe start; sub-perceptual on modern devices

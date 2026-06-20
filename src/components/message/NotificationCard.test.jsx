@@ -17,6 +17,32 @@ vi.mock("@/app/utils", async (importOriginal) => {
   };
 });
 
+// Refs needed in vi.mock factories (must be declared via vi.hoisted)
+const mockMarkRead = vi.hoisted(() => vi.fn());
+const mockDeleteNotification = vi.hoisted(() => vi.fn());
+
+vi.mock("@/app/SubscriptionManager", () => ({
+  default: {
+    markNotificationRead: mockMarkRead,
+    deleteNotification: mockDeleteNotification,
+  },
+}));
+
+vi.mock("@/components/ui/Dialog", () => ({
+  Dialog: ({ children, open }) => (open ? <div role="dialog">{children}</div> : null),
+  DialogContent: ({ children, title }) => (
+    <div>
+      <span data-testid="dialog-title">{title}</span>
+      {children}
+    </div>
+  ),
+  DialogClose: ({ children, asChild }) => (asChild ? children : <button>{children}</button>),
+}));
+
+vi.mock("@/components/ui/Button", () => ({
+  Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
+}));
+
 import { NotificationCard } from "./NotificationCard";
 
 const baseNotification = {
@@ -35,6 +61,23 @@ beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
+
+  // NotificationCard reads matchMedia during render — mock with default no-preference
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  });
+  // JSDOM does not implement pointer capture — stub to avoid throws
+  HTMLElement.prototype.setPointerCapture = vi.fn();
+  HTMLElement.prototype.releasePointerCapture = vi.fn();
+
+  mockMarkRead.mockClear();
+  mockDeleteNotification.mockClear();
 });
 
 afterEach(() => {
@@ -210,6 +253,27 @@ describe("Accessibility", () => {
     expect(bellBtn).toBeTruthy();
   });
 
+  it("bell button has aria-pressed=false when not muted", () => {
+    render(makeCard({ isMuted: false }));
+    const bellBtn = container.querySelector('[aria-label="notification_card_mute_toggle_label"]');
+    expect(bellBtn.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("bell button has unmute aria-label and aria-pressed=true when muted", () => {
+    render(makeCard({ isMuted: true }));
+    const bellBtn = container.querySelector('[aria-label="notification_card_unmute_toggle_label"]');
+    expect(bellBtn).toBeTruthy();
+    expect(bellBtn.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("clicking bell button calls onMuteToggle", () => {
+    const onMuteToggle = vi.fn();
+    render(makeCard({ onMuteToggle }));
+    const bellBtn = container.querySelector('[aria-label="notification_card_mute_toggle_label"]');
+    act(() => { bellBtn.click(); });
+    expect(onMuteToggle).toHaveBeenCalledOnce();
+  });
+
   it("overflow button has aria-label", () => {
     render(makeCard());
     const overflowBtn = container.querySelector('[aria-label="notification_card_overflow_label"]');
@@ -245,5 +309,182 @@ describe("Accent bar", () => {
     const barHigh = container.querySelector('[class*="bg-priority-high"][class*="absolute"]');
     expect(barMax).toBeNull();
     expect(barHigh).toBeNull();
+  });
+});
+
+// ─── Swipe gesture — AC #1–#8, #9 ──────────────────────────────────────────
+
+function swipeCard(element, deltaX, deltaY = 0) {
+  const startX = 200;
+  const startY = 100;
+  act(() => {
+    element.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        pointerType: "touch",
+        clientX: startX,
+        clientY: startY,
+        pointerId: 1,
+        bubbles: true,
+      })
+    );
+  });
+  act(() => {
+    element.dispatchEvent(
+      new PointerEvent("pointermove", {
+        pointerType: "touch",
+        clientX: startX + deltaX,
+        clientY: startY + deltaY,
+        pointerId: 1,
+        bubbles: true,
+      })
+    );
+  });
+  act(() => {
+    element.dispatchEvent(
+      new PointerEvent("pointerup", {
+        pointerType: "touch",
+        clientX: startX + deltaX,
+        clientY: startY + deltaY,
+        pointerId: 1,
+        bubbles: true,
+      })
+    );
+  });
+}
+
+describe("Swipe gesture — backing buttons always in DOM", () => {
+  it("mark-read and delete backing buttons are always rendered with aria-labels", () => {
+    render(makeCard());
+    expect(container.querySelector('[aria-label="swipe_mark_read_label"]')).toBeTruthy();
+    expect(container.querySelector('[aria-label="swipe_delete_label"]')).toBeTruthy();
+  });
+
+  it("both backing buttons start with tabIndex=-1 (collapsed state)", () => {
+    render(makeCard());
+    expect(container.querySelector('[aria-label="swipe_mark_read_label"]').tabIndex).toBe(-1);
+    expect(container.querySelector('[aria-label="swipe_delete_label"]').tabIndex).toBe(-1);
+  });
+});
+
+describe("Swipe gesture — left swipe reveals delete (AC #1)", () => {
+  it("swipe left past threshold (80px) sets delete button to tabIndex=0", () => {
+    render(makeCard());
+    swipeCard(container.firstChild, -80);
+    const deleteBtn = container.querySelector('[aria-label="swipe_delete_label"]');
+    expect(deleteBtn.tabIndex).toBe(0);
+  });
+
+  it("swipe left below threshold (40px) snaps back — delete stays tabIndex=-1", () => {
+    render(makeCard());
+    swipeCard(container.firstChild, -40);
+    const deleteBtn = container.querySelector('[aria-label="swipe_delete_label"]');
+    expect(deleteBtn.tabIndex).toBe(-1);
+  });
+});
+
+describe("Swipe gesture — right swipe reveals mark-read (AC #2)", () => {
+  it("swipe right past threshold on unread card reveals mark-read button (tabIndex=0)", () => {
+    render(makeCard({ notification: { ...baseNotification, new: 1 } }));
+    swipeCard(container.firstChild, 80);
+    const markReadBtn = container.querySelector('[aria-label="swipe_mark_read_label"]');
+    expect(markReadBtn.tabIndex).toBe(0);
+  });
+
+  it("swipe right past threshold on read card (new=0) snaps back — no reveal", () => {
+    render(makeCard({ notification: { ...baseNotification, new: 0 } }));
+    swipeCard(container.firstChild, 80);
+    const markReadBtn = container.querySelector('[aria-label="swipe_mark_read_label"]');
+    expect(markReadBtn.tabIndex).toBe(-1);
+  });
+});
+
+describe("Swipe gesture — action handlers (AC #3, #4)", () => {
+  it("tapping mark-read button calls subscriptionManager.markNotificationRead (AC #3)", () => {
+    render(makeCard({ notification: { ...baseNotification, new: 1 } }));
+    swipeCard(container.firstChild, 80);
+    const markReadBtn = container.querySelector('[aria-label="swipe_mark_read_label"]');
+    act(() => { markReadBtn.click(); });
+    expect(mockMarkRead).toHaveBeenCalledWith("1");
+  });
+
+  it("tapping mark-read button collapses card after action (AC #3)", () => {
+    render(makeCard({ notification: { ...baseNotification, new: 1 } }));
+    swipeCard(container.firstChild, 80);
+    const markReadBtn = container.querySelector('[aria-label="swipe_mark_read_label"]');
+    act(() => { markReadBtn.click(); });
+    expect(markReadBtn.tabIndex).toBe(-1);
+  });
+
+  it("tapping delete button opens delete confirm Dialog (AC #4)", () => {
+    render(makeCard());
+    swipeCard(container.firstChild, -80);
+    const deleteBtn = container.querySelector('[aria-label="swipe_delete_label"]');
+    act(() => { deleteBtn.click(); });
+    expect(container.querySelector('[role="dialog"]')).toBeTruthy();
+  });
+});
+
+describe("Swipe gesture — tap vs swipe distinction (AC #5)", () => {
+  it("tiny touch move (<10px) calls onTap — not a swipe", () => {
+    const onTap = vi.fn();
+    render(makeCard({ onTap }));
+    swipeCard(container.firstChild, -5);
+    expect(onTap).toHaveBeenCalledWith(baseNotification);
+    expect(container.querySelector('[aria-label="swipe_delete_label"]').tabIndex).toBe(-1);
+  });
+
+  it("swipe ≥10px does NOT call onTap", () => {
+    const onTap = vi.fn();
+    render(makeCard({ onTap }));
+    swipeCard(container.firstChild, -80);
+    expect(onTap).not.toHaveBeenCalled();
+  });
+});
+
+describe("Swipe gesture — mouse guard (AC #8)", () => {
+  it("mouse drag does NOT trigger swipe reveal", () => {
+    render(makeCard());
+    act(() => {
+      const el = container.firstChild;
+      el.dispatchEvent(new PointerEvent("pointerdown", { pointerType: "mouse", clientX: 200, clientY: 100, bubbles: true }));
+      el.dispatchEvent(new PointerEvent("pointermove", { pointerType: "mouse", clientX: 120, clientY: 100, bubbles: true }));
+      el.dispatchEvent(new PointerEvent("pointerup", { pointerType: "mouse", clientX: 120, clientY: 100, bubbles: true }));
+    });
+    expect(container.querySelector('[aria-label="swipe_delete_label"]').tabIndex).toBe(-1);
+  });
+});
+
+describe("Swipe gesture — prefers-reduced-motion (AC #6)", () => {
+  it("content layer has transition:none when prefers-reduced-motion is active", () => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    });
+    render(makeCard());
+    // Content layer is the 3rd child of the card root (after mark-read backing, delete backing)
+    const contentLayer = container.firstChild.children[2];
+    expect(contentLayer.style.transition).toBe("none");
+  });
+
+  it("backing buttons remain functional when reduced motion is active", () => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: vi.fn().mockImplementation((query) => ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    });
+    render(makeCard({ notification: { ...baseNotification, new: 1 } }));
+    swipeCard(container.firstChild, 80);
+    const markReadBtn = container.querySelector('[aria-label="swipe_mark_read_label"]');
+    act(() => { markReadBtn.click(); });
+    expect(mockMarkRead).toHaveBeenCalledWith("1");
   });
 });
