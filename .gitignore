@@ -6,8 +6,11 @@ build/
 
 #
 .claude
-
 .agents
 
 #
 _bmad
+
+.env
+playwright-report/
+test-results/

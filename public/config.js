@@ -6,7 +6,7 @@
 // During web development, you may change values here for rapid testing.
 
 var config = {
-  base_url: window.location.origin, // Change to test against a different server
+  base_url: "https://notify.eli.kr", // Self-hosted server for slice testing
   app_root: "/",
   enable_login: true,
   require_login: false,
