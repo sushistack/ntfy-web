@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (3-7 ready-for-dev)
+last_updated: 2026-06-20 (3-2 review)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -67,12 +67,12 @@ development_status:
 
   # Epic 3: Notification Experience — Receive · Read · Act
   epic-3: in-progress
-  3-1-notification-card-shell-slot-contract: review
-  3-2-adaptive-card-body-renderer: ready-for-dev
-  3-3-feeds-per-topic-all-real-time-with-states: ready-for-dev
-  3-4-card-overflow-actions-read-copy-delete: ready-for-dev
+  3-1-notification-card-shell-slot-contract: done
+  3-2-adaptive-card-body-renderer: review
+  3-3-feeds-per-topic-all-real-time-with-states: in-progress
+  3-4-card-overflow-actions-read-copy-delete: review
   3-5-url-as-source-of-truth-selection-detail-host: ready-for-dev
-  3-6-detail-content-markdown-attachment-metadata: backlog
+  3-6-detail-content-markdown-attachment-metadata: ready-for-dev
   3-7-inline-action-buttons-view-http-broadcast: ready-for-dev
   3-8-mobile-card-swipe-gesture: ready-for-dev
   epic-3-retrospective: optional

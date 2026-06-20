@@ -442,5 +442,11 @@
     "server_auth_form_password_label": "Password",
     "server_auth_form_save_button": "Save settings",
     "server_auth_form_save_error": "Failed to save. Try again.",
-    "login_error_invalid_credentials": "Invalid username or password"
+    "login_error_invalid_credentials": "Invalid username or password",
+    "notification_card_badge_high": "High",
+    "notification_card_badge_max": "Urgent",
+    "notification_card_unread_label": "Unread",
+    "notification_card_mute_toggle_label": "Mute notifications",
+    "notification_card_unmute_toggle_label": "Unmute notifications",
+    "notification_card_overflow_label": "More options"
 }
