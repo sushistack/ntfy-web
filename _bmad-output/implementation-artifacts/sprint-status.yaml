@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20
+last_updated: 2026-06-20 (1-9 created)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -43,16 +43,16 @@ story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
   # Epic 1: Foundation & Design System
-  epic-1: backlog
-  1-1-spike-emotion-layer-coexistence-poc: backlog
-  1-2-characterization-snapshot-message-dedup-ordering: backlog
-  1-3-install-ui-stack-and-wire-tailwind-v4-path-aliases: backlog
-  1-4-design-tokens-as-single-source-web-android-manifest: backlog
-  1-5-self-hosted-fonts-sw-fix-and-fouc-free-theme-bootstrap: backlog
-  1-6-ui-display-primitives-button-card-chip: backlog
-  1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: backlog
-  1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: backlog
-  1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: backlog
+  epic-1: in-progress
+  1-1-spike-emotion-layer-coexistence-poc: done
+  1-2-characterization-snapshot-message-dedup-ordering: review
+  1-3-install-ui-stack-and-wire-tailwind-v4-path-aliases: ready-for-dev
+  1-4-design-tokens-as-single-source-web-android-manifest: ready-for-dev
+  1-5-self-hosted-fonts-sw-fix-and-fouc-free-theme-bootstrap: ready-for-dev
+  1-6-ui-display-primitives-button-card-chip: ready-for-dev
+  1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: ready-for-dev
+  1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: ready-for-dev
+  1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: ready-for-dev
   epic-1-retrospective: optional
 
   # Epic 2: First Run — Jay Gets In

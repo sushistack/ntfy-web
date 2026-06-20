@@ -160,7 +160,7 @@ class SubscriptionManager {
     // killing performance. See  https://dexie.org/docs/Collection/Collection.offset()#a-better-paging-approach
 
     return this.db.notifications
-      .orderBy("time") // Sort by time
+      .orderBy("sequenceId")
       .filter((n) => n.subscriptionId === subscriptionId)
       .reverse()
       .toArray();
@@ -168,7 +168,7 @@ class SubscriptionManager {
 
   async getAllNotifications() {
     return this.db.notifications
-      .orderBy("time") // Efficient, see docs
+      .orderBy("sequenceId")
       .reverse()
       .toArray();
   }
@@ -278,4 +278,5 @@ class SubscriptionManager {
   }
 }
 
+export { SubscriptionManager };
 export default new SubscriptionManager(db());
