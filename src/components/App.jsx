@@ -25,12 +25,15 @@ import RTLCacheProvider from "./RTLCacheProvider";
 import session from "../app/Session";
 import { NEW } from "@/config/migration";
 import AppProviders from "./AppProviders";
+import Feed from "@/components/Feed";
 import Sidebar, { SidebarContent } from "./Sidebar";
 import AppBarNew from "./AppBar";
 import BottomNav from "./BottomNav";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
 import { useConnection } from "@/components/contexts/ConnectionContext";
+import { useSelection } from "@/components/contexts/SelectionContext";
 import { NotConnectedPanel, ConnectingPanel, NoSubscriptionsPanel } from "@/components/message/EmptyStates";
+import DetailPane from "./DetailPane";
 import SubscribeDialog from "./SubscribeDialog";
 import db from "@/app/db";
 
@@ -121,6 +124,40 @@ const ContentRegion = () => {
   );
 };
 
+// One route split by CSS breakpoint — mobile: DetailPane full-screen, desktop: Feed (DetailRegion handles the pane)
+// useIsDesktop prevents DetailPane from mounting on desktop (DetailRegion already mounts it there)
+const lgBreakpointMQ = typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)") : null;
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(lgBreakpointMQ?.matches ?? false);
+  useEffect(() => {
+    if (!lgBreakpointMQ) return;
+    const handler = (e) => setIsDesktop(e.matches);
+    lgBreakpointMQ.addEventListener("change", handler);
+    return () => lgBreakpointMQ.removeEventListener("change", handler);
+  }, []);
+  return isDesktop;
+};
+
+const MsgDetailRoute = () => {
+  const isDesktop = useIsDesktop();
+  return (
+    <>
+      {!isDesktop && <DetailPane />}
+      <div className="hidden lg:block"><Feed /></div>
+    </>
+  );
+};
+
+// Desktop right pane — hidden when no notification is selected
+const DetailRegion = () => {
+  const { msgId } = useSelection();
+  return (
+    <div className="hidden lg:block w-[420px] border-l border-border overflow-y-auto"> {/* layout-nudge: placeholder width; finalised in 3.5 */}
+      {msgId && <DetailPane />}
+    </div>
+  );
+};
+
 /* ── NewShell — responsive 3-column layout wired by Tasks 4–6 ── */
 const NewShell = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -139,26 +176,39 @@ const NewShell = () => {
           <Sidebar collapsed={true} />
         </div>
 
-        {/* Feed/content column */}
-        <main className="flex-1 overflow-y-auto">
+        {/* Feed/content column — tabIndex={-1} allows programmatic focus for a11y back navigation */}
+        <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto outline-none">
           <div className="max-w-[720px] mx-auto px-4 py-6">
             <Routes>
-              <Route path={routes.app} element={<ContentRegion />} />
+              {NEW.feed ? (
+                <>
+                  <Route path={routes.app} element={<Feed />} />
+                  {/* /:topic/:msgId must come BEFORE /:topic — more specific first in RR6 */}
+                  <Route path={routes.msgDetail} element={<MsgDetailRoute />} />
+                  <Route path={routes.subscription} element={<Feed />} />
+                  <Route path={routes.subscriptionExternal} element={<Feed />} />
+                </>
+              ) : (
+                <>
+                  <Route path={routes.app} element={<ContentRegion />} />
+                  <Route path={routes.subscription} element={<ContentRegion />} />
+                  <Route path={routes.subscriptionExternal} element={<ContentRegion />} />
+                </>
+              )}
               <Route path={routes.settings} element={<ServerAuthForm />} />
-              <Route path={routes.subscription} element={<ContentRegion />} />
-              <Route path={routes.subscriptionExternal} element={<ContentRegion />} />
             </Routes>
           </div>
         </main>
 
-        {/* Detail region — desktop right pane, reserved for Story 3.5 */}
-        <div className="hidden lg:block w-[420px] border-l border-border overflow-y-auto"> {/* layout-nudge: placeholder width; Story 3.5 finalises */}
-          {/* Detail pane placeholder */}
-        </div>
+        {/* Detail region — desktop right pane */}
+        <DetailRegion />
       </div>
 
       {/* Mobile bottom nav — hidden on md+ */}
       <BottomNav />
+
+      {/* Publish FAB + publish modal — fixed chrome, must be outside overflow-hidden columns */}
+      <Messaging />
 
       {/* Mobile drawer — Sidebar inside Sheet */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>

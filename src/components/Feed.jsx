@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -11,11 +12,26 @@ import { NotificationActions } from "./message/NotificationActions";
 import { NoMessagesTopicPanel, NoMessagesAllPanel } from "./message/EmptyStates";
 import { useActiveTopic } from "./hooks";
 import { useSelection } from "@/components/contexts/SelectionContext";
+import { usePublishQueue } from "@/components/contexts/PublishQueueContext";
+import { SendingIndicator, RetryBar } from "./message/QueueSlots";
 
 const PAGE_SIZE = 20;
 
 const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, isMuted, onMuteToggle }) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [actionError, setActionError] = useState(null);
+  const [muteError, setMuteError] = useState(false);
+
+  const handleMuteToggle = async () => {
+    setMuteError(false);
+    try {
+      await onMuteToggle?.();
+    } catch {
+      setMuteError(true);
+    }
+  };
+
   return (
     <NotificationCard
       notification={notification}
@@ -23,14 +39,25 @@ const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected, i
       showTopicChip={showTopicChip}
       isSelected={isSelected}
       isMuted={isMuted}
-      onMuteToggle={onMuteToggle}
+      onMuteToggle={handleMuteToggle}
+      onTap={(n) => navigate(`/${n.topic}/${n.id}`)}
       body={
         <>
           <CardBody notification={notification} />
           <NotificationActions notification={notification} onError={setActionError} />
         </>
       }
-      error={actionError}
+      error={
+        muteError ? (
+          <button
+            type="button"
+            onClick={handleMuteToggle}
+            className="text-caption text-priority-high underline py-1"
+          >
+            {t("notification_action_failed_retry_label")}
+          </button>
+        ) : actionError
+      }
     />
   );
 };
@@ -40,6 +67,7 @@ const Feed = () => {
   const topicName = useActiveTopic(); // topic string or null
   const isAllFeed = !topicName;
   const { msgId } = useSelection();
+  const { queue } = usePublishQueue();
 
   // Look up the full subscription object for the active topic
   const allSubscriptions = useLiveQuery(() => subscriptionManager.all(), []) ?? [];
@@ -51,6 +79,10 @@ const Feed = () => {
     () => Object.fromEntries(allSubscriptions.map(s => [s.id, s])),
     [allSubscriptions]
   );
+
+  const optimisticEntries = isAllFeed
+    ? queue
+    : queue.filter((e) => subscription && e.topic === subscription.topic && e.baseUrl === subscription.baseUrl);
 
   const rawNotifications = useLiveQuery(
     () => isAllFeed
@@ -71,11 +103,7 @@ const Feed = () => {
   const handleTopicMuteToggle = async () => {
     if (!subscription) return;
     const next = subscription.mutedUntil ? 0 : 1;
-    try {
-      await subscriptionManager.setMutedUntil(subscription.id, next);
-    } catch (e) {
-      console.error("[Feed] mute toggle failed", e);
-    }
+    await subscriptionManager.setMutedUntil(subscription.id, next);
   };
 
   useEffect(() => {
@@ -118,6 +146,32 @@ const Feed = () => {
             aria-label={t("feed_notifications_list")}
             aria-relevant="additions"
           >
+            {optimisticEntries.map((entry) => {
+              const optSub = isAllFeed ? allSubscriptions.find((s) => s.baseUrl === entry.baseUrl && s.topic === entry.topic) : subscription;
+              const syntheticNotification = {
+                id: `optimistic-${entry.id}`,
+                title: entry.title,
+                message: entry.body,
+                priority: entry.priority,
+                tags: entry.tags ? entry.tags.split(",").map((s) => s.trim()).filter(Boolean) : [],
+                time: Math.floor(Date.now() / 1000),
+                new: 0,
+                subscriptionId: optSub?.id ?? null,
+              };
+              return (
+                <li key={entry.id} className="motion-safe:animate-[slide-in-top_0.25s_ease-out]">
+                  <NotificationCard
+                    notification={syntheticNotification}
+                    subscriptionName={isAllFeed ? (optSub?.displayName || optSub?.topic) : undefined}
+                    isSelected={false}
+                    onTap={() => {}}
+                    body={null}
+                    pending={entry.state !== "failed" ? <SendingIndicator state={entry.state} /> : null}
+                    error={entry.state === "failed" ? <RetryBar id={entry.id} /> : null}
+                  />
+                </li>
+              );
+            })}
             {visible.map((n, index) => {
               const notifSub = isAllFeed ? subsById[n.subscriptionId] : null;
               const subscriptionName = isAllFeed
@@ -130,11 +184,7 @@ const Feed = () => {
                 ? async () => {
                     if (!notifSub) return;
                     const next = notifSub.mutedUntil ? 0 : 1;
-                    try {
-                      await subscriptionManager.setMutedUntil(notifSub.id, next);
-                    } catch (e) {
-                      console.error("[Feed] mute toggle failed", e);
-                    }
+                    await subscriptionManager.setMutedUntil(notifSub.id, next);
                   }
                 : handleTopicMuteToggle;
               return (
