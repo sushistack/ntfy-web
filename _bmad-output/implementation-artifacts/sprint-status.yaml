@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (5-3 review complete)
+last_updated: 2026-06-20 (5-4 review complete)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -90,5 +90,5 @@ development_status:
   5-1-settings-surface-sectioned-form: done
   5-2-pwa-browser-notifications-permission: done
   5-3-accessibility-light-theme-contrast-verification-pass: done
-  5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: review
+  5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: done
   epic-5-retrospective: optional

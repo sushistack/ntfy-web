@@ -43,3 +43,7 @@
 
 - PublishQueueContext.jsx: Zombie "sending" entry if TCP drops mid-flight without an HTTP error — entry stays as "sending" forever with no timeout or cleanup; inherent network limitation, out of scope for v1
 - QueueSlots.jsx: RetryBar retry button has no disabled state — double-clicking sends two concurrent requests; cosmetic race condition, acceptable for v1
+
+## Deferred from: code review of 5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens (2026-06-20)
+
+- `routes.msgDetail` and `routes.subscriptionExternal` are both two-segment dynamic paths, so React Router cannot distinguish them structurally; this predates Story 5.4 and requires a deliberate URL contract change or runtime discriminator.
