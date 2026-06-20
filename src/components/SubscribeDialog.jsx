@@ -128,7 +128,7 @@ const SubscribePage = (props) => {
           placeholder={t("subscribe_dialog_subscribe_topic_placeholder")}
           value={props.topic}
           onChange={(e) => props.setTopic(e.target.value)}
-          className="flex-1 bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring"
+          className="flex-1 bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
           aria-label={t("subscribe_dialog_subscribe_topic_placeholder")}
         />
         <Button variant="ghost" size="sm" type="button" onClick={() => props.setTopic(randomAlphanumericString(16))}>
@@ -152,7 +152,7 @@ const SubscribePage = (props) => {
           placeholder={config.base_url}
           value={props.baseUrl}
           onChange={(e) => props.setBaseUrl(e.target.value)}
-          className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring mb-2"
+          className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-2"
           aria-label={t("subscribe_dialog_subscribe_base_url_label")}
         />
       )}
@@ -196,7 +196,7 @@ const LoginPage = (props) => {
         placeholder={t("subscribe_dialog_login_username_label")}
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring mb-3"
+        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui mb-3"
         aria-label={t("subscribe_dialog_login_username_label")}
       />
       <input
@@ -204,7 +204,7 @@ const LoginPage = (props) => {
         placeholder={t("subscribe_dialog_login_password_label")}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui focus-visible:ring-2 focus-visible:ring-focus-ring"
+        className="w-full bg-transparent border-b border-control-border py-1 text-body text-text focus:outline-none focus:border-accent-ui"
         aria-label={t("subscribe_dialog_login_password_label")}
       />
       {error && <p className="text-caption text-priority-urgent mt-2">{error}</p>}
