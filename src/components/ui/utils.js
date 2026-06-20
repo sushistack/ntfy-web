@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { extendTailwindMerge } from "tailwind-merge";
+
 export { cva } from "class-variance-authority";
 
 // Tailwind v4 generates utilities from @theme custom properties, but

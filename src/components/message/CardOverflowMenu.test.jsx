@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import CardOverflowMenu from "./CardOverflowMenu";
+
 // vi.hoisted ensures these refs are available inside the hoisted vi.mock factories
 const mockMarkRead = vi.hoisted(() => vi.fn());
 const mockDelete = vi.hoisted(() => vi.fn());
@@ -51,8 +53,6 @@ vi.mock("@/app/SubscriptionManager", () => ({
 
 vi.mock("@/app/utils", () => ({ copyToClipboard: mockCopy }));
 vi.mock("@/app/notificationUtils", () => ({ formatMessage: (n) => n.message }));
-
-import CardOverflowMenu from "./CardOverflowMenu";
 
 const unreadNotification = { id: "abc123", new: 1, message: "Hello" };
 const readNotification = { id: "abc123", new: 0, message: "Hello" };

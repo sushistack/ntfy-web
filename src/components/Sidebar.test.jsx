@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import { SidebarContent } from "./Sidebar";
+
 /* ── Hoisted mock refs ── */
 const mockSetDisplayName = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
 const mockDeleteNotifications = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
@@ -79,8 +81,6 @@ vi.mock("@/components/ui/Dialog", () => ({
 vi.mock("@/components/ui/Button", () => ({
   Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
-
-import { SidebarContent } from "./Sidebar";
 
 const subA = { id: 1, topic: "alerts", displayName: "My Alerts", new: 0, mutedUntil: 0, internal: false };
 const subB = { id: 2, topic: "backups", displayName: null, new: 3, mutedUntil: 0, internal: false };

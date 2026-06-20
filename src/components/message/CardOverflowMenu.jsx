@@ -44,7 +44,7 @@ const CardOverflowMenu = ({ notification }) => {
           <button
             type="button"
             aria-label={t("card_overflow_trigger_label")}
-            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] transition-colors"
+            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-colors"
           >
             <MoreHorizontalIcon />
           </button>

@@ -16,13 +16,13 @@ const PublishFab = ({ onClick }) => {
       aria-label={t("publish_fab_label")}
       className={cn(
         "fixed z-fab",
-        "bottom-[calc(56px+1rem)] right-4",
+        "bottom-fab-mobile right-4",
         "md:bottom-6 md:right-6",
-        "w-14 h-14 rounded-[10px] bg-accent text-[#0C1A12]",
+        "w-14 h-14 rounded-sm bg-accent-ui text-accent-on-surface",
         "shadow-elev-2",
         "flex items-center justify-center",
-        "hover:brightness-110 active:brightness-90 transition-[filter]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]"
+        "hover:brightness-110 active:brightness-90 transition",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       )}
     >
       <ComposeIcon />

@@ -1,8 +1,7 @@
 import { forwardRef } from "react";
 import { cn } from "./utils";
 
-export const Card = forwardRef(function Card({ className, ...props }, ref) {
-  return (
+export const Card = forwardRef(({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
@@ -16,5 +15,4 @@ export const Card = forwardRef(function Card({ className, ...props }, ref) {
       )}
       {...props}
     />
-  );
-});
+  ));

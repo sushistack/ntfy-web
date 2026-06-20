@@ -11,16 +11,16 @@
    Roboto @font-face stays in public/static/css/fonts.css as fallback.
    ─────────────────────────────────────────────────────────── */
 @font-face {
-  font-family: 'Plus Jakarta Sans';
-  src: url('/static/fonts/PlusJakartaSans-VariableFont_wght.woff2') format('woff2');
+  font-family: "Plus Jakarta Sans";
+  src: url("/static/fonts/PlusJakartaSans-VariableFont_wght.woff2") format("woff2");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'JetBrains Mono';
-  src: url('/static/fonts/JetBrainsMono-VariableFont_wght.woff2') format('woff2');
+  font-family: "JetBrains Mono";
+  src: url("/static/fonts/JetBrainsMono-VariableFont_wght.woff2") format("woff2");
   font-weight: 100 800;
   font-style: normal;
   font-display: swap;
@@ -28,120 +28,122 @@
 
 @theme {
   /* ── Color: Backgrounds ── */
-  --color-bg:             #F3F4F6;   /* off-white page canvas, never pure #FFF */
-  --color-surface:        #FFFFFF;   /* card surface */
-  --color-surface-2:      #EEF0F2;   /* hover/active chrome one step up */
-  --color-surface-active: #EEF0F2;   /* = surface-2; active nav row, icon-button hover */
+  --color-bg: #f3f4f6; /* off-white page canvas, never pure #FFF */
+  --color-surface: #ffffff; /* card surface */
+  --color-surface-2: #eef0f2; /* hover/active chrome one step up */
+  --color-surface-active: #eef0f2; /* = surface-2; active nav row, icon-button hover */
 
   /* ── Color: Borders ── */
-  --color-border:         #E4E6E9;   /* decorative hairline — WCAG-exempt (non-interactive) */
-  --color-control-border: #767B80;   /* interactive boundary — 4.27:1 on surface, 3.74:1 on surface-2 */
+  --color-border: #e4e6e9; /* decorative hairline — WCAG-exempt (non-interactive) */
+  --color-control-border: #767b80; /* interactive boundary — 4.27:1 on surface, 3.74:1 on surface-2 */
 
   /* ── Color: Text ── */
-  --color-text:           #1C1E21;   /* primary body — 16.71:1 on surface, 15.18:1 on bg */
-  --color-muted:          #6A7076;   /* secondary/label — 5.01:1 on surface, 4.55:1 on bg (WCAG AA) */
+  --color-text: #1c1e21; /* primary body — 16.71:1 on surface, 15.18:1 on bg */
+  --color-muted: #6a7076; /* secondary/label — 5.01:1 on surface, 4.55:1 on bg (WCAG AA) */
 
   /* ── Color: Accent (3 semantic sub-tokens — WCAG 1.4.11) ──
      Pick by what is PAINTED, not by component type:
        text/icon        → accent-text    (4.5:1 contrast target)
        border/focus/dot → accent-ui      (3:1 contrast target)
        fg ON accent bg  → accent-on-surface (4.5:1 contrast target)  */
-  --color-accent-text:        #0E7A48;   /* dark emerald; 5.39:1 on surface, 4.72:1 on surface-2 (WCAG AA) */
-  --color-accent-ui:          #1A9E5F;   /* 3:1 for borders, focus ring, nav dot — 3.44:1 on surface */
-  --color-accent-on-surface:  #0C1A12;   /* very dark green on accent fill — 5.20:1 on #1A9E5F (WCAG AA) */
+  --color-accent-text: #0e7a48; /* dark emerald; 5.39:1 on surface, 4.72:1 on surface-2 (WCAG AA) */
+  --color-accent-ui: #1a9e5f; /* 3:1 for borders, focus ring, nav dot — 3.44:1 on surface */
+  --color-accent-on-surface: #0c1a12; /* very dark green on accent fill — 5.20:1 on #1A9E5F (WCAG AA) */
 
   /* ── Color: Priority / Meter thresholds ── */
-  --color-priority-high:    #BF6C15;   /* P4 amber — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
-  --color-priority-max:     #E5484D;   /* P5 coral — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
-  --color-priority-urgent:  #C7353A;   /* inline error text — 5.25:1 on surface, 4.60:1 on surface-2 */
+  --color-priority-high: #bf6c15; /* P4 amber — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
+  --color-priority-max: #e5484d; /* P5 coral — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
+  --color-priority-urgent: #c7353a; /* inline error text — 5.25:1 on surface, 4.60:1 on surface-2 */
   --color-priority-high-on-surface: #241403;
-  --color-priority-max-on-surface:  #1A0E0E;
-  --color-meter-ok:         #0E7A48;   /* = accent-text; 4.31:1 on meter-track (WCAG 1.4.11) */
-  --color-meter-track:      #E4E6E9;   /* meter background; fill-on-track pairs verified */
-  --color-meter-warning:    #BF6C15;   /* = priority-high; 3.55:1 on bg, 3.13:1 on track (WCAG 1.4.11) */
-  --color-meter-critical:   #E5484D;   /* = priority-max; 3.91:1 on surface, 3.13:1 on track (WCAG AA) */
+  --color-priority-max-on-surface: #1a0e0e;
+  --color-meter-ok: #0e7a48; /* = accent-text; 4.31:1 on meter-track (WCAG 1.4.11) */
+  --color-meter-track: #e4e6e9; /* meter background; fill-on-track pairs verified */
+  --color-meter-warning: #bf6c15; /* = priority-high; 3.55:1 on bg, 3.13:1 on track (WCAG 1.4.11) */
+  --color-meter-critical: #e5484d; /* = priority-max; 3.91:1 on surface, 3.13:1 on track (WCAG AA) */
 
   /* ── Color: Topic chip ── */
-  --color-topic-chip-bg:    #E1F2EA;   /* emerald-tinted light pill */
-  --color-topic-chip-text:  #136B43;   /* dark emerald — 5.63:1 on chip-bg (WCAG AA) */
+  --color-topic-chip-bg: #e1f2ea; /* emerald-tinted light pill */
+  --color-topic-chip-text: #136b43; /* dark emerald — 5.63:1 on chip-bg (WCAG AA) */
 
   /* ── Color: Buttons (achromatic — same in both themes) ── */
-  --color-button-fill:      #F4F5F6;   /* white-fill primary button background */
-  --color-button-fill-text: #15171A;   /* near-black primary button text — 16.45:1 on button-fill */
+  --color-button-fill: #f4f5f6; /* white-fill primary button background */
+  --color-button-fill-text: #15171a; /* near-black primary button text — 16.45:1 on button-fill */
 
   /* ── Color: Focus ring ── */
-  --color-focus-ring:       #1A9E5F;   /* = accent-ui; 3.44:1 on surface (WCAG 1.4.11) */
+  --color-focus-ring: #1a9e5f; /* = accent-ui; 3.44:1 on surface (WCAG 1.4.11) */
 
   /* ── Typography: Font families ── */
-  --font-sans: 'Plus Jakarta Sans', 'Roboto', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Roboto Mono', monospace;
+  --font-sans: "Plus Jakarta Sans", "Roboto", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", monospace;
 
   /* ── Typography: Font sizes (generate text-* utilities) ── */
-  --text-display:  28px;
-  --text-title:    22px;
+  --text-display: 28px;
+  --text-title: 22px;
   --text-subtitle: 18px;
-  --text-body:     16px;
-  --text-body-sm:  14px;
-  --text-caption:  12px;
-  --text-mono:     14px;
+  --text-body: 16px;
+  --text-body-sm: 14px;
+  --text-caption: 12px;
+  --text-mono: 14px;
 
   /* ── Typography: Line heights (pair with text-* using leading-* or explicit style) ── */
-  --leading-display:  34px;
-  --leading-title:    28px;
+  --leading-display: 34px;
+  --leading-title: 28px;
   --leading-subtitle: 24px;
-  --leading-body:     24px;
-  --leading-body-sm:  20px;
-  --leading-caption:  16px;
-  --leading-mono:     20px;
+  --leading-body: 24px;
+  --leading-body-sm: 20px;
+  --leading-caption: 16px;
+  --leading-mono: 20px;
 
   /* ── Spacing: 4px base scale ── */
-  --spacing-1: 4px;    /* tightest: icon↔label */
+  --spacing-1: 4px; /* tightest: icon↔label */
   --spacing-2: 8px;
   --spacing-3: 12px;
-  --spacing-4: 16px;   /* card internal padding base */
-  --spacing-5: 24px;   /* card internal padding full */
+  --spacing-4: 16px; /* card internal padding base */
+  --spacing-5: 24px; /* card internal padding full */
   --spacing-6: 32px;
-  --spacing-7: 48px;   /* between major surfaces */
+  --spacing-7: 48px; /* between major surfaces */
 
   /* ── Layout sizes ── */
   --width-detail-pane: 420px;
   --width-nav-drawer: 280px;
+  --min-width-menu: 160px;
   --container-feed: 720px;
   --container-message: 70ch;
   --container-attachment-name: 24ch;
   --max-height-dialog: 90dvh;
+  --inset-fab-mobile: calc(56px + var(--spacing-4));
 
   /* ── Motion ── */
   --animate-slide-in-top: slide-in-top 0.25s ease-out;
 
   /* ── Radius ── */
-  --radius-sm:    10px;    /* buttons, inputs */
-  --radius-md:    16px;    /* cards, dialogs, empty-state icon tile */
-  --radius-full:  9999px;  /* chips, pill, avatars, toggles, meter tracks */
-  --radius-badge: 6px;     /* priority badge — intentionally squared (sharper than sm) */
+  --radius-sm: 10px; /* buttons, inputs */
+  --radius-md: 16px; /* cards, dialogs, empty-state icon tile */
+  --radius-full: 9999px; /* chips, pill, avatars, toggles, meter tracks */
+  --radius-badge: 6px; /* priority badge — intentionally squared (sharper than sm) */
   /* NOTE: card shape (0 16px 16px 0) cannot be a single @theme value.
      Use @utility rounded-card below, or var(--radius-md) with explicit border-radius. */
 
   /* ── Elevation / Shadow ── */
-  --shadow-flat:   none;                                                    /* elev-0: border-only */
-  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);                           /* resting card */
+  --shadow-flat: none; /* elev-0: border-only */
+  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4); /* resting card */
   --shadow-elev-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3); /* hover / dialog */
 
   /* ── Z-index scale (overlay stacking) ── */
-  --z-fab:     40;     /* Floating action button — above content, below overlays */
-  --z-popover: 50;     /* Popover, Tooltip — non-modal, above content */
-  --z-overlay: 1350;   /* Dialog, Sheet, Menu — above MUI modals (1300) during migration */
+  --z-fab: 40; /* Floating action button — above content, below overlays */
+  --z-popover: 50; /* Popover, Tooltip — non-modal, above content */
+  --z-overlay: 1350; /* Dialog, Sheet, Menu — above MUI modals (1300) during migration */
 
   /* ── Overlay backdrop ── */
-  --color-overlay: rgba(0, 0, 0, 0.45);  /* dialog/sheet backdrop — visual adequacy confirmed */
+  --color-overlay: rgba(0, 0, 0, 0.45); /* dialog/sheet backdrop — visual adequacy confirmed */
 
   /* ── Glow effects: light-mode safe defaults ──
      Dark-only overrides are in .dark {} below.
      Declaring `none` here ensures var(--glow-*) resolves to a valid value in light mode,
      preventing the CSS invalid-at-computed-value bug when glows are stacked with other shadows. */
   --glow-priority-high: none;
-  --glow-priority-max:  none;
-  --glow-accent-dot:    none;
+  --glow-priority-max: none;
+  --glow-accent-dot: none;
 }
 
 /* ── Dark mode (hero theme) ────────────────────────────────────
@@ -149,45 +151,45 @@
    All values here are confirmed; provisional light-theme annotations were removed in Story 5.3.
    ─────────────────────────────────────────────────────────── */
 .dark {
-  --color-bg:             #0C0D0F;   /* near-black neutral canvas */
-  --color-surface:        #16181B;   /* card surface */
-  --color-surface-2:      #1C1F23;   /* one step up: hover/active chrome */
-  --color-surface-active: #1C1F23;   /* = surface-2 */
-  --color-border:         #23262B;   /* hairline 1px */
-  --color-control-border: #8B9197;   /* interactive boundary */
-  --color-text:           #E8EAED;   /* primary body text */
-  --color-muted:          #8B9197;   /* secondary/label text */
+  --color-bg: #0c0d0f; /* near-black neutral canvas */
+  --color-surface: #16181b; /* card surface */
+  --color-surface-2: #1c1f23; /* one step up: hover/active chrome */
+  --color-surface-active: #1c1f23; /* = surface-2 */
+  --color-border: #23262b; /* hairline 1px */
+  --color-control-border: #8b9197; /* interactive boundary */
+  --color-text: #e8eaed; /* primary body text */
+  --color-muted: #8b9197; /* secondary/label text */
 
   /* Accent sub-tokens */
-  --color-accent-text:       #42D392;   /* emerald — 4.5:1 on dark bg; brand shared with Android */
-  --color-accent-ui:         #42D392;   /* 3:1 for borders, focus ring, nav dot, unread dot */
-  --color-accent-on-surface: #0C1A12;   /* very dark green on #42D392 fill (FAB label, etc.) */
+  --color-accent-text: #42d392; /* emerald — 4.5:1 on dark bg; brand shared with Android */
+  --color-accent-ui: #42d392; /* 3:1 for borders, focus ring, nav dot, unread dot */
+  --color-accent-on-surface: #0c1a12; /* very dark green on #42D392 fill (FAB label, etc.) */
 
   /* Priority */
-  --color-priority-high:    #F5A95C;   /* P4 amber */
-  --color-priority-max:     #FF6B6E;   /* P5 coral */
-  --color-priority-urgent:  #FF6B6E;   /* alias of priority-max — used for inline error text */
+  --color-priority-high: #f5a95c; /* P4 amber */
+  --color-priority-max: #ff6b6e; /* P5 coral */
+  --color-priority-urgent: #ff6b6e; /* alias of priority-max — used for inline error text */
 
   /* Meter */
-  --color-meter-ok:       #42D392;   /* = accent-text */
-  --color-meter-track:    #262A2F;
-  --color-meter-warning:  #F5A95C;   /* = priority-high; threshold ≥ 65% */
-  --color-meter-critical: #FF6B6E;   /* = priority-max; threshold ≥ 90% */
+  --color-meter-ok: #42d392; /* = accent-text */
+  --color-meter-track: #262a2f;
+  --color-meter-warning: #f5a95c; /* = priority-high; threshold ≥ 65% */
+  --color-meter-critical: #ff6b6e; /* = priority-max; threshold ≥ 90% */
 
   /* Topic chip */
-  --color-topic-chip-bg:   #143A2D;   /* soft dark emerald tint */
-  --color-topic-chip-text: #7CE6B4;   /* light emerald text */
+  --color-topic-chip-bg: #143a2d; /* soft dark emerald tint */
+  --color-topic-chip-text: #7ce6b4; /* light emerald text */
 
   /* Focus ring */
-  --color-focus-ring: #42D392;   /* = accent-ui */
+  --color-focus-ring: #42d392; /* = accent-ui */
 
   /* Overlay backdrop */
-  --color-overlay: rgba(0, 0, 0, 0.65);  /* dialog/sheet backdrop, dark hero */
+  --color-overlay: rgba(0, 0, 0, 0.65); /* dialog/sheet backdrop, dark hero */
 
   /* Glow effects (dark-only — do NOT apply in light mode) */
-  --glow-priority-high: 0 0 10px rgba(245, 169, 92, 0.267);  /* amber glow on P4 bar */
-  --glow-priority-max:  0 0 10px rgba(255, 107, 110, 0.333);  /* coral glow on P5 bar */
-  --glow-accent-dot:    0 0 7px #42D392;                       /* status/unread dot glow */
+  --glow-priority-high: 0 0 10px rgba(245, 169, 92, 0.267); /* amber glow on P4 bar */
+  --glow-priority-max: 0 0 10px rgba(255, 107, 110, 0.333); /* coral glow on P5 bar */
+  --glow-accent-dot: 0 0 7px #42d392; /* status/unread dot glow */
 }
 
 /* ── Custom utility: Notification card signature shape ───────────

@@ -25,7 +25,7 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
         className={cn(
           "p-2 rounded-sm text-muted transition-colors",
           "hover:bg-surface-2",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]"
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
         )}
       >
         <HamburgerIcon />

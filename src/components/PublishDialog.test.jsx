@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import PublishDialog from "./PublishDialog";
+
 const mockEnqueue = vi.hoisted(() => vi.fn());
 const mockIsMobile = vi.hoisted(() => ({ value: false }));
 
@@ -47,8 +49,6 @@ vi.mock("@/components/ui/Sheet", () => ({
   SheetContent: ({ children }) => <div role="dialog">{children}</div>,
   SheetClose: ({ children, asChild }) => (asChild ? children : <button>{children}</button>),
 }));
-
-import PublishDialog from "./PublishDialog";
 
 const onOpenChange = vi.fn();
 const defaultProps = {

@@ -258,6 +258,8 @@
   "server_auth_form_save_button": "설정 저장",
   "server_auth_form_save_error": "저장하지 못했습니다. 다시 시도해 주세요.",
   "login_error_invalid_credentials": "사용자 이름 또는 비밀번호가 맞지 않습니다",
+  "login_error_unexpected": "로그인하지 못했습니다. 다시 시도해 주세요.",
+  "ui_dialog_title": "대화상자",
   "empty_state_not_connected_title": "서버에 연결할 수 없음",
   "empty_state_not_connected_desc": "주소와 인증을 확인해 주세요.",
   "empty_state_not_connected_action": "설정 열기",

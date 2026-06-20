@@ -15,7 +15,7 @@ vi.mock("../../app/SubscriptionManager", () => ({
   },
 }));
 
-const { connectionReducer, CONN_STATES, ConnectionProvider, useConnection } = await import("./ConnectionContext.jsx");
+const { connectionReducer, CONN_STATES, useConnection } = await import("./ConnectionContext.jsx");
 
 // ─── Reducer ────────────────────────────────────────────────────────────────
 

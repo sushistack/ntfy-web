@@ -2,11 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
 
+import DataBoundary from './DataBoundary.jsx';
+
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key) => key }),
 }));
-
-import DataBoundary from './DataBoundary.jsx';
 
 let container;
 let root;

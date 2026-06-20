@@ -249,7 +249,6 @@ export const playSound = async (id) => {
 };
 
 // From: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-// eslint-disable-next-line func-style
 export async function* fetchLinesIterator(fileURL, headers) {
   const utf8Decoder = new TextDecoder("utf-8");
   const response = await fetch(fileURL, {

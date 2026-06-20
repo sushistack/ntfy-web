@@ -1,17 +1,13 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import subscriptionManager from "../app/SubscriptionManager";
 import { useSelection } from "@/components/contexts/SelectionContext";
+import subscriptionManager from "../app/SubscriptionManager";
 import { disallowedTopic, expandSecureUrl, topicUrl } from "../app/utils";
-import routes from "./routes";
 import connectionManager from "../app/ConnectionManager";
 import poller from "../app/Poller";
 import pruner from "../app/Pruner";
-import session from "../app/Session";
-import accountApi from "../app/AccountApi";
 import versionChecker from "../app/VersionChecker";
-import { UnauthorizedError } from "../app/errors";
 import notifier from "../app/Notifier";
 import prefs from "../app/Prefs";
 import { EVENT_MESSAGE_DELETE, EVENT_MESSAGE_CLEAR, SW_PERIODIC_SYNC_EXTEND_TOKEN_TAG } from "../app/events";
@@ -39,17 +35,6 @@ export const useConnectionListeners = (account, subscriptions, users, webPushTop
     () => {
       const handleInternalMessage = async (message) => {
         console.log(`[ConnectionListener] Received message on sync topic`, message.message);
-        try {
-          const data = JSON.parse(message.message);
-          if (data.event === "sync") {
-            console.log(`[ConnectionListener] Triggering account sync`);
-            await accountApi.sync();
-          } else {
-            console.log(`[ConnectionListener] Unknown message type. Doing nothing.`);
-          }
-        } catch (e) {
-          console.log(`[ConnectionListener] Error parsing sync topic message`, e);
-        }
       };
 
       const handleNotification = async (subscription, notification) => {
@@ -140,16 +125,6 @@ export const useAutoSubscribe = (subscriptions, selected) => {
       console.log(`[Hooks] Auto-subscribing to ${topicUrl(baseUrl, params.topic)}`);
       (async () => {
         const subscription = await subscriptionManager.add(baseUrl, params.topic);
-        if (session.exists()) {
-          try {
-            await accountApi.addSubscription(baseUrl, params.topic);
-          } catch (e) {
-            console.log(`[Hooks] Auto-subscribing failed`, e);
-            if (e instanceof UnauthorizedError) {
-              await session.resetAndRedirect(routes.login);
-            }
-          }
-        }
         poller.pollInBackground(subscription); // Dangle!
       })();
     }
@@ -340,14 +315,12 @@ const usePeriodicTokenExtend = () => {
 const startWorkers = () => {
   poller.startWorker();
   pruner.startWorker();
-  accountApi.startWorker();
   versionChecker.startWorker();
 };
 
 const stopWorkers = () => {
   poller.stopWorker();
   pruner.stopWorker();
-  accountApi.stopWorker();
   versionChecker.stopWorker();
 };
 
@@ -362,16 +335,6 @@ export const useBackgroundProcesses = () => {
     return () => {
       console.log("[useBackgroundProcesses] unloading");
       stopWorkers();
-    };
-  }, []);
-};
-
-export const useAccountListener = (setAccount) => {
-  useEffect(() => {
-    accountApi.registerListener(setAccount);
-    accountApi.sync(); // Dangle
-    return () => {
-      accountApi.resetListener();
     };
   }, []);
 };
@@ -393,7 +356,7 @@ const mobileMediaQuery = typeof window !== "undefined" ? window.matchMedia("(max
 export const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(mobileMediaQuery?.matches ?? false);
   useEffect(() => {
-    if (!mobileMediaQuery) return;
+    if (!mobileMediaQuery) return undefined;
     const handler = (e) => setIsMobile(e.matches);
     mobileMediaQuery.addEventListener("change", handler);
     return () => mobileMediaQuery.removeEventListener("change", handler);

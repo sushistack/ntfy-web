@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, useRef } from "react";
+import { createContext, useContext, useReducer, useEffect, useMemo, useRef } from "react";
 import connectionManager from "../../app/ConnectionManager";
 import subscriptionManager from "../../app/SubscriptionManager";
 
@@ -54,6 +54,10 @@ const ConnectionContext = createContext(null);
 export const ConnectionProvider = ({ children, hasData }) => {
   const [state, dispatch] = useReducer(connectionReducer, initialState);
   const debounceRef = useRef({});
+  const value = useMemo(
+    () => ({ connectionState: state.connectionState, hasData: state.hasData }),
+    [state.connectionState, state.hasData]
+  );
 
   useEffect(() => {
     connectionManager.registerStateListener((subscriptionId, connState) => {
@@ -76,7 +80,7 @@ export const ConnectionProvider = ({ children, hasData }) => {
   }, [hasData]);
 
   return (
-    <ConnectionContext.Provider value={{ connectionState: state.connectionState, hasData: state.hasData }}>
+    <ConnectionContext.Provider value={value}>
       {children}
     </ConnectionContext.Provider>
   );

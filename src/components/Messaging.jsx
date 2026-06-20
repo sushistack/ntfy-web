@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useActiveTopic } from "@/components/hooks";
 import subscriptionManager from "@/app/SubscriptionManager";
+import config from "@/app/config";
 import PublishFab from "./PublishFab";
 import PublishDialog from "./PublishDialog";
-import config from "@/app/config";
 
 const Messaging = () => {
   const [publishOpen, setPublishOpen] = useState(false);

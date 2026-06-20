@@ -8,26 +8,31 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key) => key }),
 }));
 
-const mockLogin = vi.fn();
+const mockFetchOrThrow = vi.fn();
 const mockStore = vi.fn();
 const mockUnauthorizedError = class UnauthorizedError extends Error {
-  constructor(msg) { super(msg); this.name = "UnauthorizedError"; }
+  constructor(msg) {
+    super(msg);
+    this.name = "UnauthorizedError";
+  }
 };
 
-vi.mock("../app/AccountApi", () => ({
-  default: { login: mockLogin },
+vi.mock("../app/errors", () => ({
+  fetchOrThrow: mockFetchOrThrow,
+  UnauthorizedError: mockUnauthorizedError,
 }));
 
 vi.mock("../app/Session", () => ({
   default: { store: mockStore },
 }));
 
-vi.mock("./routes", () => ({
-  default: { app: "/", login: "/login", settings: "/settings" },
+vi.mock("../app/utils", () => ({
+  accountTokenUrl: (baseUrl) => `${baseUrl}/v1/account/token`,
+  withBasicAuth: (headers) => ({ ...headers, Authorization: "Basic credentials" }),
 }));
 
-vi.mock("../app/errors", () => ({
-  UnauthorizedError: mockUnauthorizedError,
+vi.mock("./routes", () => ({
+  default: { app: "/", login: "/login", settings: "/settings" },
 }));
 
 const { default: Login } = await import("./Login.jsx");
@@ -36,7 +41,7 @@ let container;
 let root;
 
 beforeEach(() => {
-  mockLogin.mockClear();
+  mockFetchOrThrow.mockClear();
   mockStore.mockClear();
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -71,8 +76,12 @@ describe("Login — require_login guard", () => {
 });
 
 describe("Login — form structure", () => {
-  beforeEach(() => { globalThis.config.require_login = true; });
-  afterEach(() => { globalThis.config.require_login = false; });
+  beforeEach(() => {
+    globalThis.config.require_login = true;
+  });
+  afterEach(() => {
+    globalThis.config.require_login = false;
+  });
 
   it("renders username and password inputs", () => {
     renderLogin();
@@ -103,11 +112,17 @@ describe("Login — form structure", () => {
 });
 
 describe("Login — submit handler", () => {
-  beforeEach(() => { globalThis.config.require_login = true; });
-  afterEach(() => { globalThis.config.require_login = false; });
+  beforeEach(() => {
+    globalThis.config.require_login = true;
+  });
+  afterEach(() => {
+    globalThis.config.require_login = false;
+  });
 
-  it("calls accountApi.login and session.store on successful submit", async () => {
-    mockLogin.mockResolvedValueOnce("token_xyz");
+  it("requests a token and stores the returned session on successful submit", async () => {
+    mockFetchOrThrow.mockResolvedValueOnce({
+      json: async () => ({ token: "token_xyz" }),
+    });
     mockStore.mockResolvedValueOnce(undefined);
 
     renderLogin();
@@ -127,12 +142,20 @@ describe("Login — submit handler", () => {
       container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true }));
     });
 
-    expect(mockLogin).toHaveBeenCalledWith({ username: "jay", password: "secret" });
+    expect(mockFetchOrThrow).toHaveBeenCalledWith(
+      `${globalThis.config.base_url}/v1/account/token`,
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          Authorization: expect.stringMatching(/^Basic /),
+        }),
+      })
+    );
     expect(mockStore).toHaveBeenCalledWith("jay", "token_xyz");
   });
 
   it("shows login_error_invalid_credentials on UnauthorizedError", async () => {
-    mockLogin.mockRejectedValueOnce(new mockUnauthorizedError("bad creds"));
+    mockFetchOrThrow.mockRejectedValueOnce(new mockUnauthorizedError("bad creds"));
 
     renderLogin();
 
@@ -141,6 +164,19 @@ describe("Login — submit handler", () => {
     });
 
     expect(container.textContent).toContain("login_error_invalid_credentials");
+  });
+
+  it("shows a localized generic error for unexpected failures", async () => {
+    mockFetchOrThrow.mockRejectedValueOnce(new Error("server detail"));
+
+    renderLogin();
+
+    await act(async () => {
+      container.querySelector("form").dispatchEvent(new Event("submit", { bubbles: true }));
+    });
+
+    expect(container.textContent).toContain("login_error_unexpected");
+    expect(container.textContent).not.toContain("server detail");
   });
 });
 

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import { NotificationCard } from "./NotificationCard";
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key) => key,
@@ -42,8 +44,6 @@ vi.mock("@/components/ui/Dialog", () => ({
 vi.mock("@/components/ui/Button", () => ({
   Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
-
-import { NotificationCard } from "./NotificationCard";
 
 const baseNotification = {
   id: "1",

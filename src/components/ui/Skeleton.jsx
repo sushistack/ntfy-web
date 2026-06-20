@@ -1,4 +1,4 @@
-import { cn } from './utils.js';
+import { cn } from './utils';
 
 export function Skeleton({ variant = 'card', className }) {
   if (variant === 'line') {

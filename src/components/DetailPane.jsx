@@ -111,12 +111,12 @@ const DetailPane = () => {
       <MarkdownBoundary
         key={msgId}
         fallback={
-          <p className="max-w-[70ch] leading-[1.5] text-body text-text">
+          <p className="max-w-message leading-body text-body text-text">
             {notification.message}
           </p>
         }
       >
-        <div className="max-w-[70ch] leading-[1.5] text-body text-text">
+        <div className="max-w-message leading-body text-body text-text">
           <MarkdownContent content={notification.message} />
         </div>
       </MarkdownBoundary>

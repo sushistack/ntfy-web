@@ -2,14 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+// Use real notificationUtils and utils (not mocked)
+import AttachmentBox from "./AttachmentBox";
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (k, opts) => (opts?.name ? `${k}:${opts.name}` : k),
   }),
 }));
-
-// Use real notificationUtils and utils (not mocked)
-import AttachmentBox from "./AttachmentBox";
 
 const imageAttachment = { url: "https://example.com/photo.jpg", name: "photo.jpg", size: 12345, type: "image/jpeg" };
 const fileAttachment = { url: "https://example.com/report.pdf", name: "report.pdf", size: 98765 };

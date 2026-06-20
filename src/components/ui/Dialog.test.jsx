@@ -66,4 +66,14 @@ describe("Dialog render", () => {
     expect(document.body.textContent).toContain("My Title");
     cleanup();
   });
+
+  it("uses a localized accessible fallback when title is omitted", () => {
+    const { cleanup } = renderInto(
+      <Dialog defaultOpen>
+        <DialogContent>Dialog body text</DialogContent>
+      </Dialog>
+    );
+    expect(document.body.textContent).toContain("ui_dialog_title");
+    cleanup();
+  });
 });

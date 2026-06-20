@@ -22,7 +22,7 @@ vi.mock("dexie-react-hooks", () => ({
 
 // Mock Tabs to avoid Radix UI complexity in DOM tests
 vi.mock("@/components/ui/Tabs", () => ({
-  TabsRoot: ({ children, value, onValueChange }) => (
+  TabsRoot: ({ children, value }) => (
     <div data-tabs-root data-value={value}>{children}</div>
   ),
   TabsList: ({ children }) => <div role="tablist">{children}</div>,

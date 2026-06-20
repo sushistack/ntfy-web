@@ -1,20 +1,26 @@
 {
   "extends": ["airbnb", "prettier"],
+  "plugins": ["i18next", "react-hooks", "tailwindcss"],
   "settings": {
     "import/resolver": {
       "vite": {
         "viteConfig": {
           "resolve": {
             "alias": {
-              "@": "./src"
+              "@": "/src"
             }
           }
         }
       }
+    },
+    "tailwindcss": {
+      "cssConfigPath": "src/styles/main.css",
+      "functions": ["cn", "cva"]
     }
   },
   "env": {
-    "browser": true
+    "browser": true,
+    "es2021": true
   },
   "globals": {
     "config": "readonly"
@@ -25,27 +31,87 @@
   "rules": {
     "no-console": "off",
     "class-methods-use-this": "off",
-    "func-style": ["error", "expression"],
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
     "no-await-in-loop": "error",
     "import/no-cycle": "warn",
+    "import/prefer-default-export": "off",
     "react/prop-types": "off",
     "react/destructuring-assignment": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off",
     "react/jsx-no-useless-fragment": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-no-duplicate-props": [
       "error",
       {
-        "ignoreCase": false // For <TextField>'s [iI]nputProps
+        "ignoreCase": false
       }
     ],
     "react/function-component-definition": [
       "error",
       {
-        "namedComponents": "arrow-function",
+        "namedComponents": ["function-declaration", "arrow-function"],
         "unnamedComponents": "arrow-function"
+      }
+    ],
+    "i18next/no-literal-string": [
+      "error",
+      {
+        "mode": "jsx-only",
+        "jsx-attributes": {
+          "include": ["aria-label", "title", "placeholder", "alt"]
+        }
+      }
+    ],
+    "tailwindcss/no-arbitrary-value": "error",
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          {
+            "target": "./src/app",
+            "from": "./src/components",
+            "except": ["./routes.js"],
+            "message": "src/app/ must not import from src/components/ (sole exception: Notifier.js → routes.js)"
+          },
+          {
+            "target": "./src/components/ui",
+            "from": "./src/components/message",
+            "message": "ui/ is domain-ignorant — it must not import from message/ domain"
+          }
+        ]
       }
     ]
   },
-  "overrides": [{ "files": ["./public/sw.js"], "rules": { "no-restricted-globals": "off" } }]
+  "overrides": [
+    { "files": ["./public/sw.js"], "rules": { "no-restricted-globals": "off" } },
+    {
+      "files": ["./src/**/*.test.js", "./src/**/*.test.jsx", "./src/app/test-setup.js"],
+      "rules": {
+        "func-style": "off",
+        "i18next/no-literal-string": "off",
+        "import/extensions": "off",
+        "new-cap": "off",
+        "no-return-await": "off",
+        "no-script-url": "off",
+        "react/button-has-type": "off"
+      }
+    },
+    {
+      "files": ["./src/components/contexts/*Context.jsx"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          "ForInStatement",
+          "LabeledStatement",
+          "WithStatement",
+          {
+            "selector": "CallExpression[callee.name='useLiveQuery']",
+            "message": "contexts/ must not call useLiveQuery — data stays in Dexie, read in components"
+          }
+        ]
+      }
+    }
+  ]
 }

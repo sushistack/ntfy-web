@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import { NotConnectedPanel, ConnectingPanel, NoSubscriptionsPanel } from "./EmptyStates";
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key) => key }),
 }));
-
-import { NotConnectedPanel, ConnectingPanel, NoSubscriptionsPanel } from "./EmptyStates";
 
 let container;
 let root;

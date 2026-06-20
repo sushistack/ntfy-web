@@ -8,7 +8,7 @@ const MenuContent = ({ className, ...props }) => (
   <DropdownMenu.Portal>
     <DropdownMenu.Content
       className={cn(
-        "min-w-[160px] bg-surface border border-border rounded-sm shadow-elev-2",
+        "min-w-menu bg-surface border border-border rounded-sm shadow-elev-2",
         "py-1 z-overlay",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

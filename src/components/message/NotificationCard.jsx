@@ -79,7 +79,7 @@ export function NotificationCard({
 
   // Collapse when tapping outside a revealed card (guard: skip when delete dialog is open)
   useEffect(() => {
-    if (!revealedSide) return;
+    if (!revealedSide) return undefined;
     const handler = (e) => {
       if (deleteConfirmOpen) return;
       if (!cardRef.current?.contains(e.target)) {
@@ -165,8 +165,12 @@ export function NotificationCard({
   };
 
   // Snap position when revealed overrides live swipeOffset
-  const contentOffset =
-    revealedSide === "delete" ? -REVEAL_MAX : revealedSide === "mark-read" ? REVEAL_MAX : swipeOffset;
+  let contentOffset = swipeOffset;
+  if (revealedSide === "delete") {
+    contentOffset = -REVEAL_MAX;
+  } else if (revealedSide === "mark-read") {
+    contentOffset = REVEAL_MAX;
+  }
 
   const contentStyle = {
     transform: `translateX(${contentOffset}px)`,
@@ -188,7 +192,7 @@ export function NotificationCard({
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
       className={cn(
-        "relative overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
+        "relative overflow-hidden cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
         isSelected && "bg-surface-active"
       )}
     >
@@ -207,7 +211,7 @@ export function NotificationCard({
             e.stopPropagation();
             handleSwipeMarkRead();
           }}
-          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-[var(--color-focus-ring)] rounded-sm"
+          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
         />
       </div>
 
@@ -227,7 +231,7 @@ export function NotificationCard({
             setDeleteConfirmOpen(true);
             dragRef.current.isLocked = true;
           }}
-          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-[var(--color-focus-ring)] rounded-sm"
+          className="w-full h-full focus:outline-none focus:ring-1 focus:ring-focus-ring rounded-sm"
         />
       </div>
 
@@ -271,7 +275,7 @@ export function NotificationCard({
             }}
             aria-label={t(isMuted ? "notification_card_unmute_toggle_label" : "notification_card_mute_toggle_label")}
             aria-pressed={isMuted ?? false}
-            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] transition-colors"
+            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-colors"
           >
             <BellIcon />
           </button>
@@ -279,7 +283,7 @@ export function NotificationCard({
             type="button"
             onClick={(e) => e.stopPropagation()}
             aria-label={t("notification_card_overflow_label")}
-            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)] transition-colors"
+            className="p-1 rounded-sm text-muted hover:text-text hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring transition-colors"
           >
             <MoreIcon />
           </button>

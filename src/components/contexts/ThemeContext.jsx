@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
 import prefs, { THEME } from "../../app/Prefs";
 
 const ThemeContext = createContext(null);
@@ -36,7 +36,11 @@ export function ThemeProvider({ children }) {
   // Apply .dark class + mirror to localStorage on every relevant state change
   useEffect(() => {
     document.documentElement.classList.toggle(DARK_CLASS, isDark(state.choice, state.systemPrefersDark));
-    try { localStorage.setItem("theme", state.choice); } catch (_) {}
+    try {
+      localStorage.setItem("theme", state.choice);
+    } catch (_) {
+      // Storage can be unavailable in private browsing; theme application still succeeds.
+    }
   }, [state.choice, state.systemPrefersDark]);
 
   // OS preference listener — wired once, cleaned up on unmount
@@ -47,13 +51,18 @@ export function ThemeProvider({ children }) {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  const setChoice = async (newChoice) => {
+  const setChoice = useCallback(async (newChoice) => {
     dispatch({ type: "set", choice: newChoice });
-    try { await prefs.setTheme(newChoice); } catch (_) {}
-  };
+    try {
+      await prefs.setTheme(newChoice);
+    } catch (_) {
+      // Keep the in-memory choice when durable storage is unavailable.
+    }
+  }, []);
+  const value = useMemo(() => ({ choice: state.choice, setChoice }), [setChoice, state.choice]);
 
   return (
-    <ThemeContext.Provider value={{ choice: state.choice, setChoice }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

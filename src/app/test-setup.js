@@ -10,3 +10,20 @@ globalThis.config = {
   require_login: false,
   disallowed_topics: [],
 };
+
+globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+
+if (!globalThis.PointerEvent) {
+  globalThis.PointerEvent = class PointerEvent extends MouseEvent {
+    constructor(type, init = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 0;
+      this.pointerType = init.pointerType ?? "";
+    }
+  };
+}
+
+if (!HTMLElement.prototype.setPointerCapture) {
+  HTMLElement.prototype.setPointerCapture = () => {};
+  HTMLElement.prototype.releasePointerCapture = () => {};
+}

@@ -69,6 +69,11 @@ describe("Button", () => {
     expect(el.disabled).toBe(true);
   });
 
+  it("preserves a reset button type", () => {
+    const el = renderButton({ type: "reset" });
+    expect(el.type).toBe("reset");
+  });
+
   it("includes focus-visible ring classes", () => {
     const el = renderButton({});
     expect(el.className).toContain("focus-visible:ring-2");

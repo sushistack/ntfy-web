@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useMatch } from "react-router-dom";
 
 const SelectionContext = createContext(null);
@@ -13,10 +13,13 @@ export const SelectionProvider = ({ children }) => {
   const rawTopic = detailMatch?.params?.topic ?? topicMatch?.params?.topic ?? null;
   const rawMsgId = detailMatch?.params?.msgId ?? null;
 
-  const value = {
-    topic: rawTopic && !RESERVED_PATHS.has(rawTopic) ? rawTopic : null,
-    msgId: rawMsgId && !RESERVED_PATHS.has(rawMsgId) ? rawMsgId : null,
-  };
+  const value = useMemo(
+    () => ({
+      topic: rawTopic && !RESERVED_PATHS.has(rawTopic) ? rawTopic : null,
+      msgId: rawMsgId && !RESERVED_PATHS.has(rawMsgId) ? rawMsgId : null,
+    }),
+    [rawMsgId, rawTopic]
+  );
 
   return <SelectionContext.Provider value={value}>{children}</SelectionContext.Provider>;
 };

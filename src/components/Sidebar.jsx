@@ -320,12 +320,7 @@ export const SidebarContent = ({ collapsed = false }) => {
 const Sidebar = ({ collapsed = false }) => {
   const { t } = useTranslation();
   return (
-    <aside
-      className={cn(
-        "flex flex-col h-full bg-surface border-r border-border",
-        collapsed ? "w-14" : "w-[280px]" /* layout-nudge: spec width */
-      )}
-    >
+    <aside className={cn("flex flex-col h-full bg-surface border-r border-border", collapsed ? "w-14" : "w-nav-drawer")}>
       {/* Logo / brand */}
       {!collapsed && (
         <div className="px-4 py-3 border-b border-border">

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { createRoot } from "react-dom/client";
 import { act } from "react";
 
+import { NotificationActions } from "./NotificationActions";
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (k) => k }),
 }));
@@ -28,8 +30,6 @@ vi.mock("@/components/ui/Tooltip", () => ({
   TooltipTrigger: ({ children, asChild }) => (asChild ? children : <span>{children}</span>),
   TooltipContent: ({ children }) => <div role="tooltip">{children}</div>,
 }));
-
-import { NotificationActions } from "./NotificationActions";
 
 let container;
 let root;

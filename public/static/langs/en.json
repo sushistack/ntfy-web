@@ -475,6 +475,8 @@
   "server_auth_form_save_button": "Save settings",
   "server_auth_form_save_error": "Failed to save. Try again.",
   "login_error_invalid_credentials": "Invalid username or password",
+  "login_error_unexpected": "Login failed. Please try again.",
+  "ui_dialog_title": "Dialog",
   "notification_card_badge_high": "High",
   "notification_card_badge_max": "Urgent",
   "notification_card_unread_label": "Unread",

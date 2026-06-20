@@ -1,5 +1,5 @@
 import { Tabs as TabsPrimitive } from 'radix-ui';
-import { cn } from './utils.js';
+import { cn } from './utils';
 
 export const TabsRoot = TabsPrimitive.Root;
 

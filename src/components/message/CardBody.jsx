@@ -32,9 +32,9 @@ const parseKvLines = (message) =>
     .trim()
     .split("\n")
     .filter((l) => l.trim())
-    .map((line) => {
+    .map((line, lineIndex) => {
       const match = line.match(/^([^:]+):\s*(.*)$/);
-      if (!match) return { key: line, value: "", numericValue: null, isError: false };
+      if (!match) return { id: `${line}:${lineIndex}`, key: line, value: "", numericValue: null, isError: false };
       const [, key, value] = match;
       const percentMatch = value.trim().match(/^(\d+(\.\d+)?)%$/);
       const numericMatch = value.trim().match(/^(\d+(\.\d+)?)$/);
@@ -45,7 +45,7 @@ const parseKvLines = (message) =>
         numericValue = parseFloat(numericMatch[1]);
       }
       const isError = /error|fail|err/i.test(key);
-      return { key: key.trim(), value: value.trim(), numericValue, isError };
+      return { id: `${key.trim()}:${value.trim()}:${lineIndex}`, key: key.trim(), value: value.trim(), numericValue, isError };
     });
 
 const KV_ICONS = {
@@ -99,8 +99,8 @@ const ParagraphBody = ({ message }) => {
 
 const KvBody = ({ lines }) => (
   <dl className="text-body-sm space-y-1 py-2">
-    {lines.map(({ key, value, isError }, index) => (
-      <div key={`${key}:${value}:${index}`} className="flex items-baseline gap-2">
+    {lines.map(({ id, key, value, isError }) => (
+      <div key={id} className="flex items-baseline gap-2">
         <KvIcon keyName={key} />
         <dt className="text-muted font-medium shrink-0">{key}</dt>
         <dd className={cn("ml-auto", isError ? "text-priority-urgent" : "text-accent-text")}>{value}</dd>
@@ -111,8 +111,8 @@ const KvBody = ({ lines }) => (
 
 const RichKvBody = ({ lines }) => (
   <dl className="text-body-sm space-y-2 py-2">
-    {lines.map(({ key, value, numericValue }, index) => (
-      <div key={`${key}:${value}:${index}`} className="flex flex-col gap-1">
+    {lines.map(({ id, key, value, numericValue }) => (
+      <div key={id} className="flex flex-col gap-1">
         <div className="flex items-baseline gap-2">
           <KvIcon keyName={key} />
           <dt className="text-muted font-medium shrink-0">{key}</dt>

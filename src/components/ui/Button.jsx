@@ -28,5 +28,6 @@ const button = cva(
 );
 
 export function Button({ variant, size, className, type = "button", ...props }) {
+  // eslint-disable-next-line react/button-has-type -- wrapper preserves the caller's valid native button type.
   return <button type={type} className={cn(button({ variant, size }), className)} {...props} />;
 }

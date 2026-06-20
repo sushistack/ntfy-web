@@ -50,7 +50,7 @@ const BottomNav = () => {
             onClick={() => navigate(path)}
             className={cn(
               "flex flex-col items-center justify-center flex-1 py-2 gap-1 text-caption transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
               isActive ? "text-accent-text" : "text-muted"
             )}
             aria-current={isActive ? "page" : undefined}
