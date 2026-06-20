@@ -93,7 +93,7 @@ const ContentRegion = () => {
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const navigate = useNavigate();
   const { connectionState, hasData } = useConnection();
-  const subscriptions = useLiveQuery(() => db.subscriptions.toArray(), []) ?? [];
+  const subscriptions = useLiveQuery(() => db.subscriptions.filter((s) => !s.internal).toArray(), []) ?? [];
 
   const panel = (() => {
     if (connectionState === "offline") {
@@ -145,6 +145,8 @@ const NewShell = () => {
             <Routes>
               <Route path={routes.app} element={<ContentRegion />} />
               <Route path={routes.settings} element={<ServerAuthForm />} />
+              <Route path={routes.subscription} element={<ContentRegion />} />
+              <Route path={routes.subscriptionExternal} element={<ContentRegion />} />
             </Routes>
           </div>
         </main>

@@ -127,6 +127,11 @@ const SubscribePage = (props) => {
   return (
     <div className="p-4">
       <p className="text-body-sm text-muted mb-4">{t("subscribe_dialog_subscribe_description")}</p>
+      {!anotherServerVisible && (
+        <p className="text-body-sm text-muted mb-3 break-all" aria-label={t("subscribe_dialog_subscribe_base_url_label")}>
+          {config.base_url}
+        </p>
+      )}
       <div className="flex gap-2 mb-4">
         <input
           autoFocus

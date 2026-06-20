@@ -52,6 +52,7 @@
   /* ── Color: Priority / Meter thresholds ── */
   --color-priority-high:    #E8943A;   /* [ASSUMPTION] P4 amber (deepened for light AA) */
   --color-priority-max:     #E5484D;   /* [ASSUMPTION] P5 coral (deepened for light AA) */
+  --color-priority-urgent:  #E5484D;   /* alias of priority-max — used for inline error text */
   --color-meter-ok:         #1A9E5F;   /* [ASSUMPTION] = accent-text */
   --color-meter-track:      #E4E6E9;   /* [ASSUMPTION] = border color; verify fill visibility at 65%+ threshold */
   --color-meter-warning:    #E8943A;   /* [ASSUMPTION] = priority-high; threshold ≥ 65% */
@@ -149,6 +150,7 @@
   /* Priority */
   --color-priority-high:    #F5A95C;   /* P4 amber */
   --color-priority-max:     #FF6B6E;   /* P5 coral */
+  --color-priority-urgent:  #FF6B6E;   /* alias of priority-max — used for inline error text */
 
   /* Meter */
   --color-meter-ok:       #42D392;   /* = accent-text */
