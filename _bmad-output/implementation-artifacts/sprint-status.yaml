@@ -1,0 +1,94 @@
+# generated: 2026-06-20
+# last_updated: 2026-06-20
+# project: ntfy-web
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-06-20
+last_updated: 2026-06-20
+project: ntfy-web
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 1: Foundation & Design System
+  epic-1: backlog
+  1-1-spike-emotion-layer-coexistence-poc: backlog
+  1-2-characterization-snapshot-message-dedup-ordering: backlog
+  1-3-install-ui-stack-and-wire-tailwind-v4-path-aliases: backlog
+  1-4-design-tokens-as-single-source-web-android-manifest: backlog
+  1-5-self-hosted-fonts-sw-fix-and-fouc-free-theme-bootstrap: backlog
+  1-6-ui-display-primitives-button-card-chip: backlog
+  1-7-ui-overlay-primitives-on-radix-dialog-sheet-menu-popover-tooltip: backlog
+  1-8-ui-form-data-primitives-switch-tabs-meter-skeleton: backlog
+  1-9-ui-state-boundary-primitives-databoundary-statepanel-live-region: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: First Run — Jay Gets In
+  epic-2: backlog
+  2-1-responsive-app-shell-provider-scaffold: backlog
+  2-2-theme-switch-light-dark-system: backlog
+  2-3-connection-indicator-state-hasdata: backlog
+  2-4-server-auth-entry-with-conditional-login: backlog
+  2-5-subscribe-to-a-topic: backlog
+  2-6-first-run-state-panels-with-korean-voice: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Notification Experience — Receive · Read · Act
+  epic-3: backlog
+  3-1-notification-card-shell-slot-contract: backlog
+  3-2-adaptive-card-body-renderer: backlog
+  3-3-feeds-per-topic-all-real-time-with-states: backlog
+  3-4-card-overflow-actions-read-copy-delete: backlog
+  3-5-url-as-source-of-truth-selection-detail-host: backlog
+  3-6-detail-content-markdown-attachment-metadata: backlog
+  3-7-inline-action-buttons-view-http-broadcast: backlog
+  3-8-mobile-card-swipe-gesture: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Topics & Publishing — Jay Sends
+  epic-4: backlog
+  4-1-manage-subscriptions-rename-clear-unsubscribe: backlog
+  4-2-mute-unmute-a-topic: backlog
+  4-3-publish-a-message: backlog
+  4-4-optimistic-publish-queue: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Settings, PWA & Migration Cleanup
+  epic-5: backlog
+  5-1-settings-surface-sectioned-form: backlog
+  5-2-pwa-browser-notifications-permission: backlog
+  5-3-accessibility-light-theme-contrast-verification-pass: backlog
+  5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: backlog
+  epic-5-retrospective: optional
