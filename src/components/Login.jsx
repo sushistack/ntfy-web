@@ -1,116 +1,98 @@
-import * as React from "react";
 import { useState } from "react";
-import { Typography, TextField, Button, Box, IconButton, InputAdornment } from "@mui/material";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import config from "../app/config";
 import accountApi from "../app/AccountApi";
-import AvatarBox from "./AvatarBox";
 import session from "../app/Session";
 import routes from "./routes";
 import { UnauthorizedError } from "../app/errors";
 
 const Login = () => {
   const { t } = useTranslation();
-  const [error, setError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const user = { username, password };
+  if (!config.require_login) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
     try {
-      const token = await accountApi.login(user);
-      console.log(`[Login] User auth for user ${user.username} successful, token is ${token}`);
-      await session.store(user.username, token);
+      const token = await accountApi.login({ username, password });
+      await session.store(username, token);
       window.location.href = routes.app;
-    } catch (e) {
-      console.log(`[Login] User auth for user ${user.username} failed`, e);
-      if (e instanceof UnauthorizedError) {
-        setError(t("Login failed: Invalid username or password"));
+    } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        setError(t("login_error_invalid_credentials"));
       } else {
-        setError(e.message);
+        setError(err.message);
       }
     }
   };
-  if (!config.enable_login) {
-    return (
-      <AvatarBox>
-        <Typography sx={{ typography: "h6" }}>{t("login_disabled")}</Typography>
-      </AvatarBox>
-    );
-  }
+
   return (
-    <AvatarBox>
-      <Typography sx={{ typography: "h6" }}>{t("login_title")}</Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <TextField
-          margin="dense"
-          required
-          fullWidth
-          id="username"
-          label={t("signup_form_username")}
-          name="username"
-          value={username}
-          onChange={(ev) => setUsername(ev.target.value.trim())}
-          autoFocus
-        />
-        <TextField
-          margin="dense"
-          required
-          fullWidth
-          name="password"
-          label={t("signup_form_password")}
-          type={showPassword ? "text" : "password"}
-          id="password"
-          value={password}
-          onChange={(ev) => setPassword(ev.target.value.trim())}
-          autoComplete="current-password"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={t("signup_form_toggle_password_visibility")}
-                  onClick={() => setShowPassword(!showPassword)}
-                  onMouseDown={(ev) => ev.preventDefault()}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Button type="submit" fullWidth variant="contained" disabled={username === "" || password === ""} sx={{ mt: 2, mb: 2 }}>
-          {t("login_form_button_submit")}
-        </Button>
-        {error && (
-          <Box
-            sx={{
-              mb: 1,
-              display: "flex",
-              flexGrow: 1,
-              justifyContent: "center",
-            }}
-          >
-            <WarningAmberIcon color="error" sx={{ mr: 1 }} />
-            <Typography sx={{ color: "error.main" }}>{error}</Typography>
-          </Box>
-        )}
-        <Box sx={{ width: "100%" }}>
-          {/* This is where the password reset link would go */}
-          {config.enable_signup && (
-            <div style={{ float: "right" }}>
-              <NavLink to={routes.signup} variant="body1">
-                {t("login_link_signup")}
-              </NavLink>
+    <div className="flex min-h-screen items-center justify-center bg-bg">
+      <div className="w-full max-w-sm flex flex-col gap-6 p-6">
+        <h1 className="text-heading font-semibold text-foreground text-center">{t("login_title")}</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="login-username" className="text-body-sm font-medium text-foreground">
+              {t("signup_form_username")}
+            </label>
+            <input
+              id="login-username"
+              className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.trim())}
+              autoFocus
+              autoComplete="username"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="login-password" className="text-body-sm font-medium text-foreground">
+              {t("signup_form_password")}
+            </label>
+            <div className="relative">
+              <input
+                id="login-password"
+                className="w-full rounded-sm bg-surface-2 border border-border px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent-ui"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value.trim())}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-2 flex items-center text-muted hover:text-foreground"
+                aria-label={t("signup_form_toggle_password_visibility")}
+                onClick={() => setShowPassword((v) => !v)}
+                onMouseDown={(e) => e.preventDefault()}
+              >
+                {showPassword ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                )}
+              </button>
             </div>
+          </div>
+
+          {error && (
+            <p role="alert" className="text-body-sm text-priority-urgent">{error}</p>
           )}
-        </Box>
-      </Box>
-    </AvatarBox>
+
+          <button
+            type="submit"
+            disabled={username === "" || password === ""}
+            className="w-full h-10 px-4 rounded-sm bg-button-fill text-button-fill-text text-body-sm font-semibold hover:bg-surface-2 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+          >
+            {t("login_form_button_submit")}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

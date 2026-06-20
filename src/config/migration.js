@@ -9,4 +9,5 @@ export const NEW = {
   detail: false,
   dialogs: false,
   settings: false,
+  auth: false,
 };
