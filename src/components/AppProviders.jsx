@@ -9,7 +9,7 @@ import { PublishQueueProvider } from "@/components/contexts/PublishQueueContext"
 
 // Computes hasData outside ConnectionContext (which cannot import useLiveQuery per arch boundary).
 const HasDataBridge = ({ children }) => {
-  const hasData = useLiveQuery(() => db.notifications.limit(1).count().then((c) => c > 0), []) ?? false;
+  const hasData = useLiveQuery(() => db().notifications.limit(1).count().then((c) => c > 0), []) ?? false;
   return (
     <ConnectionProvider hasData={hasData}>
       <SelectionProvider>

@@ -46,12 +46,12 @@ const DetailPane = () => {
   const [actionError, setActionError] = useState(null);
 
   const notification = useLiveQuery(
-    () => (msgId ? db.notifications.get(msgId) : null),
+    () => (msgId ? db().notifications.get(msgId) : null),
     [msgId]
   ) ?? null;
 
   const subscription = useLiveQuery(
-    () => (notification?.subscriptionId ? db.subscriptions.get(notification.subscriptionId) : null),
+    () => (notification?.subscriptionId ? db().subscriptions.get(notification.subscriptionId) : null),
     [notification?.subscriptionId]
   );
   const subscriptionName = subscription?.displayName || notification?.topic || "";
