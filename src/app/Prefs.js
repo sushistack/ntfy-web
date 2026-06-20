@@ -12,7 +12,7 @@ class Prefs {
   }
 
   async setSound(sound) {
-    this.db.prefs.put({ key: "sound", value: sound.toString() });
+    await this.db.prefs.put({ key: "sound", value: sound.toString() });
   }
 
   async sound() {
@@ -21,7 +21,7 @@ class Prefs {
   }
 
   async setMinPriority(minPriority) {
-    this.db.prefs.put({ key: "minPriority", value: minPriority.toString() });
+    await this.db.prefs.put({ key: "minPriority", value: minPriority.toString() });
   }
 
   async minPriority() {
