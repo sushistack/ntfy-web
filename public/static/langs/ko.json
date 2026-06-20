@@ -310,5 +310,8 @@
   "settings_sound_label": "알림 효과음",
   "settings_min_priority_label": "최소 우선순위",
   "settings_web_push_label": "백그라운드 알림",
-  "settings_delete_after_label": "알림 자동 삭제"
+  "settings_delete_after_label": "알림 자동 삭제",
+
+  "language_en": "English",
+  "language_ko": "한국어"
 }

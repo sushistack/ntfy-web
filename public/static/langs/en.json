@@ -521,5 +521,8 @@
   "settings_sound_label": "Notification sound",
   "settings_min_priority_label": "Minimum priority",
   "settings_web_push_label": "Background notifications",
-  "settings_delete_after_label": "Delete notifications after"
+  "settings_delete_after_label": "Delete notifications after",
+
+  "language_en": "English",
+  "language_ko": "한국어"
 }
