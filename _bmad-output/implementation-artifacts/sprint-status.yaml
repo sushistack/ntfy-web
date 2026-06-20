@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-06-20
-last_updated: 2026-06-20 (3-3, 3-8 done after code review)
+last_updated: 2026-06-20 (5-4 story created)
 project: ntfy-web
 project_key: NOKEY
 tracking_system: file-system
@@ -71,24 +71,24 @@ development_status:
   3-2-adaptive-card-body-renderer: done
   3-3-feeds-per-topic-all-real-time-with-states: done
   3-4-card-overflow-actions-read-copy-delete: done
-  3-5-url-as-source-of-truth-selection-detail-host: review
-  3-6-detail-content-markdown-attachment-metadata: review
-  3-7-inline-action-buttons-view-http-broadcast: review
+  3-5-url-as-source-of-truth-selection-detail-host: done
+  3-6-detail-content-markdown-attachment-metadata: done
+  3-7-inline-action-buttons-view-http-broadcast: done
   3-8-mobile-card-swipe-gesture: done
   epic-3-retrospective: optional
 
   # Epic 4: Topics & Publishing — Jay Sends
   epic-4: in-progress
-  4-1-manage-subscriptions-rename-clear-unsubscribe: in-progress
-  4-2-mute-unmute-a-topic: in-progress
-  4-3-publish-a-message: in-progress
-  4-4-optimistic-publish-queue: ready-for-dev
+  4-1-manage-subscriptions-rename-clear-unsubscribe: review
+  4-2-mute-unmute-a-topic: review
+  4-3-publish-a-message: review
+  4-4-optimistic-publish-queue: in-progress
   epic-4-retrospective: optional
 
   # Epic 5: Settings, PWA & Migration Cleanup
-  epic-5: backlog
-  5-1-settings-surface-sectioned-form: backlog
-  5-2-pwa-browser-notifications-permission: backlog
-  5-3-accessibility-light-theme-contrast-verification-pass: backlog
-  5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: backlog
+  epic-5: in-progress
+  5-1-settings-surface-sectioned-form: ready-for-dev
+  5-2-pwa-browser-notifications-permission: ready-for-dev
+  5-3-accessibility-light-theme-contrast-verification-pass: ready-for-dev
+  5-4-migration-cleanup-remove-mui-emotion-rtl-trimmed-screens: ready-for-dev
   epic-5-retrospective: optional
