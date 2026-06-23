@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/components/ui/utils";
 
 const ComposeIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <path d="M12 5v14M5 12h14" />
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z" />
   </svg>
 );
 
