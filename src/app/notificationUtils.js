@@ -24,7 +24,32 @@ const formatTitleWithDefault = (m, fallback) => {
   return fallback;
 };
 
+// Card messages carry JSON in the body (see StructuredCard.jsx). The feed renders it as a
+// component, but a desktop notification would otherwise show raw JSON — flatten it to text.
+// Self-contained (no React imports) so the service worker can use it too.
+export const summarizeCard = (raw) => {
+  let spec;
+  try {
+    spec = JSON.parse(raw ?? "");
+  } catch {
+    return null;
+  }
+  if (!spec || typeof spec !== "object") return null;
+  const blocks = spec.type === "sections" ? spec.blocks ?? [] : [spec];
+  const lines = [];
+  for (const b of blocks) {
+    if (b?.type === "kv") (b.rows ?? []).forEach((r) => r?.key && lines.push(`${r.key}: ${r.value ?? ""}`));
+    else if (b?.type === "list") (b.items ?? []).forEach((it) => lines.push(`• ${it}`));
+    else if (b?.type === "markdown" && b.text) lines.push(b.text);
+  }
+  return lines.length ? lines.join("\n") : null;
+};
+
 export const formatMessage = (m) => {
+  if (m.tags?.includes("card")) {
+    const summary = summarizeCard(m.message);
+    if (summary) return summary;
+  }
   if (m.title) {
     return m.message || "";
   }

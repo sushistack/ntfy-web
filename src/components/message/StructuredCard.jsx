@@ -48,17 +48,21 @@ const KvRow = ({ row }) => {
   const hasMeter = Number.isFinite(Number(row?.meter));
   const status = row?.status;
   return (
-    <div className="flex items-center gap-2.5 text-body-sm">
+    <div className="flex items-start gap-2.5 text-body-sm">
       <KvIcon keyName={row?.icon ?? row?.key} />
       <dt className="text-muted shrink-0 w-20 truncate">{row?.key}</dt>
       <dd
         className={cn(
-          "flex items-center gap-1.5 shrink-0 min-w-[3.5rem] tabular-nums",
+          "flex items-start gap-1.5 tabular-nums",
+          // meter rows keep a fixed value column; everything else fills + wraps long values
+          hasMeter ? "shrink-0 min-w-[3.5rem]" : "flex-1 min-w-0",
           STATUS_VALUE_COLOR[status] ?? "text-text"
         )}
       >
-        {status && !hasMeter && <span className={cn("w-2 h-2 rounded-full shrink-0", STATUS_DOT[status] ?? "bg-muted")} />}
-        {row?.value}
+        {status && !hasMeter && (
+          <span className={cn("mt-1.5 w-2 h-2 rounded-full shrink-0", STATUS_DOT[status] ?? "bg-muted")} />
+        )}
+        <span className="min-w-0 break-words">{row?.value}</span>
       </dd>
       {hasMeter && <Meter value={Number(row.meter)} className="flex-1 min-w-0" />}
     </div>
