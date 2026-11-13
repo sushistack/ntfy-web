@@ -33,6 +33,7 @@ vi.mock("@/components/hooks", () => ({
 vi.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
   useParams: () => ({}),
+  useLocation: () => ({ pathname: "/" }),
 }));
 
 vi.mock("dexie-react-hooks", () => ({
@@ -312,7 +313,7 @@ describe("SidebarContent — active row highlight", () => {
     mockUseActiveTopic.mockReturnValue(null);
     render(<SidebarContent />);
     const rows = Array.from(container.querySelectorAll("div[class*='group']"));
-    const anyActive = rows.some((el) => el.className.includes("bg-surface-2"));
+    const anyActive = rows.some((el) => el.classList.contains("bg-surface-2")); // exact class, not hover:bg-surface-2
     expect(anyActive).toBe(false);
   });
 });

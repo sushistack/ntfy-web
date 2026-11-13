@@ -1,3 +1,4 @@
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 @import "./tokens.css";
 @layer mui, base, components, utilities;
 @import "tailwindcss";

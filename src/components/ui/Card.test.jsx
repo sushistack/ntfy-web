@@ -41,20 +41,14 @@ describe('Card', () => {
     expect(el.className).toContain('bg-surface');
   });
 
-  it('applies border and border-border classes', () => {
+  it('has no outline border (sheet on canvas)', () => {
     const el = renderCard({});
-    expect(el.className).toContain('border');
-    expect(el.className).toContain('border-border');
+    expect(el.className).not.toContain('border-border');
   });
 
   it('applies shadow-elev-1 resting shadow', () => {
     const el = renderCard({});
     expect(el.className).toContain('shadow-elev-1');
-  });
-
-  it('applies md:hover:shadow-elev-2 hover elevation', () => {
-    const el = renderCard({});
-    expect(el.className).toContain('md:hover:shadow-elev-2');
   });
 
   it('merges custom className', () => {

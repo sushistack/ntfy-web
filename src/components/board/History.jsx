@@ -3,18 +3,26 @@ import { useNavigate } from "react-router-dom";
 import { dayStart, slotOf, slotsForDay } from "@/app/incidents";
 import { Skeleton } from "@/components/ui/Skeleton";
 import StatePanel from "@/components/ui/StatePanel";
+import { cn } from "@/components/ui/utils";
 import routes from "@/components/routes";
 import TickStrip, { TickAxis, toneOf } from "./TickStrip";
+import StatusAvatar, { lookFor } from "./Avatar";
+import { focus, press } from "./Board";
 import { hhmm, topicLabel, useIncidents } from "./useIncidents";
 
 const DAYS = 7;
+
+const summary = (t, inc) => {
+  if (inc.state === "open") return t("history_still_firing");
+  return inc.week.length === 1 ? t("history_sent_week_one") : t("history_sent_week_other", { count: inc.week.length });
+};
 
 const History = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { incidents, now, subsById, loading } = useIncidents(null);
 
-  if (loading) return <Skeleton className="h-40" />;
+  if (loading) return <Skeleton className="h-40 rounded-md" />;
 
   const starts = Array.from({ length: DAYS }, (_, i) => dayStart(now, i - (DAYS - 1))); // oldest → today
   const weekStart = starts[0];
@@ -26,13 +34,15 @@ const History = () => {
     .sort((a, b) => b.week.length - a.week.length);
 
   return (
-    <div>
-      <h1 className="text-display font-semibold tracking-tight text-text">{t("history_title")}</h1>
-      <p className="mt-1 mb-6 text-body-sm text-muted max-w-[60ch]">{t("history_description")}</p>
+    <div className="pb-24">
+      <header className="px-1">
+        <h1 className="text-[28px] leading-[1.25] font-bold tracking-[-0.025em] text-text">{t("history_title")}</h1>
+        <p className="mt-2 text-[15px] text-muted max-w-[60ch]">{t("history_description")}</p>
+      </header>
 
       {rows.length === 0 && <StatePanel title={t("history_empty")} />}
 
-      <ul className="flex flex-col gap-3">
+      <ul className="mt-7 flex flex-col gap-3">
         {rows.map((inc) => {
           const sub = subsById[inc.subscriptionId];
           const days = starts.filter((s) => inc.week.some((f) => f >= s && f < s + 86400)).length;
@@ -41,31 +51,26 @@ const History = () => {
               <button
                 type="button"
                 onClick={() => sub && navigate(`${routes.forSubscription(sub)}?incident=${inc.id}`)}
-                className="w-full text-left rounded-md border border-border bg-surface p-4 shadow-elev-1 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className={cn("w-full text-left rounded-md bg-surface p-5 shadow-elev-1", press, focus)}
               >
-                <div className="flex flex-wrap justify-between gap-x-4 gap-y-1 items-baseline">
-                  <div className="min-w-0">
-                    <p className="text-caption font-semibold text-muted">{topicLabel(sub)}</p>
-                    <h2 className="text-body font-semibold text-text">{inc.title}</h2>
+                <div className="flex items-start gap-3.5">
+                  <StatusAvatar look={lookFor(inc)} />
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-[17px] leading-snug font-semibold text-text break-words">{inc.title}</h2>
+                    <p className="mt-0.5 text-[14px] text-muted">
+                      {topicLabel(sub)} · <span className="font-semibold text-text">{summary(t, inc)}</span>
+                    </p>
+                    <p className="text-[13px] text-muted">
+                      {days === 1 ? t("history_days_one", { time: hhmm(inc.last) }) : t("history_days_other", { count: days })}
+                    </p>
                   </div>
-                  <p className="text-caption text-muted sm:text-right">
-                    <span className="font-semibold text-text">
-                      {inc.state === "open"
-                        ? t("history_still_firing")
-                        : inc.week.length === 1
-                        ? t("history_sent_week_one")
-                        : t("history_sent_week_other", { count: inc.week.length })}
-                    </span>
-                    <br />
-                    {days === 1 ? t("history_days_one", { time: hhmm(inc.last) }) : t("history_days_other", { count: days })}
-                  </p>
                 </div>
 
-                <div className="mt-4 grid grid-cols-[2.75rem_1fr] gap-x-2.5 gap-y-[3px] items-center">
+                <div className="mt-5 grid grid-cols-[2.5rem_1fr] gap-x-2 gap-y-[5px] items-center">
                   {starts.map((s, d) => {
                     const isToday = d === DAYS - 1;
                     return [
-                      <span key={`l${s}`} className={isToday ? "text-caption font-semibold text-text" : "text-caption text-muted"}>
+                      <span key={`l${s}`} className={cn("text-[12px]", isToday ? "font-bold text-text" : "text-muted")}>
                         {isToday ? t("history_today") : new Date(s * 1000).toLocaleDateString([], { weekday: "short" })}
                       </span>,
                       <TickStrip

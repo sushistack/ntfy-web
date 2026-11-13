@@ -96,11 +96,11 @@ describe("NotificationActions — button count and variants (AC: 1)", () => {
     expect(buttons[0].className).toContain("bg-button-fill");
   });
 
-  it("second button has ghost variant class (bg-transparent)", () => {
+  it("second button has ghost variant class (bg-surface-2)", () => {
     const actions = [VIEW_ACTION, HTTP_ACTION];
     renderInto(<NotificationActions notification={makeNotif(actions)} onError={vi.fn()} />);
     const buttons = container.querySelectorAll("button");
-    expect(buttons[1].className).toContain("bg-transparent");
+    expect(buttons[1].className).toContain("bg-surface-2");
   });
 
   it("filters out copy actions from the action row", () => {

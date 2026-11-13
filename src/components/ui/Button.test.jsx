@@ -39,9 +39,8 @@ describe("Button", () => {
 
   it("applies ghost variant classes", () => {
     const el = renderButton({ variant: "ghost" });
-    expect(el.className).toContain("border-control-border");
-    expect(el.className).toContain("text-muted");
-    expect(el.className).toContain("bg-transparent");
+    expect(el.className).toContain("bg-surface-2");
+    expect(el.className).toContain("text-text");
   });
 
   it("applies sm size classes", () => {
@@ -79,15 +78,14 @@ describe("Button", () => {
     expect(el.className).toContain("focus-visible:ring-2");
   });
 
-  it("primary hover uses accent fill feedback", () => {
+  it("primary hover darkens the fill instead of swapping colours", () => {
     const el = renderButton({});
-    expect(el.className).toContain("hover:bg-accent-ui");
-    expect(el.className).toContain("hover:text-accent-on-surface");
+    expect(el.className).toContain("hover:brightness-95");
   });
 
-  it("includes press motion classes", () => {
+  it("gives press feedback without a hover lift", () => {
     const el = renderButton({});
-    expect(el.className).toContain("hover:-translate-y-0.5");
-    expect(el.className).toContain("active:scale-95");
+    expect(el.className).toContain("active:scale-[0.97]");
+    expect(el.className).not.toContain("hover:-translate-y-0.5");
   });
 });

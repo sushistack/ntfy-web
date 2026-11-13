@@ -16,7 +16,7 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
   const title = pathname === "/history" ? t("sidebar_history") : topic ?? t("app_bar_title_all");
 
   return (
-    <header className="flex items-center h-14 px-2 bg-surface border-b border-border md:hidden flex-shrink-0">
+    <header className="flex items-center h-14 px-2 bg-bg md:hidden flex-shrink-0">
       <button
         type="button"
         onClick={onMenuOpen}
@@ -32,7 +32,7 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
         <HamburgerIcon />
       </button>
 
-      <h1 className="flex-1 px-2 text-body font-medium text-text truncate">{title}</h1>
+      <h1 className="flex-1 px-2 text-[17px] font-bold tracking-[-0.01em] text-text truncate">{title}</h1>
 
       {/* Connection dot placeholder — Story 2.3 replaces this */}
       <div className="w-8 h-8" aria-hidden="true" />

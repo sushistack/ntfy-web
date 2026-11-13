@@ -6,68 +6,83 @@ import { cn } from "@/components/ui/utils";
 import { NoMessagesAllPanel, NoMessagesTopicPanel } from "@/components/message/EmptyStates";
 import { useActiveTopic } from "@/components/hooks";
 import TickStrip, { TickAxis, toneOf } from "./TickStrip";
+import StatusAvatar, { lookFor } from "./Avatar";
 import { hhmm, topicLabel, useIncidents, when as at } from "./useIncidents";
 
-const IncidentCard = ({ incident, sub, today, nowSlot, quiet, onOpen }) => {
-  const { t } = useTranslation();
-  const slots = slotsForDay(incident.firings, today);
-  const okSlot = incident.resolvedAt ? slotOf(incident.resolvedAt, today) : null;
-  const sentToday = incident.firings.filter((f) => f >= today).length;
-  const sent = sentToday === 1 ? t("board_sent_today_one") : t("board_sent_today_other", { count: sentToday });
-  const when =
-    incident.state === "resolved" || incident.state === "quiet"
-      ? t("board_range", { from: hhmm(incident.since), to: hhmm(incident.resolvedAt ?? incident.last) })
-      : hhmm(incident.last);
+export const press = "transition-transform duration-150 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100";
+export const focus = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring";
 
+const sentToday = (t, incident, today) => {
+  const count = incident.firings.filter((f) => f >= today).length;
+  return count === 1 ? t("board_sent_today_one") : t("board_sent_today_other", { count });
+};
+
+/** Firing now: a full card each, with the day strip. */
+const OpenCard = ({ incident, sub, today, nowSlot, onOpen }) => {
+  const { t } = useTranslation();
+  const sent = sentToday(t, incident, today);
+  const since = incident.since < incident.last ? t("board_since", { time: at(incident.since, today) }) : hhmm(incident.last);
   return (
     <li>
-      <button
-        type="button"
-        onClick={onOpen}
-        className={cn(
-          "w-full text-left rounded-md border px-4 py-3 transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-          quiet
-            ? "border-dashed border-border bg-transparent hover:bg-surface"
-            : "border-border bg-surface shadow-elev-1 hover:bg-surface-2"
-        )}
-      >
-        <div className="flex justify-between gap-3 text-caption">
-          <span className="font-semibold text-muted truncate">{topicLabel(sub)}</span>
-          <span className="text-muted whitespace-nowrap tabular-nums">{when}</span>
+      <button type="button" onClick={onOpen} className={cn("w-full text-left rounded-md bg-surface p-5 shadow-elev-1", press, focus)}>
+        <div className="flex items-start gap-3.5">
+          <StatusAvatar look={lookFor(incident)} unread={incident.unread > 0} />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[17px] leading-snug font-semibold text-text break-words">{incident.title}</h3>
+            <p className="mt-0.5 text-[14px] text-muted truncate">
+              {topicLabel(sub)} · {since}
+            </p>
+          </div>
+          <span className="text-[13px] text-muted tabular-nums whitespace-nowrap pt-0.5">{hhmm(incident.last)}</span>
         </div>
-        <h3 className={cn("mt-0.5 mb-2 text-body text-text", quiet ? "font-medium" : "font-semibold")}>
-          {incident.unread > 0 && (
-            <span
-              className="inline-block w-2 h-2 mr-2 rounded-full bg-accent-ui align-middle"
-              aria-label={t("notifications_new_indicator")}
-            />
-          )}
-          {incident.title}
-        </h3>
         <TickStrip
-          slots={slots}
-          okSlot={okSlot}
+          className="mt-4"
+          slots={slotsForDay(incident.firings, today)}
           nowSlot={nowSlot}
           tone={toneOf(incident.priority)}
-          size={quiet ? "sm" : "md"}
           label={sent}
         />
-        {!quiet && (
-          <div className="flex justify-between mt-1.5 text-caption text-muted tabular-nums">
-            <span>{incident.since < incident.last ? t("board_since", { time: at(incident.since, today) }) : hhmm(incident.last)}</span>
-            <span>{sent}</span>
-          </div>
-        )}
+        <p className="mt-2 text-[13px] text-muted">{sent}</p>
       </button>
     </li>
   );
 };
 
-const Section = ({ title, children }) => (
-  <section className="mt-6">
-    <h2 className="text-caption font-semibold text-muted mb-2">{title}</h2>
-    <ul className="flex flex-col gap-2">{children}</ul>
+/** Went quiet / info: compact rows grouped on one sheet. */
+const QuietRow = ({ incident, sub, today, onOpen }) => {
+  const { t } = useTranslation();
+  const from = hhmm(incident.since);
+  const to = hhmm(incident.resolvedAt ?? incident.last);
+  const range = incident.state === "info" || from === to ? to : t("board_range", { from, to });
+  return (
+    <li>
+      <button type="button" onClick={onOpen} className={cn("w-full text-left px-5 py-4 hover:bg-surface-2", focus)}>
+        <div className="flex items-center gap-3.5">
+          <StatusAvatar look={lookFor(incident)} unread={incident.unread > 0} />
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[16px] leading-snug font-medium text-text break-words">{incident.title}</h3>
+            <p className="mt-0.5 text-[13px] text-muted truncate">
+              {topicLabel(sub)} · {range}
+            </p>
+          </div>
+        </div>
+        <TickStrip
+          className="mt-3 ml-[3.375rem]"
+          size="sm"
+          slots={slotsForDay(incident.firings, today)}
+          okSlot={incident.resolvedAt ? slotOf(incident.resolvedAt, today) : null}
+          tone={toneOf(incident.priority)}
+          label={sentToday(t, incident, today)}
+        />
+      </button>
+    </li>
+  );
+};
+
+const Section = ({ title, children, sheet = false }) => (
+  <section className="mt-9">
+    <h2 className="mb-3 px-1 text-[18px] font-bold text-text tracking-[-0.01em]">{title}</h2>
+    <ul className={sheet ? "rounded-md bg-surface shadow-elev-1 overflow-hidden py-1" : "flex flex-col gap-3"}>{children}</ul>
   </section>
 );
 
@@ -77,7 +92,7 @@ const Board = () => {
   const [, setParams] = useSearchParams();
   const { incidents, now, subsById, loading } = useIncidents(topicName);
 
-  if (loading) return <Skeleton className="h-40" />;
+  if (loading) return <Skeleton className="h-40 rounded-md" />;
   if (incidents.length === 0) return topicName ? <NoMessagesTopicPanel /> : <NoMessagesAllPanel />;
 
   const today = dayStart(now);
@@ -86,49 +101,63 @@ const Board = () => {
   const quiet = incidents.filter((i) => (i.state === "quiet" || i.state === "resolved") && i.notifications[0].time >= today);
   const info = incidents.filter((i) => i.state === "info" && i.notifications[0].time >= today);
   const lastToday = incidents.find((i) => i.notifications[0].time >= today)?.notifications[0].time;
-
-  const openIncident = (key) => setParams({ incident: key });
-  const card = (incident, isQuiet) => (
-    <IncidentCard
-      key={incident.key}
-      incident={incident}
-      sub={subsById[incident.subscriptionId]}
-      today={today}
-      nowSlot={nowSlot}
-      quiet={isQuiet}
-      onOpen={() => openIncident(incident.id)}
-    />
-  );
+  const rowProps = (incident) => ({
+    incident,
+    sub: subsById[incident.subscriptionId],
+    today,
+    onOpen: () => setParams({ incident: incident.id }),
+  });
 
   return (
-    <div>
-      <h1 className="text-display font-semibold tracking-tight text-text leading-tight">
-        {open.length === 0 ? t("board_summary_clear") : t("board_summary_firing", { count: open.length })}
-      </h1>
-      <p className="mt-1 text-body-sm text-muted">
-        {quiet.length > 0 && `${t("board_summary_quiet", { count: quiet.length })} `}
-        {lastToday ? t("board_summary_last", { time: hhmm(lastToday) }) : t("board_summary_none_today")}
-      </p>
+    <div className="pb-24">
+      <header className="px-1">
+        {open.length === 0 && <StatusAvatar look="clear" size="lg" />}
+        <h1 className={cn("text-[28px] leading-[1.25] font-bold tracking-[-0.025em] text-text", open.length === 0 && "mt-4")}>
+          {open.length === 0 ? t("board_summary_clear") : t("board_summary_firing", { count: open.length })}
+        </h1>
+        <p className="mt-2 text-[15px] text-muted">
+          {quiet.length > 0 && `${t("board_summary_quiet", { count: quiet.length })} `}
+          {lastToday ? t("board_summary_last", { time: hhmm(lastToday) }) : t("board_summary_none_today")}
+        </p>
+      </header>
 
       {open.length === 0 && (
-        <div className="mt-6">
+        <div className="mt-6 rounded-md bg-surface p-5 shadow-elev-1">
           <TickStrip
+            size="lg"
             slots={slotsForDay(
               incidents.flatMap((i) => i.firings),
               today
             )}
             nowSlot={nowSlot}
             tone="bg-priority-max"
-            size="lg"
             label={t("board_today_strip")}
           />
           <TickAxis />
         </div>
       )}
 
-      {open.length > 0 && <Section title={t("board_section_open")}>{open.map((i) => card(i, false))}</Section>}
-      {quiet.length > 0 && <Section title={t("board_section_quiet")}>{quiet.map((i) => card(i, true))}</Section>}
-      {info.length > 0 && <Section title={t("board_section_info")}>{info.map((i) => card(i, true))}</Section>}
+      {open.length > 0 && (
+        <Section title={t("board_section_open")}>
+          {open.map((i) => (
+            <OpenCard key={i.key} {...rowProps(i)} nowSlot={nowSlot} />
+          ))}
+        </Section>
+      )}
+      {quiet.length > 0 && (
+        <Section title={t("board_section_quiet")} sheet>
+          {quiet.map((i) => (
+            <QuietRow key={i.key} {...rowProps(i)} />
+          ))}
+        </Section>
+      )}
+      {info.length > 0 && (
+        <Section title={t("board_section_info")} sheet>
+          {info.map((i) => (
+            <QuietRow key={i.key} {...rowProps(i)} />
+          ))}
+        </Section>
+      )}
     </div>
   );
 };

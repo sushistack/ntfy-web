@@ -234,7 +234,8 @@ export function NotificationCard({
       >
         {/* Accent bar — colored per priority (min/low gray, normal white, high amber, max coral) */}
         <div
-          className={cn("absolute left-0 top-0 bottom-0 w-1", PRIORITY_BAR[priority] ?? "bg-text")}
+          // Bar hidden in the 2026-11 redesign: the priority badge already carries severity.
+          className={cn("hidden absolute left-0 top-0 bottom-0 w-1", PRIORITY_BAR[priority] ?? "bg-text")}
           style={
             priority >= 4
               ? { boxShadow: priority === 5 ? "var(--glow-priority-max)" : "var(--glow-priority-high)" }

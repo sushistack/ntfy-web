@@ -6,10 +6,13 @@ import { dayStart, slotOf, slotsForDay } from "@/app/incidents";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import StatePanel from "@/components/ui/StatePanel";
+import { cn } from "@/components/ui/utils";
 import CardBody from "@/components/message/CardBody";
 import { NotificationActions } from "@/components/message/NotificationActions";
 import { useActiveTopic } from "@/components/hooks";
 import TickStrip, { TickAxis, toneOf } from "./TickStrip";
+import StatusAvatar, { lookFor } from "./Avatar";
+import { focus } from "./Board";
 import { topicLabel, useIncidents, when } from "./useIncidents";
 
 const SENT_AT_LIMIT = 12;
@@ -28,6 +31,22 @@ const statusLine = (t, incident, now) => {
   }
 };
 
+const BackIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M15 18l-6-6 6-6" />
+  </svg>
+);
+
 const IncidentDetail = ({ incidentKey }) => {
   const { t } = useTranslation();
   const topicName = useActiveTopic();
@@ -36,7 +55,7 @@ const IncidentDetail = ({ incidentKey }) => {
   const [actionError, setActionError] = useState(null);
   const back = () => setParams({});
 
-  if (loading) return <Skeleton className="h-40" />;
+  if (loading) return <Skeleton className="h-40 rounded-md" />;
   const incident = incidents.find((i) => i.id === incidentKey);
   if (!incident) {
     return (
@@ -63,17 +82,25 @@ const IncidentDetail = ({ incidentKey }) => {
       <button
         type="button"
         onClick={back}
-        className="text-body-sm text-muted hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded-sm"
+        className={cn(
+          "-ml-1.5 inline-flex items-center gap-0.5 rounded-sm py-1 pr-2 text-[15px] font-medium text-muted hover:text-text",
+          focus
+        )}
       >
-        ‹ {t("board_back")}
+        <BackIcon />
+        {t("board_back")}
       </button>
-      <p className="mt-3 text-caption font-semibold text-muted">{topicLabel(sub)}</p>
-      <h1 className="text-display font-semibold tracking-tight text-text leading-tight">{incident.title}</h1>
-      <p className="mt-1 text-body-sm text-muted">
-        {statusLine(t, incident, now)} {sent}.
-      </p>
 
-      <div className="mt-5">
+      <header className="mt-5 px-1">
+        <StatusAvatar look={lookFor(incident)} size="lg" />
+        <p className="mt-4 text-[14px] font-semibold text-accent-text">{topicLabel(sub)}</p>
+        <h1 className="mt-1 text-[28px] leading-[1.25] font-bold tracking-[-0.025em] text-text break-words">{incident.title}</h1>
+        <p className="mt-2 text-[15px] text-muted">
+          {statusLine(t, incident, now)} {sent}.
+        </p>
+      </header>
+
+      <div className="mt-6 rounded-md bg-surface p-5 shadow-elev-1">
         <TickStrip
           slots={slotsForDay(incident.firings, today)}
           okSlot={incident.resolvedAt ? slotOf(incident.resolvedAt, today) : null}
@@ -86,39 +113,43 @@ const IncidentDetail = ({ incidentKey }) => {
       </div>
 
       {/* Latest message in full: structured card / markdown + its own action buttons */}
-      <div className="mt-5 rounded-md border border-border bg-surface p-4">
+      <div className="mt-3 rounded-md bg-surface p-5 shadow-elev-1">
         <CardBody notification={incident.latest} />
         <NotificationActions notification={incident.latest} onError={setActionError} />
         {actionError}
       </div>
 
+      <div className={cn("mt-3 grid gap-2", incident.unread > 0 ? "grid-cols-2" : "grid-cols-1")}>
+        <Button variant="ghost" size="lg" className="h-14 rounded-[16px] bg-surface shadow-elev-1" onClick={mute}>
+          {t("incident_mute_hour")}
+        </Button>
+        {incident.unread > 0 && (
+          <Button size="lg" className="h-14 rounded-[16px]" onClick={markRead}>
+            {t("incident_mark_read")}
+          </Button>
+        )}
+      </div>
+
       {incident.firings.length > 1 && (
-        <>
-          <h2 className="mt-6 mb-2 text-caption font-semibold text-muted">{t("incident_sent_at")}</h2>
-          <ul className="flex flex-wrap gap-1.5">
+        <section className="mt-9">
+          <h2 className="mb-3 px-1 text-[18px] font-bold text-text tracking-[-0.01em]">{t("incident_sent_at")}</h2>
+          <ul className="flex flex-wrap gap-2 px-1">
             {incident.firings
               .slice(-SENT_AT_LIMIT)
               .reverse()
               .map((time) => (
-                <li key={time} className="rounded-badge border border-border bg-surface px-2 py-0.5 text-caption tabular-nums text-text">
+                <li key={time} className="rounded-full bg-surface px-3 py-1.5 text-[13px] font-medium tabular-nums text-text shadow-elev-1">
                   {when(time, now)}
                 </li>
               ))}
             {incident.firings.length > SENT_AT_LIMIT && (
-              <li className="px-1 py-0.5 text-caption text-muted">
+              <li className="px-1 py-1.5 text-[13px] text-muted">
                 {t("incident_sent_earlier", { count: incident.firings.length - SENT_AT_LIMIT })}
               </li>
             )}
           </ul>
-        </>
+        </section>
       )}
-
-      <div className="mt-6 flex flex-wrap gap-2">
-        {incident.unread > 0 && <Button onClick={markRead}>{t("incident_mark_read")}</Button>}
-        <Button variant="ghost" onClick={mute}>
-          {t("incident_mute_hour")}
-        </Button>
-      </div>
     </article>
   );
 };

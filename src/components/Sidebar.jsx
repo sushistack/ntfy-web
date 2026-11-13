@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import subscriptionManager from "@/app/SubscriptionManager";
 import { useActiveTopic } from "@/components/hooks";
@@ -108,6 +108,7 @@ export const SidebarContent = ({ collapsed = false }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const activeSub = useActiveTopic();
+  const { pathname } = useLocation();
   const subscriptions = useLiveQuery(() => subscriptionManager.all()) ?? [];
   const visibleSubs = subscriptions.filter((s) => !s.internal);
 
@@ -168,15 +169,15 @@ export const SidebarContent = ({ collapsed = false }) => {
         className={cn(
           "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
           collapsed && "justify-center gap-0 px-2",
-          "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
-          "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
+          "hover:bg-surface-2 active:scale-[0.98]",
+          "motion-reduce:transition-none motion-reduce:active:scale-100",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-          !activeSub && "bg-surface-2"
+          !activeSub && pathname === "/" && "bg-surface-2"
         )}
       >
         <span
           className={cn(
-            "flex-shrink-0 w-1 h-4 rounded-full",
+            "hidden",
             collapsed && "hidden",
             !activeSub ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
           )}
@@ -187,7 +188,9 @@ export const SidebarContent = ({ collapsed = false }) => {
         ) : (
           <>
             <GridIcon className="flex-shrink-0 text-muted" />
-            <span className="text-text truncate">{t("sidebar_all_notifications")}</span>
+            <span className={cn("text-text truncate", !activeSub && pathname === "/" && "font-semibold")}>
+              {t("sidebar_all_notifications")}
+            </span>
           </>
         )}
       </button>
@@ -208,8 +211,8 @@ export const SidebarContent = ({ collapsed = false }) => {
             key={sub.id}
             className={cn(
               "group relative flex items-center rounded-sm transition-all duration-150 ease-out",
-              "hover:translate-x-0.5 hover:bg-surface-active active:translate-x-0",
-              "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
+              "hover:bg-surface-2 active:scale-[0.98]",
+              "motion-reduce:transition-none motion-reduce:active:scale-100",
               isActive && "bg-surface-2"
             )}
           >
@@ -225,7 +228,7 @@ export const SidebarContent = ({ collapsed = false }) => {
             >
               <span
                 className={cn(
-                  "flex-shrink-0 w-1 h-4 rounded-full",
+                  "hidden",
                   collapsed && "hidden",
                   isActive ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
                 )}
@@ -236,7 +239,7 @@ export const SidebarContent = ({ collapsed = false }) => {
               ) : (
                 <>
                   {topicIcon}
-                  <span className="text-text text-body-sm truncate">{sub.displayName ?? sub.topic}</span>
+                  <span className={cn("text-text text-body-sm truncate", isActive && "font-semibold")}>{sub.displayName ?? sub.topic}</span>
                   {sub.new > 0 && (
                     <span className="ml-auto pr-1 text-caption font-medium text-accent-text">{sub.new <= 99 ? sub.new : "99+"}</span>
                   )}
@@ -345,12 +348,12 @@ export const SidebarContent = ({ collapsed = false }) => {
           onClick={() => setSubscribeOpen(true)}
           className={cn(
             "flex items-center gap-3 px-3 py-2 mt-1 rounded-sm text-body-sm font-medium text-accent-text transition-all duration-150 ease-out w-full text-left",
-            "hover:translate-x-0.5 hover:bg-surface-active hover:text-text active:translate-x-0",
-            "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
+            "hover:bg-surface-2 active:scale-[0.98]",
+            "motion-reduce:transition-none motion-reduce:active:scale-100",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           )}
         >
-          <span className="flex-shrink-0 w-1 h-4 rounded-full bg-transparent" aria-hidden="true" />
+          <span className="hidden" aria-hidden="true" />
           <PlusIcon className="flex-shrink-0" />
           <span className="truncate">{t("sidebar_add_topic")}</span>
         </button>
@@ -366,13 +369,15 @@ export const SidebarContent = ({ collapsed = false }) => {
         className={cn(
           "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
           collapsed && "justify-center gap-0 px-2",
-          "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
-          "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          "hover:bg-surface-2 active:scale-[0.98]",
+          "motion-reduce:transition-none motion-reduce:active:scale-100",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+          pathname === "/history" && "bg-surface-2 font-semibold"
         )}
         aria-label={collapsed ? t("sidebar_history") : undefined}
+        aria-current={pathname === "/history" ? "page" : undefined}
       >
-        {!collapsed && <span className="flex-shrink-0 w-1 h-4 rounded-full bg-transparent" aria-hidden="true" />}
+        {!collapsed && <span className="hidden" aria-hidden="true" />}
         <ClockIcon className="flex-shrink-0 text-muted" />
         {!collapsed && <span className="text-text">{t("sidebar_history")}</span>}
       </button>
@@ -383,12 +388,13 @@ export const SidebarContent = ({ collapsed = false }) => {
         onClick={() => navigate("/settings")}
         className={cn(
           "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
-          "hover:translate-x-0.5 hover:bg-surface-active hover:text-accent-text active:translate-x-0",
-          "motion-reduce:transition-none motion-reduce:hover:translate-x-0",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          "hover:bg-surface-2 active:scale-[0.98]",
+          "motion-reduce:transition-none motion-reduce:active:scale-100",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+          pathname === "/settings" && "bg-surface-2 font-semibold"
         )}
       >
-        {!collapsed && <span className="flex-shrink-0 w-1 h-4 rounded-full bg-transparent" aria-hidden="true" />}
+        {!collapsed && <span className="hidden" aria-hidden="true" />}
         <GearIcon className="flex-shrink-0 text-muted" />
         {!collapsed && <span className="text-text">{t("sidebar_settings")}</span>}
       </button>
