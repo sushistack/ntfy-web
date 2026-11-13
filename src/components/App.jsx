@@ -45,7 +45,7 @@ const ShellWiring = () => {
   }, [i18n.language]);
 
   React.useEffect(() => {
-    document.title = newNotificationsCount > 0 ? `(${newNotificationsCount}) ntfy` : "ntfy";
+    document.title = newNotificationsCount > 0 ? `(${newNotificationsCount}) Notify` : "Notify";
     window.navigator.setAppBadge?.(newNotificationsCount);
     updateFavicon(newNotificationsCount);
   }, [newNotificationsCount]);

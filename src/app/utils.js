@@ -339,7 +339,7 @@ const loadFaviconIcon = () =>
     };
     img.onerror = () => resolve(null);
     // Use PNG instead of ICO — .ico files can't be reliably drawn to canvas in all browsers
-    img.src = "/static/images/ntfy.png";
+    img.src = "/static/images/ntfy.png?v=2";
   });
 
 export const updateFavicon = async (count) => {
