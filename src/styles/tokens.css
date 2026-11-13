@@ -28,52 +28,53 @@
 
 @theme {
   /* ── Color: Backgrounds ── */
-  --color-bg: #f3f4f6; /* off-white page canvas, never pure #FFF */
-  --color-surface: #ffffff; /* card surface */
-  --color-surface-2: #eef0f2; /* hover/active chrome one step up */
-  --color-surface-active: #eef0f2; /* = surface-2; active nav row, icon-button hover */
+  --color-bg: #f2f4f6; /* soft gray canvas (cards sit on it as white sheets) */
+  --color-surface: #ffffff; /* card / sheet */
+  --color-surface-2: #f2f4f6; /* pressed / hover fill, segmented-control track */
+  --color-surface-active: #f2f4f6; /* active nav row */
 
   /* ── Color: Borders ── */
-  --color-border: #e4e6e9; /* decorative hairline — WCAG-exempt (non-interactive) */
-  --color-control-border: #767b80; /* interactive boundary — 4.27:1 on surface, 3.74:1 on surface-2 */
+  --color-border: #e5e8eb; /* hairline — decorative, WCAG-exempt */
+  --color-control-border: #848e99; /* interactive boundary — 3.33:1 on surface, 3.02:1 on bg */
 
   /* ── Color: Text ── */
-  --color-text: #1c1e21; /* primary body — 16.71:1 on surface, 15.18:1 on bg */
-  --color-muted: #6a7076; /* secondary/label — 5.01:1 on surface, 4.55:1 on bg (WCAG AA) */
+  --color-text: #191f28; /* primary — 16.56:1 on surface */
+  --color-muted: #636e7b; /* secondary — 5.19:1 on surface, 4.71:1 on bg */
 
   /* ── Color: Accent (3 semantic sub-tokens — WCAG 1.4.11) ──
      Pick by what is PAINTED, not by component type:
        text/icon        → accent-text    (4.5:1 contrast target)
        border/focus/dot → accent-ui      (3:1 contrast target)
        fg ON accent bg  → accent-on-surface (4.5:1 contrast target)  */
-  --color-accent-text: #0e7a48; /* dark emerald; 5.39:1 on surface, 4.72:1 on surface-2 (WCAG AA) */
-  --color-accent-ui: #1a9e5f; /* 3:1 for borders, focus ring, nav dot — 3.44:1 on surface */
-  --color-accent-on-surface: #0c1a12; /* very dark green on accent fill — 5.20:1 on #1A9E5F (WCAG AA) */
+  --color-accent-text: #1b64da; /* blue text/icon — 5.41:1 on surface, 4.91:1 on bg */
+  --color-accent-ui: #1d6be5; /* blue fill/border/dot — 4.44:1 on bg */
+  --color-accent-on-surface: #ffffff; /* white on accent fill — 4.90:1 */
 
   /* ── Color: Priority / Meter thresholds ── */
-  --color-priority-high: #bf6c15; /* P4 amber — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
-  --color-priority-max: #e5484d; /* P5 coral — 3.91:1 on surface, 3.13:1 on meter-track (WCAG AA) */
-  --color-priority-urgent: #c7353a; /* inline error text — 5.25:1 on surface, 4.60:1 on surface-2 */
+  --color-priority-high: #c96800; /* P4 amber — 3.5:1 on bg, #241403 on it 4.6:1 */
+  --color-priority-max: #e5404d; /* P5 red — 4.06:1 on surface, 3.68:1 on bg */
+  --color-priority-urgent: #d22030; /* inline error text — 5.26:1 on surface */
   --color-priority-high-on-surface: #241403;
   --color-priority-max-on-surface: #1a0e0e;
-  --color-meter-ok: #0e7a48; /* = accent-text; 4.31:1 on meter-track (WCAG 1.4.11) */
-  --color-meter-track: #e4e6e9; /* meter background; fill-on-track pairs verified */
-  --color-meter-warning: #bf6c15; /* = priority-high; 3.55:1 on bg, 3.13:1 on track (WCAG 1.4.11) */
-  --color-meter-critical: #e5484d; /* = priority-max; 3.91:1 on surface, 3.13:1 on track (WCAG AA) */
+  --color-meter-ok: #06804f; /* green — 4.06:1 on track */
+  --color-meter-track: #e5e8eb; /* tick / meter track */
+  --color-meter-warning: #c96800; /* = priority-high — 3.1:1 on track */
+  --color-meter-critical: #e5404d; /* = priority-max — 3.30:1 on track */
 
   /* ── Color: Topic chip ── */
-  --color-topic-chip-bg: #e1f2ea; /* emerald-tinted light pill */
-  --color-topic-chip-text: #136b43; /* dark emerald — 5.63:1 on chip-bg (WCAG AA) */
+  --color-topic-chip-bg: #e8f3ff; /* pale blue pill */
+  --color-topic-chip-text: #1b64da; /* 4.82:1 on chip-bg */
 
   /* ── Color: Buttons (achromatic — same in both themes) ── */
-  --color-button-fill: #f4f5f6; /* white-fill primary button background */
-  --color-button-fill-text: #15171a; /* near-black primary button text — 16.45:1 on button-fill */
+  --color-button-fill: #1d6be5; /* primary button: solid blue */
+  --color-button-fill-text: #ffffff; /* 4.90:1 on button-fill */
 
   /* ── Color: Focus ring ── */
-  --color-focus-ring: #1a9e5f; /* = accent-ui; 3.44:1 on surface (WCAG 1.4.11) */
+  --color-focus-ring: #1d6be5; /* = accent-ui */
 
   /* ── Typography: Font families ── */
-  --font-sans: "Plus Jakarta Sans", "Roboto", system-ui, sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
+    sans-serif;
   --font-mono: "JetBrains Mono", "Roboto Mono", monospace;
 
   /* ── Typography: Font sizes (generate text-* utilities) ── */
@@ -117,17 +118,17 @@
   --animate-slide-in-top: slide-in-top 0.25s ease-out;
 
   /* ── Radius ── */
-  --radius-sm: 10px; /* buttons, inputs */
-  --radius-md: 16px; /* cards, dialogs, empty-state icon tile */
+  --radius-sm: 14px; /* buttons, inputs */
+  --radius-md: 20px; /* cards, sheets, dialogs */
   --radius-full: 9999px; /* chips, pill, avatars, toggles, meter tracks */
-  --radius-badge: 6px; /* priority badge — intentionally squared (sharper than sm) */
+  --radius-badge: 8px; /* small badges and chips */
   /* NOTE: card shape (0 16px 16px 0) cannot be a single @theme value.
      Use @utility rounded-card below, or var(--radius-md) with explicit border-radius. */
 
   /* ── Elevation / Shadow ── */
   --shadow-flat: none; /* elev-0: border-only */
-  --shadow-elev-1: 0 1px 2px rgba(0, 0, 0, 0.4); /* resting card */
-  --shadow-elev-2: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3); /* hover / dialog */
+  --shadow-elev-1: 0 1px 2px rgba(2, 32, 71, 0.05); /* resting card — barely there */
+  --shadow-elev-2: 0 8px 28px rgba(2, 32, 71, 0.12); /* sheet / dialog / FAB */
 
   /* ── Z-index scale (overlay stacking) ── */
   --z-fab: 40; /* Floating action button — above content, below overlays */
@@ -151,51 +152,51 @@
    All values here are confirmed; provisional light-theme annotations were removed in Story 5.3.
    ─────────────────────────────────────────────────────────── */
 .dark {
-  --color-bg: #0c0d0f; /* near-black neutral canvas */
-  --color-surface: #16181b; /* card surface */
-  --color-surface-2: #1c1f23; /* one step up: hover/active chrome */
-  --color-surface-active: #1c1f23; /* = surface-2 */
-  --color-border: #23262b; /* hairline 1px */
-  --color-control-border: #8b9197; /* interactive boundary */
-  --color-text: #e8eaed; /* primary body text */
-  --color-muted: #8b9197; /* secondary/label text */
+  --color-bg: #17171c;
+  --color-surface: #202027;
+  --color-surface-2: #2c2c35;
+  --color-surface-active: #2c2c35;
+  --color-border: #2c2c35;
+  --color-control-border: #7e838f;
+  --color-text: #ececf0;
+  --color-muted: #9ea3ad;
 
   /* Accent sub-tokens */
-  --color-accent-text: #42d392; /* emerald — 4.5:1 on dark bg; brand shared with Android */
-  --color-accent-ui: #42d392; /* 3:1 for borders, focus ring, nav dot, unread dot */
-  --color-accent-on-surface: #0c1a12; /* very dark green on #42D392 fill (FAB label, etc.) */
+  --color-accent-text: #64a8ff;
+  --color-accent-ui: #2870e6; /* white on it 4.61:1 (badges), 3.9:1 on bg */
+  --color-accent-on-surface: #ffffff;
 
   /* Priority */
-  --color-priority-high: #f5a95c; /* P4 amber */
-  --color-priority-max: #ff6b6e; /* P5 coral */
-  --color-priority-urgent: #ff6b6e; /* alias of priority-max — used for inline error text */
+  --color-priority-high: #ffa940;
+  --color-priority-max: #ff6370;
+  --color-priority-urgent: #ff6370;
 
   /* Meter */
-  --color-meter-ok: #42d392; /* = accent-text */
-  --color-meter-track: #262a2f;
-  --color-meter-warning: #f5a95c; /* = priority-high; threshold ≥ 65% */
-  --color-meter-critical: #ff6b6e; /* = priority-max; threshold ≥ 90% */
+  --color-meter-ok: #2fca86;
+  --color-meter-track: #383842; /* empty ticks stay visible on surface (1.4:1, decorative) */
+  --color-meter-warning: #ffa940;
+  --color-meter-critical: #ff6370;
 
   /* Topic chip */
-  --color-topic-chip-bg: #143a2d; /* soft dark emerald tint */
-  --color-topic-chip-text: #7ce6b4; /* light emerald text */
+  --color-topic-chip-bg: #1b2a44;
+  --color-topic-chip-text: #8dbcff;
 
   /* Focus ring */
-  --color-focus-ring: #42d392; /* = accent-ui */
+  --color-focus-ring: #2870e6;
 
   /* Overlay backdrop */
   --color-overlay: rgba(0, 0, 0, 0.65); /* dialog/sheet backdrop, dark hero */
 
   /* Glow effects (dark-only — do NOT apply in light mode) */
-  --glow-priority-high: 0 0 10px rgba(245, 169, 92, 0.267); /* amber glow on P4 bar */
-  --glow-priority-max: 0 0 10px rgba(255, 107, 110, 0.333); /* coral glow on P5 bar */
-  --glow-accent-dot: 0 0 7px #42d392; /* status/unread dot glow */
+  --glow-priority-high: none;
+  --glow-priority-max: none;
+  --glow-accent-dot: none;
 }
 
 /* ── Custom utility: Notification card signature shape ───────────
-   Squared corners (no radius) — per Jay's call the flat edge reads cleaner.
+   Rounded like every other sheet (2026-11 redesign; was squared).
    Use: <div class="rounded-card"> (no arbitrary value needed)
    ─────────────────────────────────────────────────────────── */
 @utility rounded-card {
-  border-radius: 0;
+  border-radius: var(--radius-md);
 }

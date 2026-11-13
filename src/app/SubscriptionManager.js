@@ -159,18 +159,17 @@ class SubscriptionManager {
     // It's actually fine, because the reading and filtering is quite fast. The rendering is what's
     // killing performance. See  https://dexie.org/docs/Collection/Collection.offset()#a-better-paging-approach
 
+    // Newest first by server time. Not sequenceId: ntfy's sequence_id is null for normal messages, so it
+    // falls back to the random message id and the order is meaningless.
     return this.db.notifications
-      .orderBy("sequenceId")
+      .orderBy("time")
       .filter((n) => n.subscriptionId === subscriptionId)
       .reverse()
       .toArray();
   }
 
   async getAllNotifications() {
-    return this.db.notifications
-      .orderBy("sequenceId")
-      .reverse()
-      .toArray();
+    return this.db.notifications.orderBy("time").reverse().toArray();
   }
 
   /** Adds notification, or returns false if it already exists */

@@ -19,11 +19,12 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      // PW_CHROMIUM: use an already-installed Chromium instead of downloading the pinned build
+      use: { ...devices["Desktop Chrome"], launchOptions: { executablePath: process.env.PW_CHROMIUM || undefined } },
     },
   ],
   webServer: {
-    command: "npm start",
+    command: "npm start -- --port 3002 --strictPort",
     url: "http://localhost:3002",
     reuseExistingServer: true,
     timeout: 30_000,

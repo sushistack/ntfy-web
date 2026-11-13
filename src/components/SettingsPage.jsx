@@ -352,7 +352,7 @@ export default function SettingsPage() {
 
   return (
     <div className="p-4">
-      <div className="settings-shell-panel app-panel-enter grid bg-surface border border-border rounded-none overflow-hidden">
+      <div className="settings-shell-panel app-panel-enter grid bg-surface rounded-md shadow-elev-1 overflow-hidden">
         {/* Left nav */}
         <nav aria-label={t("nav_button_settings")} className="border-r border-border p-2 flex flex-col gap-1">
         {navItems.map((item) => (

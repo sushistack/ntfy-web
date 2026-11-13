@@ -1,9 +1,13 @@
 import * as React from "react";
 import { useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useSearchParams } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useTranslation } from "react-i18next";
 import Feed from "@/components/Feed";
+import Board from "@/components/board/Board";
+import IncidentDetail from "@/components/board/IncidentDetail";
+import History from "@/components/board/History";
+import ViewToggle from "@/components/board/ViewToggle";
 import { Sheet, SheetContent } from "@/components/ui/Sheet";
 import { useBackgroundProcesses, useConnectionListeners, useWebPushTopics } from "./hooks";
 import userManager from "../app/UserManager";
@@ -15,7 +19,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import routes from "./routes";
 import initI18n from "../app/i18n";
 import AppProviders from "./AppProviders";
-import Sidebar, { SidebarContent } from "./Sidebar";
+import Sidebar, { SidebarBrand, SidebarContent } from "./Sidebar";
 import AppBarNew from "./AppBar";
 import Messaging from "./Messaging";
 import SettingsPage from "./SettingsPage";
@@ -49,9 +53,23 @@ const ShellWiring = () => {
   return null;
 };
 
-const FeedRoute = () => (
+/* Board is the default view; ?view=messages keeps the raw message feed, ?incident=<key> opens one incident. */
+const FeedRoute = () => {
+  const [params] = useSearchParams();
+  const incident = params.get("incident");
+  const messages = params.get("view") === "messages";
+  return (
+    <div className="max-w-feed mx-auto px-4 py-6">
+      {!incident && <ViewToggle messages={messages} />}
+      {incident && <IncidentDetail incidentKey={incident} />}
+      {!incident && (messages ? <Feed /> : <Board />)}
+    </div>
+  );
+};
+
+const HistoryRoute = () => (
   <div className="max-w-feed mx-auto px-4 py-6">
-    <Feed />
+    <History />
   </div>
 );
 
@@ -84,6 +102,7 @@ const NewShell = () => {
               <Route path={routes.subscription} element={<FeedRoute />} />
               <Route path={routes.subscriptionExternal} element={<FeedRoute />} />
               <Route path={routes.settings} element={<SettingsPage />} />
+              <Route path={routes.history} element={<HistoryRoute />} />
             </Routes>
           </main>
         </div>
@@ -94,6 +113,7 @@ const NewShell = () => {
         {/* Mobile drawer — Sidebar inside Sheet */}
         <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
           <SheetContent side="left" className="w-nav-drawer">
+            <SidebarBrand />
             <SidebarContent collapsed={false} />
           </SheetContent>
         </Sheet>

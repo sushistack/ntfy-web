@@ -234,7 +234,8 @@ export function NotificationCard({
       >
         {/* Accent bar — colored per priority (min/low gray, normal white, high amber, max coral) */}
         <div
-          className={cn("absolute left-0 top-0 bottom-0 w-1", PRIORITY_BAR[priority] ?? "bg-text")}
+          // Bar hidden in the 2026-11 redesign: the priority badge already carries severity.
+          className={cn("hidden absolute left-0 top-0 bottom-0 w-1", PRIORITY_BAR[priority] ?? "bg-text")}
           style={
             priority >= 4
               ? { boxShadow: priority === 5 ? "var(--glow-priority-max)" : "var(--glow-priority-high)" }
@@ -245,17 +246,12 @@ export function NotificationCard({
         {/* Header band */}
         <div className="flex items-center gap-2 px-4 pt-3 pb-2 pl-5">
           <PriorityBadge priority={priority} />
-          <p className="flex-1 text-body font-semibold text-text truncate">
+          {/* Read state is shown by a quieter title (no dot); unread keeps an SR-only label. Not card opacity:
+              that would push the gray secondary text below 4.5:1. */}
+          <p className={cn("flex-1 text-body truncate", notification.new === 1 ? "font-bold text-text" : "font-medium text-muted")}>
             {notification.title || notification.message}
           </p>
-          {notification.new === 1 && (
-            <span
-              role="status"
-              aria-label={t("notification_card_unread_label")}
-              className="w-2 h-2 rounded-full bg-accent-ui shrink-0"
-              style={{ boxShadow: "var(--glow-accent-dot)" }}
-            />
-          )}
+          {notification.new === 1 && <span role="status" aria-label={t("notification_card_unread_label")} className="sr-only" />}
           <button
             type="button"
             onClick={(e) => {
