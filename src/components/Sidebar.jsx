@@ -84,12 +84,6 @@ const HomeIcon = () => (
   </svg>
 );
 
-const BellIcon = () => (
-  <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M12 2a6 6 0 0 0-6 6v3.6l-1.7 3.4A1 1 0 0 0 5.2 16.5h13.6a1 1 0 0 0 .9-1.5L18 11.6V8a6 6 0 0 0-6-6Zm-2.8 16a2.9 2.9 0 0 0 5.6 0z" />
-  </svg>
-);
-
 /** Rounded icon square for primary destinations; filled blue when active. */
 const IconTile = ({ active, children }) => (
   <span
@@ -430,9 +424,7 @@ export const SidebarBrand = ({ collapsed = false }) => {
   const { t } = useTranslation();
   return (
     <div className={cn("flex items-center gap-2.5 pt-5 pb-4", collapsed ? "justify-center px-1.5" : "px-5")}>
-      <span className="grid place-items-center w-8 h-8 rounded-sm bg-accent-ui text-accent-on-surface" aria-hidden="true">
-        <BellIcon />
-      </span>
+      <img src="/static/images/brand-mark.png" alt="" className="w-8 h-8" />
       {!collapsed && <span className="text-subtitle font-bold tracking-tight text-text">{t("brand_name")}</span>}
     </div>
   );

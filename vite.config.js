@@ -43,17 +43,9 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
         globIgnores: ["config.js"],
       },
-      // The actual prod manifest is served from the go server, see server.go handleWebManifest.
-      manifest: mode === "development" && {
-        theme_color: "#317f6f",
-        icons: [
-          {
-            src: "/static/images/pwa-192x192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-        ],
-      },
+      // Standalone UI (no ntfy go server in front), so the manifest is a static file:
+      // public/manifest.webmanifest. Without it prod had no installable PWA (/manifest.webmanifest fell through to index.html).
+      manifest: false,
     }),
   ],
 }));

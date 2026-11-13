@@ -74,7 +74,7 @@ export const isImage = (attachment) => {
 };
 
 export const icon = "/static/images/ntfy.png";
-export const badge = "/static/images/mask-icon.svg";
+export const badge = "/static/images/badge-96.png"; // monochrome PNG: Android status-bar badges ignore SVG/colour
 
 /**
  * Computes a unique notification tag scoped by baseUrl, topic, and sequence ID.
