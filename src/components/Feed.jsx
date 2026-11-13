@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLiveQuery } from "dexie-react-hooks";
+import { useSearchParams } from "react-router-dom";
+import { cn } from "@/components/ui/utils";
 import DataBoundary from "@/components/ui/DataBoundary";
 import LiveRegion from "@/components/ui/LiveRegion";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -17,6 +19,33 @@ import { SendingIndicator, RetryBar } from "./message/QueueSlots";
 import { findArrivingNotifications } from "./feedAnnouncements";
 
 const PAGE_SIZE = 20;
+const ALL_PARAMS = { view: "messages" };
+const UNREAD_PARAMS = { view: "messages", filter: "unread" };
+
+/** 전체 / 안읽음 pills (Gmail/GitHub-style; a "read only" view is rarely useful). */
+const FeedFilter = ({ unreadOnly, unreadCount, onChange }) => {
+  const { t } = useTranslation();
+  const pill = (active, label, params) => (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={() => onChange(params)}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-body-sm font-semibold transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
+        active ? "bg-text text-surface" : "bg-surface text-muted shadow-elev-1 hover:text-text"
+      )}
+    >
+      {label}
+    </button>
+  );
+  return (
+    <div role="group" aria-label={t("feed_filter_label")} className="mb-4 flex gap-2">
+      {pill(!unreadOnly, t("feed_filter_all"), ALL_PARAMS)}
+      {pill(unreadOnly, unreadCount > 0 ? t("feed_filter_unread_count", { count: unreadCount }) : t("feed_filter_unread"), UNREAD_PARAMS)}
+    </div>
+  );
+};
 
 const FeedCard = ({ notification, subscriptionName, showTopicChip, isSelected }) => {
   const [actionError, setActionError] = useState(null);
@@ -65,12 +94,16 @@ const Feed = () => {
   const isLoading = rawNotifications === undefined;
   const notifications = rawNotifications ?? [];
   const isEmpty = !isLoading && notifications.length === 0 && optimisticEntries.length === 0;
+  const [params, setParams] = useSearchParams();
+  const unreadOnly = params.get("filter") === "unread";
+  const unreadCount = notifications.filter((n) => n.new === 1).length;
+  const shown = unreadOnly ? notifications.filter((n) => n.new === 1) : notifications;
 
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
   const seenNotificationsRef = useRef({ scope: null, ids: new Set() });
   const [arrivalAnnouncement, setArrivalAnnouncement] = useState({ message: "", sequence: 0 });
   const [animatingIds, setAnimatingIds] = useState(() => new Set());
-  const visible = notifications.slice(0, displayCount);
+  const visible = shown.slice(0, displayCount);
   const notificationScope = isAllFeed ? "all" : subscription?.id ?? null;
 
   useEffect(() => {
@@ -104,6 +137,9 @@ const Feed = () => {
     <>
       <LiveRegion message={arrivalAnnouncement.message} announcementKey={arrivalAnnouncement.sequence} />
 
+      {!isEmpty && !isLoading && <FeedFilter unreadOnly={unreadOnly} unreadCount={unreadCount} onChange={setParams} />}
+      {unreadOnly && !isLoading && shown.length === 0 && <p className="px-1 py-10 text-center text-body text-muted">{t("feed_unread_empty")}</p>}
+
       <DataBoundary
         loading={isLoading}
         hasCache={false}
@@ -114,13 +150,13 @@ const Feed = () => {
         <InfiniteScroll
           dataLength={visible.length}
           next={() => setDisplayCount((prev) => prev + PAGE_SIZE)}
-          hasMore={visible.length < notifications.length}
+          hasMore={visible.length < shown.length}
           loader={<Skeleton className="mt-3" />}
           scrollThreshold={0.7}
           scrollableTarget="main"
         >
           <ul aria-label={t("feed_notifications_list")} className="flex flex-col gap-[1.125rem]">
-            {optimisticEntries.map((entry) => {
+            {(unreadOnly ? [] : optimisticEntries).map((entry) => {
               const optSub = isAllFeed
                 ? allSubscriptions.find((s) => s.baseUrl === entry.baseUrl && s.topic === entry.topic)
                 : subscription;

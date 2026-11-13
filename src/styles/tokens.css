@@ -163,7 +163,7 @@
 
   /* Accent sub-tokens */
   --color-accent-text: #64a8ff;
-  --color-accent-ui: #3d86f5;
+  --color-accent-ui: #2870e6; /* white on it 4.61:1 (badges), 3.9:1 on bg */
   --color-accent-on-surface: #ffffff;
 
   /* Priority */
@@ -173,7 +173,7 @@
 
   /* Meter */
   --color-meter-ok: #2fca86;
-  --color-meter-track: #2c2c35;
+  --color-meter-track: #383842; /* empty ticks stay visible on surface (1.4:1, decorative) */
   --color-meter-warning: #ffa940;
   --color-meter-critical: #ff6370;
 
@@ -182,7 +182,7 @@
   --color-topic-chip-text: #8dbcff;
 
   /* Focus ring */
-  --color-focus-ring: #3d86f5;
+  --color-focus-ring: #2870e6;
 
   /* Overlay backdrop */
   --color-overlay: rgba(0, 0, 0, 0.65); /* dialog/sheet backdrop, dark hero */

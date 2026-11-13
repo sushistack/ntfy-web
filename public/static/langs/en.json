@@ -590,5 +590,10 @@
   "board_sent_today_other": "Sent {{count}} times today",
   "brand_name": "Notify",
   "sidebar_topics_title": "Topics",
-  "sidebar_no_topics": "No topics yet. Subscribe to one to start getting alerts."
+  "sidebar_no_topics": "No topics yet. Subscribe to one to start getting alerts.",
+  "feed_filter_label": "Filter messages",
+  "feed_filter_all": "All",
+  "feed_filter_unread": "Unread",
+  "feed_filter_unread_count": "Unread {{count}}",
+  "feed_unread_empty": "No unread messages."
 }

@@ -357,5 +357,10 @@
   "history_days_one": "하루, 마지막 {{time}}",
   "brand_name": "Notify",
   "sidebar_topics_title": "토픽",
-  "sidebar_no_topics": "아직 구독한 토픽이 없어요. 토픽을 구독하면 여기에 보여요."
+  "sidebar_no_topics": "아직 구독한 토픽이 없어요. 토픽을 구독하면 여기에 보여요.",
+  "feed_filter_label": "메시지 필터",
+  "feed_filter_all": "전체",
+  "feed_filter_unread": "안읽음",
+  "feed_filter_unread_count": "안읽음 {{count}}",
+  "feed_unread_empty": "안 읽은 메시지가 없어요."
 }

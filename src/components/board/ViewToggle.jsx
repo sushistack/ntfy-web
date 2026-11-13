@@ -15,7 +15,7 @@ const ViewToggle = ({ messages }) => {
       onClick={onClick}
       className={cn(
         "px-4 py-1.5 rounded-full text-body-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-        active ? "bg-surface text-text shadow-elev-1" : "text-muted hover:text-text"
+        active ? "bg-text text-surface" : "text-muted hover:text-text" // inverted pill reads as selected in both themes
       )}
     >
       {label}

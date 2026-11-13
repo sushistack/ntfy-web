@@ -246,17 +246,12 @@ export function NotificationCard({
         {/* Header band */}
         <div className="flex items-center gap-2 px-4 pt-3 pb-2 pl-5">
           <PriorityBadge priority={priority} />
-          <p className="flex-1 text-body font-semibold text-text truncate">
+          {/* Read state is shown by a quieter title (no dot); unread keeps an SR-only label. Not card opacity:
+              that would push the gray secondary text below 4.5:1. */}
+          <p className={cn("flex-1 text-body truncate", notification.new === 1 ? "font-bold text-text" : "font-medium text-muted")}>
             {notification.title || notification.message}
           </p>
-          {notification.new === 1 && (
-            <span
-              role="status"
-              aria-label={t("notification_card_unread_label")}
-              className="w-2 h-2 rounded-full bg-accent-ui shrink-0"
-              style={{ boxShadow: "var(--glow-accent-dot)" }}
-            />
-          )}
+          {notification.new === 1 && <span role="status" aria-label={t("notification_card_unread_label")} className="sr-only" />}
           <button
             type="button"
             onClick={(e) => {

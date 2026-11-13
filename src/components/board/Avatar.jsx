@@ -21,13 +21,13 @@ const INFO = <Glyph d="M12 11v7M12 6.5h.01" />;
 
 // Round status mark used by board rows: colour + glyph both carry the state (not colour alone).
 const looks = {
-  open5: ["bg-priority-max/14 text-priority-max", ALERT],
-  open4: ["bg-priority-high/16 text-priority-high", ALERT],
-  open3: ["bg-accent-ui/14 text-accent-text", ALERT],
-  resolved: ["bg-meter-ok/14 text-meter-ok", CHECK],
+  open5: ["bg-priority-max/18 text-priority-max", ALERT],
+  open4: ["bg-priority-high/20 text-priority-high", ALERT],
+  open3: ["bg-accent-ui/18 text-accent-text", ALERT],
+  resolved: ["bg-meter-ok/18 text-meter-ok", CHECK],
   quiet: ["bg-surface-2 text-muted", MOON],
-  info: ["bg-accent-ui/12 text-accent-text", INFO],
-  clear: ["bg-meter-ok/14 text-meter-ok", CHECK],
+  info: ["bg-accent-ui/16 text-accent-text", INFO],
+  clear: ["bg-meter-ok/18 text-meter-ok", CHECK],
 };
 
 export const lookFor = (incident) => {
