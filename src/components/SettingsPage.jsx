@@ -299,7 +299,15 @@ function NotificationsSection({ t }) {
         </SelectControl>
       </SettingRow>
       <SettingRow label={t("settings_web_push_label")}>
-        <Switch checked={!!webPushEnabled} onCheckedChange={(v) => prefs.setWebPushEnabled(v)} aria-label={t("settings_web_push_label")} />
+        <Switch
+          checked={!!webPushEnabled}
+          onCheckedChange={async (v) => {
+            // Push only subscribes once notifications are allowed; ask right when the user opts in.
+            if (v && !notifier.granted()) await notifier.maybeRequestPermission();
+            await prefs.setWebPushEnabled(v);
+          }}
+          aria-label={t("settings_web_push_label")}
+        />
       </SettingRow>
     </div>
   );
