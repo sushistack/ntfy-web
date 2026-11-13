@@ -73,7 +73,8 @@ export const isImage = (attachment) => {
   return attachment.name?.match(imageRegex) || attachment.url?.match(imageRegex);
 };
 
-export const icon = "/static/images/ntfy.png";
+// ?v=N: /static/ is cached immutable for a year and icon names are fixed, so bump N when an icon changes.
+export const icon = "/static/images/ntfy.png?v=2";
 export const badge = "/static/images/badge-96.png"; // monochrome PNG: Android status-bar badges ignore SVG/colour
 
 /**
