@@ -12,7 +12,8 @@ const IncidentCard = ({ incident, sub, today, nowSlot, quiet, onOpen }) => {
   const { t } = useTranslation();
   const slots = slotsForDay(incident.firings, today);
   const okSlot = incident.resolvedAt ? slotOf(incident.resolvedAt, today) : null;
-  const sent = incident.runCount === 1 ? t("board_sent_one") : t("board_sent_other", { count: incident.runCount });
+  const sentToday = incident.firings.filter((f) => f >= today).length;
+  const sent = sentToday === 1 ? t("board_sent_today_one") : t("board_sent_today_other", { count: sentToday });
   const when =
     incident.state === "resolved" || incident.state === "quiet"
       ? t("board_range", { from: hhmm(incident.since), to: hhmm(incident.resolvedAt ?? incident.last) })

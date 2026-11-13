@@ -53,7 +53,8 @@ const IncidentDetail = ({ incidentKey }) => {
 
   const sub = subsById[incident.subscriptionId];
   const today = dayStart(now);
-  const sent = incident.runCount === 1 ? t("board_sent_one") : t("board_sent_other", { count: incident.runCount });
+  const sentToday = incident.firings.filter((f) => f >= today).length;
+  const sent = sentToday === 1 ? t("board_sent_today_one") : t("board_sent_today_other", { count: sentToday });
   const markRead = () => incident.notifications.filter((n) => n.new === 1).forEach((n) => subscriptionManager.markNotificationRead(n.id));
   const mute = () => subscriptionManager.setMutedUntil(incident.subscriptionId, now + 3600);
 

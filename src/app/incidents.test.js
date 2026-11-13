@@ -41,7 +41,6 @@ describe("groupIncidents", () => {
     const [inc] = groupIncidents(list, NOW);
     expect(inc.first).toBe(NOW - 86400);
     expect(inc.since).toBe(NOW - 900);
-    expect(inc.runCount).toBe(2);
   });
 
   it("marks an incident quiet once it stops re-firing", () => {

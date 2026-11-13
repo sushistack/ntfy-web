@@ -98,7 +98,7 @@ const DotsHorizontalIcon = ({ className }) => (
 
 /* ── Sidebar content (shared between desktop sidebar and mobile drawer) ── */
 /* Derive active topic from URL path — useParams() requires a Route match; useLocation() is always available */
-const SYSTEM_PATHS = new Set(["/", "/all", "/settings", "/login", "/signup", "/account"]);
+const SYSTEM_PATHS = new Set(["/", "/all", "/settings", "/history", "/login", "/signup", "/account"]);
 export const getTopicFromPath = (pathname) => {
   const seg = pathname.split("/")[1] || "";
   return seg && !SYSTEM_PATHS.has(`/${seg}`) ? seg : undefined;

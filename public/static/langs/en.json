@@ -568,8 +568,6 @@
   "board_section_info": "For your information",
   "board_since": "Since {{time}}",
   "board_range": "{{from}} to {{to}}",
-  "board_sent_one": "Sent once",
-  "board_sent_other": "Sent {{count}} times",
   "incident_status_open": "Still firing since {{time}}.",
   "incident_status_quiet": "Stopped firing after {{time}}.",
   "incident_status_resolved": "Fixed at {{time}}.",
@@ -587,5 +585,7 @@
   "history_sent_week_other": "Sent {{count}} times this week",
   "history_days_one": "On one day, last at {{time}}",
   "history_days_other": "Across {{count}} days",
-  "incident_sent_earlier": "and {{count}} earlier"
+  "incident_sent_earlier": "and {{count}} earlier",
+  "board_sent_today_one": "Sent once today",
+  "board_sent_today_other": "Sent {{count}} times today"
 }

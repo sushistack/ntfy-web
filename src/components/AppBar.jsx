@@ -13,7 +13,7 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const topic = getTopicFromPath(pathname);
-  const title = topic ?? t("app_bar_title_all");
+  const title = pathname === "/history" ? t("sidebar_history") : topic ?? t("app_bar_title_all");
 
   return (
     <header className="flex items-center h-14 px-2 bg-surface border-b border-border md:hidden flex-shrink-0">

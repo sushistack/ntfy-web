@@ -52,7 +52,7 @@ const runStart = (firings) => {
  * @param now unix seconds
  * @returns incidents sorted newest-first:
  *   {key, id (short, for URLs), subscriptionId, title, state: 'open'|'quiet'|'resolved'|'info', firings: number[] (asc),
- *    first, since (start of the current unbroken run), runCount, last, resolvedAt, priority, unread, latest, notifications (desc)}
+ *    first, since (start of the current unbroken run), last, resolvedAt, priority, unread, latest, notifications (desc)}
  */
 export const groupIncidents = (notifications, now) => {
   const groups = new Map();
@@ -88,7 +88,6 @@ export const groupIncidents = (notifications, now) => {
       firings,
       first: firings[0] ?? latest.time,
       since: runStart(firings) ?? latest.time,
-      runCount: firings.filter((f) => f >= (runStart(firings) ?? latest.time)).length,
       last: firings[firings.length - 1] ?? latest.time,
       resolvedAt: state === "resolved" ? latest.time : null,
       priority,
