@@ -12,9 +12,9 @@ var config = {
   enable_reservations: true,
   enable_emails: true,
   enable_calls: true,
-  enable_web_push: false,
+  enable_web_push: true,
   billing_contact: "",
-  web_push_public_key: "",
+  web_push_public_key: "BATLo5RHqStR9rQEspTkce_yL2X7W30SOzXZTq-rg1D8GxOgKpW7Wa-Lc6i7VCZ-uFODXeBrObheJgt8h7MsmqY", // = ntfy server.yml web-push-public-key (homelab-gitops)
   disallowed_topics: ["docs", "static", "file", "app", "account", "settings", "signup", "login", "v1"],
   config_hash: "prod",
 };
