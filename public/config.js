@@ -6,7 +6,7 @@
 // During web development, you may change values here for rapid testing.
 
 var config = {
-  base_url: "https://notify.eli.kr", // Self-hosted server for slice testing
+  base_url: "https://ntfy.eli.kr", // Self-hosted ntfy API (notify.eli.kr now serves this web app)
   app_root: "/",
   enable_login: true,
   require_login: false,
