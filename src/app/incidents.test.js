@@ -57,6 +57,11 @@ describe("groupIncidents", () => {
     expect(inc.resolvedAt).toBe(NOW - 300);
   });
 
+  it("treats UP as the later message when DOWN and UP share a second", () => {
+    const [inc] = groupIncidents([n("Webapp UP", 0, { priority: 3 }), n("Webapp DOWN", 0)], NOW);
+    expect(inc.state).toBe("resolved");
+  });
+
   it("treats low-priority one-offs as info", () => {
     const [inc] = groupIncidents([n("Daily summary", 60, { priority: 3 })], NOW);
     expect(inc.state).toBe("info");

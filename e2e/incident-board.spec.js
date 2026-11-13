@@ -17,6 +17,8 @@ async function publish(title, priority, message = title, tags = []) {
     body: JSON.stringify({ topic: TOPIC, title, priority, message, tags }),
   });
   if (!res.ok) throw new Error(`publish failed: ${res.status} ${await res.text()}`);
+  // ntfy timestamps are whole seconds; real senders never publish the same alert twice in one second
+  await new Promise((resolve) => setTimeout(resolve, 1100));
 }
 
 const backupCard = JSON.stringify({
@@ -109,7 +111,11 @@ test.describe("incident board (real server)", () => {
     await expect(page.getByText("31h old")).toBeVisible(); // kv card rendered, not raw JSON
     await expect(page.getByRole("heading", { name: "Sent at" })).toBeVisible();
 
+    // Backlog fetched on subscribe is stored as read; a live arrival is unread and updates the open detail.
     const markRead = page.getByRole("button", { name: "Mark read" });
+    await expect(markRead).toBeHidden();
+    await publish("🥪 Backup stale: e2e-svc", 5, backupCard, ["card"]);
+    await expect(page.getByText(/Sent 5 times/)).toBeVisible({ timeout: 20000 });
     await expect(markRead).toBeVisible();
     await markRead.click();
     await expect(markRead).toBeHidden();
@@ -127,7 +133,7 @@ test.describe("incident board (real server)", () => {
 
     await page.getByRole("button", { name: "Messages", exact: true }).click();
     await expect(page).toHaveURL(/view=messages/);
-    await expect(page.getByRole("list", { name: /notifications/i }).locator(":scope > li")).toHaveCount(9, { timeout: 15000 });
+    await expect(page.getByRole("list", { name: "Notification list" }).locator(":scope > li")).toHaveCount(10, { timeout: 15000 }); // 8 + 2 live publishes above
   });
 
   test("History shows the alert across the week", async ({ page }) => {

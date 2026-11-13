@@ -64,7 +64,8 @@ export const groupIncidents = (notifications, now) => {
 
   const incidents = [];
   for (const [key, list] of groups) {
-    list.sort((a, b) => b.time - a.time);
+    // ntfy times are whole seconds; on a tie treat a recovery as the later message (UP follows DOWN).
+    list.sort((a, b) => b.time - a.time || isRecovery(b) - isRecovery(a));
     const latest = list[0];
     const failures = list.filter((n) => !isRecovery(n));
     const firings = failures.map((n) => n.time).sort((a, b) => a - b);
