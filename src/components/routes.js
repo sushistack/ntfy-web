@@ -5,6 +5,7 @@ const routes = {
   login: "/login",
   app: config.app_root,
   settings: "/settings",
+  history: "/history",
   subscription: "/:topic",
   subscriptionExternal: "/:baseUrl/:topic",
   msgDetail: "/:topic/:msgId",
