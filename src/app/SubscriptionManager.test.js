@@ -1,5 +1,5 @@
 /**
- * Characterization tests for Dexie dedup and sequenceId ordering.
+ * Characterization tests for Dexie dedup and time ordering.
  * ENTRY GATE (G1): feed/card stories (3.x) may not begin until all tests here are GREEN.
  * REGRESSION GUARD (G6): these tests must stay GREEN through all subsequent refactors.
  */
@@ -78,33 +78,27 @@ describe("SubscriptionManager dedup and ordering", () => {
     expect(count).toBe(1);
   });
 
-  it("getNotifications: higher sequenceId appears first regardless of arrival time", async () => {
+  // ntfy sends sequence_id: null for normal messages, so sequenceId falls back to the random message id.
+  // `time` is server-assigned for both WebSocket and poll rows, so it is the reliable order.
+  it("getNotifications: newest server time first, whatever the (random) ids and arrival order", async () => {
     const sub = { id: "sub1", baseUrl: "http://ntfy.sh", topic: "test", mutedUntil: 0, last: null };
     await db.subscriptions.put(sub);
 
-    // WS message — arrived first, higher sequenceId, lower time (by coincidence or clock skew)
-    const wsMsg = makeMessage({ id: "ws-msg", time: 1000, sequence_id: 100 });
-    await sm.addNotification("sub1", wsMsg);
-
-    // Poll row — arrived later, lower sequenceId, HIGHER time (the clock-skew edge case)
-    const pollMsg = makeMessage({ id: "poll-msg", time: 1001, sequence_id: 50 });
-    await sm.addNotifications("sub1", [pollMsg]);
+    await sm.addNotification("sub1", makeMessage({ id: "zzzOlder", time: 1000, sequence_id: null }));
+    await sm.addNotifications("sub1", [makeMessage({ id: "aaaNewer", time: 1001, sequence_id: null })]);
 
     const notifications = await sm.getNotifications("sub1");
-    expect(notifications).toHaveLength(2);
-    expect(notifications[0].id).toBe("ws-msg"); // sequenceId=100 first
-    expect(notifications[1].id).toBe("poll-msg"); // sequenceId=50 second
+    expect(notifications.map((n) => n.id)).toEqual(["aaaNewer", "zzzOlder"]);
   });
 
-  it("getAllNotifications: higher sequenceId appears first across all subscriptions", async () => {
-    const sub = { id: "sub1", baseUrl: "http://ntfy.sh", topic: "test", mutedUntil: 0, last: null };
-    await db.subscriptions.put(sub);
+  it("getAllNotifications: newest server time first across all subscriptions", async () => {
+    await db.subscriptions.put({ id: "sub1", baseUrl: "http://ntfy.sh", topic: "a", mutedUntil: 0, last: null });
+    await db.subscriptions.put({ id: "sub2", baseUrl: "http://ntfy.sh", topic: "b", mutedUntil: 0, last: null });
 
-    await sm.addNotification("sub1", makeMessage({ id: "a", time: 900, sequence_id: 200 }));
-    await sm.addNotifications("sub1", [makeMessage({ id: "b", time: 999, sequence_id: 10 })]);
+    await sm.addNotification("sub1", makeMessage({ id: "zzz", time: 900, sequence_id: null }));
+    await sm.addNotifications("sub2", [makeMessage({ id: "aaa", time: 999, sequence_id: null })]);
 
     const all = await sm.getAllNotifications();
-    expect(all[0].id).toBe("a"); // sequenceId=200 first
-    expect(all[1].id).toBe("b"); // sequenceId=10 second
+    expect(all.map((n) => n.id)).toEqual(["aaa", "zzz"]);
   });
 });

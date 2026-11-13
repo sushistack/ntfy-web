@@ -56,7 +56,8 @@ Charts are hand-drawn SVG (no chart dep). Meter thresholds: <65 emerald / ≥65 
 ## 6. Feed (`Feed.jsx`)
 
 - Full cards, **18px gap** (`gap-[1.125rem]`), client-paginated (20/page, infinite scroll).
-- Order: **`sequenceId` desc** (newest by server sequence; not wall-clock — robust to skew).
+- Order: **`time` desc** (server-assigned timestamp; ntfy's `sequence_id` is null for normal messages, so
+  `sequenceId` falls back to the random message id and is not an order).
   (`app/SubscriptionManager.js`)
 - **No sticky topic header.** New arrivals: only the arrived card slides in (`animate-slide-in-top`).
 - All-feed shows topic chips; per-topic omits them. Optimistic sends pin to top.

@@ -134,6 +134,11 @@ test.describe("incident board (real server)", () => {
     await page.getByRole("button", { name: "Messages", exact: true }).click();
     await expect(page).toHaveURL(/view=messages/);
     await expect(page.getByRole("list", { name: "Notification list" }).locator(":scope > li")).toHaveCount(10, { timeout: 15000 }); // 8 + 2 live publishes above
+
+    // newest first by time (each card ends with "YYYY-MM-DD HH:mm:ss")
+    const items = await page.getByRole("list", { name: "Notification list" }).locator(":scope > li").allInnerTexts();
+    const stamps = items.map((text) => text.match(/\d{4}-\d\d-\d\d \d\d:\d\d:\d\d/)[0]);
+    expect(stamps).toEqual([...stamps].sort().reverse());
   });
 
   test("History shows the alert across the week", async ({ page }) => {
