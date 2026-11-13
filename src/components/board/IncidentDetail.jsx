@@ -83,7 +83,7 @@ const IncidentDetail = ({ incidentKey }) => {
         type="button"
         onClick={back}
         className={cn(
-          "-ml-1.5 inline-flex items-center gap-0.5 rounded-sm py-1 pr-2 text-[15px] font-medium text-muted hover:text-text",
+          "-ml-1.5 inline-flex items-center gap-0.5 rounded-sm py-1 pr-2 text-body font-medium text-muted hover:text-text",
           focus
         )}
       >
@@ -93,9 +93,9 @@ const IncidentDetail = ({ incidentKey }) => {
 
       <header className="mt-5 px-1">
         <StatusAvatar look={lookFor(incident)} size="lg" />
-        <p className="mt-4 text-[14px] font-semibold text-accent-text">{topicLabel(sub)}</p>
-        <h1 className="mt-1 text-[28px] leading-[1.25] font-bold tracking-[-0.025em] text-text break-words">{incident.title}</h1>
-        <p className="mt-2 text-[15px] text-muted">
+        <p className="mt-4 text-body-sm font-semibold text-accent-text">{topicLabel(sub)}</p>
+        <h1 className="mt-1 text-display leading-tight font-bold tracking-tight text-text break-words">{incident.title}</h1>
+        <p className="mt-2 text-body text-muted">
           {statusLine(t, incident, now)} {sent}.
         </p>
       </header>
@@ -120,11 +120,11 @@ const IncidentDetail = ({ incidentKey }) => {
       </div>
 
       <div className={cn("mt-3 grid gap-2", incident.unread > 0 ? "grid-cols-2" : "grid-cols-1")}>
-        <Button variant="ghost" size="lg" className="h-14 rounded-[16px] bg-surface shadow-elev-1" onClick={mute}>
+        <Button variant="ghost" size="lg" className="h-14 rounded-sm bg-surface shadow-elev-1" onClick={mute}>
           {t("incident_mute_hour")}
         </Button>
         {incident.unread > 0 && (
-          <Button size="lg" className="h-14 rounded-[16px]" onClick={markRead}>
+          <Button size="lg" className="h-14 rounded-sm" onClick={markRead}>
             {t("incident_mark_read")}
           </Button>
         )}
@@ -132,18 +132,21 @@ const IncidentDetail = ({ incidentKey }) => {
 
       {incident.firings.length > 1 && (
         <section className="mt-9">
-          <h2 className="mb-3 px-1 text-[18px] font-bold text-text tracking-[-0.01em]">{t("incident_sent_at")}</h2>
+          <h2 className="mb-3 px-1 text-subtitle font-bold text-text tracking-tight">{t("incident_sent_at")}</h2>
           <ul className="flex flex-wrap gap-2 px-1">
             {incident.firings
               .slice(-SENT_AT_LIMIT)
               .reverse()
               .map((time) => (
-                <li key={time} className="rounded-full bg-surface px-3 py-1.5 text-[13px] font-medium tabular-nums text-text shadow-elev-1">
+                <li
+                  key={time}
+                  className="rounded-full bg-surface px-3 py-1.5 text-caption font-medium tabular-nums text-text shadow-elev-1"
+                >
                   {when(time, now)}
                 </li>
               ))}
             {incident.firings.length > SENT_AT_LIMIT && (
-              <li className="px-1 py-1.5 text-[13px] text-muted">
+              <li className="px-1 py-1.5 text-caption text-muted">
                 {t("incident_sent_earlier", { count: incident.firings.length - SENT_AT_LIMIT })}
               </li>
             )}

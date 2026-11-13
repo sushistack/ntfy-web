@@ -19,7 +19,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import routes from "./routes";
 import initI18n from "../app/i18n";
 import AppProviders from "./AppProviders";
-import Sidebar, { SidebarContent } from "./Sidebar";
+import Sidebar, { SidebarBrand, SidebarContent } from "./Sidebar";
 import AppBarNew from "./AppBar";
 import Messaging from "./Messaging";
 import SettingsPage from "./SettingsPage";
@@ -113,6 +113,7 @@ const NewShell = () => {
         {/* Mobile drawer — Sidebar inside Sheet */}
         <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
           <SheetContent side="left" className="w-nav-drawer">
+            <SidebarBrand />
             <SidebarContent collapsed={false} />
           </SheetContent>
         </Sheet>

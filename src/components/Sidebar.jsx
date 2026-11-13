@@ -18,21 +18,6 @@ const BellOffIcon = ({ className }) => (
   </svg>
 );
 
-const MessageIcon = ({ className }) => (
-  <svg
-    className={cn("w-5 h-5", className)}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={2}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-);
-
 const GearIcon = ({ className }) => (
   <svg
     className={cn("w-5 h-5", className)}
@@ -84,11 +69,60 @@ const PlusIcon = ({ className }) => (
   </svg>
 );
 
-const GridIcon = ({ className }) => (
-  <svg className={cn("w-5 h-5", className)} viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
-    <path d="M1 1h6v6H1V1Zm7 0h6v6H8V1ZM1 8h6v6H1V8Zm7 0h6v6H8V8Z" />
+const HomeIcon = () => (
+  <svg
+    className="w-4.5 h-4.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
   </svg>
 );
+
+const BellIcon = () => (
+  <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12 2a6 6 0 0 0-6 6v3.6l-1.7 3.4A1 1 0 0 0 5.2 16.5h13.6a1 1 0 0 0 .9-1.5L18 11.6V8a6 6 0 0 0-6-6Zm-2.8 16a2.9 2.9 0 0 0 5.6 0z" />
+  </svg>
+);
+
+/** Rounded icon square for primary destinations; filled blue when active. */
+const IconTile = ({ active, children }) => (
+  <span
+    className={cn(
+      "grid place-items-center w-8 h-8 shrink-0 rounded-sm transition-colors",
+      active ? "bg-accent-ui text-accent-on-surface" : "bg-surface-2 text-muted group-hover/nav:bg-border"
+    )}
+    aria-hidden="true"
+  >
+    {children}
+  </span>
+);
+
+// Stable per-topic colour so topics are recognisable at a glance (decorative; the name sits beside it).
+const AVATAR_COLORS = ["#3182f6", "#8b5cf6", "#ec4899", "#f97316", "#10b981", "#0ea5e9", "#ef4444", "#64748b"];
+const colorFor = (name) => {
+  let h = 0;
+  for (let i = 0; i < name.length; i += 1) h = (h * 31 + name.charCodeAt(i)) % 997;
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+};
+
+const TopicAvatar = ({ name, muted }) => {
+  const color = colorFor(name);
+  return (
+    <span
+      aria-hidden="true"
+      className={cn("grid place-items-center w-8 h-8 shrink-0 rounded-full text-body-sm font-bold", muted && "opacity-50")}
+      style={{ color, backgroundColor: `color-mix(in srgb, ${color} 15%, transparent)` }}
+    >
+      {[...name][0]?.toUpperCase()}
+    </span>
+  );
+};
 
 const DotsHorizontalIcon = ({ className }) => (
   <svg className={cn("w-4 h-4", className)} viewBox="0 0 15 15" fill="currentColor" aria-hidden="true">
@@ -160,144 +194,164 @@ export const SidebarContent = ({ collapsed = false }) => {
     }
   };
 
-  return (
-    <nav className={cn("flex flex-col h-full py-2 overflow-y-auto", collapsed ? "px-1" : "px-2")} aria-label={t("sidebar_aria_label")}>
-      {/* All notifications row */}
-      <button
-        type="button"
-        onClick={() => navigate("/")}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
-          collapsed && "justify-center gap-0 px-2",
-          "hover:bg-surface-2 active:scale-[0.98]",
-          "motion-reduce:transition-none motion-reduce:active:scale-100",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-          !activeSub && pathname === "/" && "bg-surface-2"
-        )}
-      >
-        <span
-          className={cn(
-            "hidden",
-            collapsed && "hidden",
-            !activeSub ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
-          )}
-          aria-hidden="true"
-        />
-        {collapsed ? (
-          <GridIcon className="flex-shrink-0 text-muted" />
-        ) : (
-          <>
-            <GridIcon className="flex-shrink-0 text-muted" />
-            <span className={cn("text-text truncate", !activeSub && pathname === "/" && "font-semibold")}>
-              {t("sidebar_all_notifications")}
-            </span>
-          </>
-        )}
-      </button>
+  const navRow = (active) =>
+    cn(
+      "group/nav flex items-center gap-3 w-full rounded-sm text-left text-body transition-colors",
+      collapsed ? "justify-center p-1.5" : "px-2 py-1.5",
+      active ? "bg-surface-2 font-semibold text-text" : "text-text hover:bg-surface-2",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+    );
+  const isBoard = !activeSub && pathname === "/";
+  const isHistory = pathname === "/history";
+  const isSettings = pathname === "/settings";
 
-      {/* Subscriptions list */}
-      {visibleSubs.map((sub) => {
-        const isActive = sub.topic === activeSub;
-        const isMuted = (sub.mutedUntil ?? 0) > 0;
-        // Left icon = message icon (topic identity). Collapsed rail shows bell-off when muted so mute state stays visible.
-        const topicIcon =
-          collapsed && isMuted ? (
-            <BellOffIcon className="flex-shrink-0 text-muted" />
+  return (
+    <nav className={cn("flex flex-col h-full pb-3 overflow-y-auto", collapsed ? "px-1.5" : "px-3")} aria-label={t("sidebar_aria_label")}>
+      {/* Primary destinations */}
+      <div className="flex flex-col gap-0.5">
+        <button type="button" onClick={() => navigate("/")} className={navRow(isBoard)} aria-current={isBoard ? "page" : undefined}>
+          <IconTile active={isBoard}>
+            <HomeIcon />
+          </IconTile>
+          {collapsed ? (
+            <span className="sr-only">{t("sidebar_all_notifications")}</span>
           ) : (
-            <MessageIcon className={cn("flex-shrink-0", isActive ? "text-accent-text" : "text-muted")} />
-          );
-        return (
-          <div
-            key={sub.id}
-            className={cn(
-              "group relative flex items-center rounded-sm transition-all duration-150 ease-out",
-              "hover:bg-surface-2 active:scale-[0.98]",
-              "motion-reduce:transition-none motion-reduce:active:scale-100",
-              isActive && "bg-surface-2"
-            )}
-          >
-            {/* Navigation area */}
-            <button
-              type="button"
-              onClick={() => navigate(routes.forSubscription(sub))}
+            <span className="truncate">{t("sidebar_all_notifications")}</span>
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/history")}
+          className={navRow(isHistory)}
+          aria-current={isHistory ? "page" : undefined}
+          aria-label={collapsed ? t("sidebar_history") : undefined}
+        >
+          <IconTile active={isHistory}>
+            <ClockIcon className="w-4.5 h-4.5" />
+          </IconTile>
+          {!collapsed && <span>{t("sidebar_history")}</span>}
+        </button>
+      </div>
+
+      {/* Topics */}
+      <div className={cn("mt-6 mb-1 flex items-center", collapsed ? "justify-center" : "justify-between pl-2")}>
+        {!collapsed && <span className="text-caption font-semibold text-muted">{t("sidebar_topics_title")}</span>}
+        <button
+          type="button"
+          onClick={() => setSubscribeOpen(true)}
+          className={cn(
+            "grid place-items-center w-8 h-8 rounded-full text-muted hover:bg-surface-2 hover:text-text transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          )}
+          title={t("sidebar_add_topic")}
+        >
+          <PlusIcon className="w-4.5 h-4.5" />
+          <span className="sr-only">{t("sidebar_add_topic")}</span>
+        </button>
+      </div>
+
+      {visibleSubs.length === 0 && !collapsed && (
+        <button
+          type="button"
+          onClick={() => setSubscribeOpen(true)}
+          className="mx-1 mt-1 rounded-sm border border-dashed border-border px-3 py-3 text-left text-body-sm text-muted hover:bg-surface-2"
+        >
+          {t("sidebar_no_topics")}
+        </button>
+      )}
+
+      <div className="flex flex-col gap-0.5">
+        {visibleSubs.map((sub) => {
+          const isActive = sub.topic === activeSub;
+          const isMuted = (sub.mutedUntil ?? 0) > 0;
+          const name = sub.displayName ?? sub.topic;
+          return (
+            <div
+              key={sub.id}
               className={cn(
-                "flex flex-1 items-center gap-3 pl-3 py-2 min-w-0 text-left",
-                collapsed && "justify-center gap-0 px-2",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                "group relative flex items-center rounded-sm transition-colors",
+                isActive ? "bg-surface-2" : "hover:bg-surface-2"
               )}
             >
-              <span
+              {/* Navigation area */}
+              <button
+                type="button"
+                onClick={() => navigate(routes.forSubscription(sub))}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "hidden",
-                  collapsed && "hidden",
-                  isActive ? "bg-accent-ui [box-shadow:var(--glow-accent-dot)]" : "bg-transparent"
+                  "flex flex-1 items-center gap-3 min-w-0 text-left text-body",
+                  collapsed ? "justify-center p-1.5" : "pl-2 py-1.5",
+                  "rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 )}
-                aria-hidden="true"
-              />
-              {collapsed ? (
-                topicIcon
-              ) : (
-                <>
-                  {topicIcon}
-                  <span className={cn("text-text text-body-sm truncate", isActive && "font-semibold")}>{sub.displayName ?? sub.topic}</span>
-                  {sub.new > 0 && (
-                    <span className="ml-auto pr-1 text-caption font-medium text-accent-text">{sub.new <= 99 ? sub.new : "99+"}</span>
-                  )}
-                </>
-              )}
-            </button>
-
-            {/* Muted indicator — passive icon (not a button); mute toggle lives in the ⋯ menu */}
-            {!collapsed && isMuted && (
-              <span
-                className="shrink-0 text-muted"
-                role="img"
-                aria-label={t("sidebar_topic_muted_indicator")}
-                title={t("sidebar_topic_muted_indicator")}
               >
-                <BellOffIcon className="w-4 h-4" />
-              </span>
-            )}
+                <TopicAvatar name={name} muted={isMuted} />
+                {collapsed ? (
+                  <span className="sr-only">{name}</span>
+                ) : (
+                  <span className={cn("truncate text-text", isActive && "font-semibold", isMuted && "text-muted")}>{name}</span>
+                )}
+              </button>
 
-            {/* Context menu — only in expanded sidebar */}
-            {!collapsed && (
-              <Menu>
-                <MenuTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex-shrink-0 p-2 mr-1 rounded-sm text-muted transition-all duration-150 ease-out",
-                      "hover:text-accent-text hover:bg-surface-2 hover:scale-105 active:scale-95",
-                      "motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                    )}
-                    aria-label={t("sub_menu_trigger_label", { name: sub.displayName ?? sub.topic })}
-                  >
-                    <DotsHorizontalIcon />
-                  </button>
-                </MenuTrigger>
-                <MenuContent align="start" side="right">
-                  <MenuItem onSelect={() => handleSidebarMuteToggle(sub)}>
-                    {t(isMuted ? "sidebar_topic_unmute_label" : "sidebar_topic_mute_label")}
-                  </MenuItem>
-                  <MenuSeparator />
-                  <MenuItem
-                    onSelect={() => {
-                      setRenameSub(sub);
-                      setRenameValue(sub.displayName ?? sub.topic);
-                    }}
-                  >
-                    {t("sub_menu_rename")}
-                  </MenuItem>
-                  <MenuItem onSelect={() => setClearSub(sub)}>{t("sub_menu_clear")}</MenuItem>
-                  <MenuSeparator />
-                  <MenuItem onSelect={() => handleUnsubscribe(sub)}>{t("sub_menu_unsubscribe")}</MenuItem>
-                </MenuContent>
-              </Menu>
-            )}
-          </div>
-        );
-      })}
+              {!collapsed && (
+                <div className="flex items-center gap-0.5 pr-1.5 pl-1">
+                  {/* Muted indicator — passive icon (not a button); mute toggle lives in the ⋯ menu */}
+                  {isMuted && (
+                    <span
+                      className="shrink-0 text-muted"
+                      role="img"
+                      aria-label={t("sidebar_topic_muted_indicator")}
+                      title={t("sidebar_topic_muted_indicator")}
+                    >
+                      <BellOffIcon className="w-4 h-4" />
+                    </span>
+                  )}
+                  {sub.new > 0 && (
+                    <span className="min-w-4.5 h-4.5 px-1.5 grid place-items-center rounded-full bg-accent-ui text-caption font-bold text-accent-on-surface tabular-nums">
+                      {sub.new <= 99 ? sub.new : "99+"}
+                    </span>
+                  )}
+                  <Menu>
+                    <MenuTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "grid place-items-center w-8 h-8 rounded-full text-muted transition-opacity",
+                          // Quiet until the row is hovered/focused; always visible on touch (no hover there).
+                          "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100",
+                          "hover:bg-border hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                        )}
+                        aria-label={t("sub_menu_trigger_label", { name })}
+                      >
+                        <DotsHorizontalIcon />
+                      </button>
+                    </MenuTrigger>
+                    <MenuContent align="start" side="right">
+                      <MenuItem onSelect={() => handleSidebarMuteToggle(sub)}>
+                        {t(isMuted ? "sidebar_topic_unmute_label" : "sidebar_topic_mute_label")}
+                      </MenuItem>
+                      <MenuSeparator />
+                      <MenuItem
+                        onSelect={() => {
+                          setRenameSub(sub);
+                          setRenameValue(name);
+                        }}
+                      >
+                        {t("sub_menu_rename")}
+                      </MenuItem>
+                      <MenuItem onSelect={() => setClearSub(sub)}>{t("sub_menu_clear")}</MenuItem>
+                      <MenuSeparator />
+                      <MenuItem onSelect={() => handleUnsubscribe(sub)}>{t("sub_menu_unsubscribe")}</MenuItem>
+                    </MenuContent>
+                  </Menu>
+                </div>
+              )}
+              {collapsed && sub.new > 0 && (
+                <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-accent-ui ring-2 ring-surface" aria-hidden="true" />
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       {/* Rename dialog — outside map to avoid N instances */}
       <Dialog open={!!renameSub} onOpenChange={(open) => !open && setRenameSub(null)}>
@@ -341,62 +395,21 @@ export const SidebarContent = ({ collapsed = false }) => {
         </DialogContent>
       </Dialog>
 
-      {/* Add topic action */}
-      {!collapsed && (
-        <button
-          type="button"
-          onClick={() => setSubscribeOpen(true)}
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 mt-1 rounded-sm text-body-sm font-medium text-accent-text transition-all duration-150 ease-out w-full text-left",
-            "hover:bg-surface-2 active:scale-[0.98]",
-            "motion-reduce:transition-none motion-reduce:active:scale-100",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-          )}
-        >
-          <span className="hidden" aria-hidden="true" />
-          <PlusIcon className="flex-shrink-0" />
-          <span className="truncate">{t("sidebar_add_topic")}</span>
-        </button>
-      )}
-
       {/* Spacer */}
-      <div className="flex-1" />
-
-      {/* History */}
-      <button
-        type="button"
-        onClick={() => navigate("/history")}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
-          collapsed && "justify-center gap-0 px-2",
-          "hover:bg-surface-2 active:scale-[0.98]",
-          "motion-reduce:transition-none motion-reduce:active:scale-100",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-          pathname === "/history" && "bg-surface-2 font-semibold"
-        )}
-        aria-label={collapsed ? t("sidebar_history") : undefined}
-        aria-current={pathname === "/history" ? "page" : undefined}
-      >
-        {!collapsed && <span className="hidden" aria-hidden="true" />}
-        <ClockIcon className="flex-shrink-0 text-muted" />
-        {!collapsed && <span className="text-text">{t("sidebar_history")}</span>}
-      </button>
+      <div className="flex-1 min-h-6" />
 
       {/* Settings */}
       <button
         type="button"
         onClick={() => navigate("/settings")}
-        className={cn(
-          "flex items-center gap-3 px-3 py-2 rounded-sm text-body-sm transition-all duration-150 ease-out w-full text-left",
-          "hover:bg-surface-2 active:scale-[0.98]",
-          "motion-reduce:transition-none motion-reduce:active:scale-100",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-          pathname === "/settings" && "bg-surface-2 font-semibold"
-        )}
+        className={navRow(isSettings)}
+        aria-current={isSettings ? "page" : undefined}
+        aria-label={collapsed ? t("sidebar_settings") : undefined}
       >
-        {!collapsed && <span className="hidden" aria-hidden="true" />}
-        <GearIcon className="flex-shrink-0 text-muted" />
-        {!collapsed && <span className="text-text">{t("sidebar_settings")}</span>}
+        <IconTile active={isSettings}>
+          <GearIcon className="w-4.5 h-4.5" />
+        </IconTile>
+        {!collapsed && <span>{t("sidebar_settings")}</span>}
       </button>
 
       <SubscribeDialog
@@ -412,20 +425,25 @@ export const SidebarContent = ({ collapsed = false }) => {
   );
 };
 
-/* ── Desktop/tablet sidebar frame ── */
-const Sidebar = ({ collapsed = false }) => {
+/* ── App brand (sidebar header + mobile drawer header) ── */
+export const SidebarBrand = ({ collapsed = false }) => {
   const { t } = useTranslation();
   return (
-    <aside className={cn("flex flex-col h-full bg-surface border-r border-border", collapsed ? "w-14" : "w-nav-drawer")}>
-      {/* Logo / brand */}
-      {!collapsed && (
-        <div className="px-4 py-3 border-b border-border">
-          <span className="text-body font-medium text-text">{t("app_name")}</span>
-        </div>
-      )}
-      <SidebarContent collapsed={collapsed} />
-    </aside>
+    <div className={cn("flex items-center gap-2.5 pt-5 pb-4", collapsed ? "justify-center px-1.5" : "px-5")}>
+      <span className="grid place-items-center w-8 h-8 rounded-sm bg-accent-ui text-accent-on-surface" aria-hidden="true">
+        <BellIcon />
+      </span>
+      {!collapsed && <span className="text-subtitle font-bold tracking-tight text-text">{t("brand_name")}</span>}
+    </div>
   );
 };
+
+/* ── Desktop/tablet sidebar frame ── */
+const Sidebar = ({ collapsed = false }) => (
+  <aside className={cn("flex flex-col h-full bg-surface", collapsed ? "w-16" : "w-nav-drawer")}>
+    <SidebarBrand collapsed={collapsed} />
+    <SidebarContent collapsed={collapsed} />
+  </aside>
+);
 
 export default Sidebar;

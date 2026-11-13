@@ -1,5 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { useLiveQuery } from "dexie-react-hooks";
+import subscriptionManager from "@/app/SubscriptionManager";
 import { cn } from "@/components/ui/utils";
 import { getTopicFromPath } from "./Sidebar";
 
@@ -13,7 +15,12 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const topic = getTopicFromPath(pathname);
-  const title = pathname === "/history" ? t("sidebar_history") : topic ?? t("app_bar_title_all");
+  const subscriptions = useLiveQuery(() => subscriptionManager.all(), []) ?? [];
+  const sub = topic ? subscriptions.find((s) => s.topic === topic) : null;
+  let title = t("app_bar_title_all");
+  if (pathname === "/history") title = t("sidebar_history");
+  else if (pathname === "/settings") title = t("sidebar_settings");
+  else if (topic) title = sub?.displayName || topic;
 
   return (
     <header className="flex items-center h-14 px-2 bg-bg md:hidden flex-shrink-0">
@@ -32,7 +39,7 @@ const AppBar = ({ onMenuOpen = () => {}, drawerOpen = false }) => {
         <HamburgerIcon />
       </button>
 
-      <h1 className="flex-1 px-2 text-[17px] font-bold tracking-[-0.01em] text-text truncate">{title}</h1>
+      <h1 className="flex-1 px-2 text-body font-bold tracking-tight text-text truncate">{title}</h1>
 
       {/* Connection dot placeholder — Story 2.3 replaces this */}
       <div className="w-8 h-8" aria-hidden="true" />

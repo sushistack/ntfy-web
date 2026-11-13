@@ -354,5 +354,8 @@
   "history_days_other": "{{count}}일에 걸쳐",
   "board_sent_today_one": "오늘 1번 받았어요",
   "history_sent_week_one": "이번 주 1번",
-  "history_days_one": "하루, 마지막 {{time}}"
+  "history_days_one": "하루, 마지막 {{time}}",
+  "brand_name": "Notify",
+  "sidebar_topics_title": "토픽",
+  "sidebar_no_topics": "아직 구독한 토픽이 없어요. 토픽을 구독하면 여기에 보여요."
 }

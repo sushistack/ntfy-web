@@ -11,6 +11,7 @@ import { focus, press } from "./Board";
 import { hhmm, topicLabel, useIncidents } from "./useIncidents";
 
 const DAYS = 7;
+const WEEKDAY_SHORT = { weekday: "short" };
 
 const summary = (t, inc) => {
   if (inc.state === "open") return t("history_still_firing");
@@ -36,8 +37,8 @@ const History = () => {
   return (
     <div className="pb-24">
       <header className="px-1">
-        <h1 className="text-[28px] leading-[1.25] font-bold tracking-[-0.025em] text-text">{t("history_title")}</h1>
-        <p className="mt-2 text-[15px] text-muted max-w-[60ch]">{t("history_description")}</p>
+        <h1 className="text-display leading-tight font-bold tracking-tight text-text">{t("history_title")}</h1>
+        <p className="mt-2 text-body text-muted max-w-prose">{t("history_description")}</p>
       </header>
 
       {rows.length === 0 && <StatePanel title={t("history_empty")} />}
@@ -56,35 +57,36 @@ const History = () => {
                 <div className="flex items-start gap-3.5">
                   <StatusAvatar look={lookFor(inc)} />
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-[17px] leading-snug font-semibold text-text break-words">{inc.title}</h2>
-                    <p className="mt-0.5 text-[14px] text-muted">
+                    <h2 className="text-body leading-snug font-semibold text-text break-words">{inc.title}</h2>
+                    <p className="mt-0.5 text-body-sm text-muted">
                       {topicLabel(sub)} · <span className="font-semibold text-text">{summary(t, inc)}</span>
                     </p>
-                    <p className="text-[13px] text-muted">
+                    <p className="text-caption text-muted">
                       {days === 1 ? t("history_days_one", { time: hhmm(inc.last) }) : t("history_days_other", { count: days })}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-5 grid grid-cols-[2.5rem_1fr] gap-x-2 gap-y-[5px] items-center">
+                <div className="mt-5 flex flex-col gap-1">
                   {starts.map((s, d) => {
                     const isToday = d === DAYS - 1;
-                    return [
-                      <span key={`l${s}`} className={cn("text-[12px]", isToday ? "font-bold text-text" : "text-muted")}>
-                        {isToday ? t("history_today") : new Date(s * 1000).toLocaleDateString([], { weekday: "short" })}
-                      </span>,
-                      <TickStrip
-                        key={`s${s}`}
-                        slots={slotsForDay(inc.week, s)}
-                        okSlot={inc.resolvedAt && inc.resolvedAt >= s && inc.resolvedAt < s + 86400 ? slotOf(inc.resolvedAt, s) : null}
-                        nowSlot={isToday ? slotOf(now, s) : null}
-                        tone={toneOf(inc.priority)}
-                        size="sm"
-                      />,
-                    ];
+                    return (
+                      <div key={s} className="flex items-center gap-2">
+                        <span className={cn("w-10 shrink-0 text-caption", isToday ? "font-bold text-text" : "text-muted")}>
+                          {isToday ? t("history_today") : new Date(s * 1000).toLocaleDateString([], WEEKDAY_SHORT)}
+                        </span>
+                        <TickStrip
+                          className="flex-1"
+                          slots={slotsForDay(inc.week, s)}
+                          okSlot={inc.resolvedAt && inc.resolvedAt >= s && inc.resolvedAt < s + 86400 ? slotOf(inc.resolvedAt, s) : null}
+                          nowSlot={isToday ? slotOf(now, s) : null}
+                          tone={toneOf(inc.priority)}
+                          size="sm"
+                        />
+                      </div>
+                    );
                   })}
-                  <span />
-                  <TickAxis />
+                  <TickAxis className="ml-12" />
                 </div>
               </button>
             </li>

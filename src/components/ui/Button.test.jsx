@@ -85,7 +85,7 @@ describe("Button", () => {
 
   it("gives press feedback without a hover lift", () => {
     const el = renderButton({});
-    expect(el.className).toContain("active:scale-[0.97]");
+    expect(el.className).toContain("active:scale-97");
     expect(el.className).not.toContain("hover:-translate-y-0.5");
   });
 });

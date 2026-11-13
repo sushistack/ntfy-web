@@ -587,5 +587,8 @@
   "history_days_other": "Across {{count}} days",
   "incident_sent_earlier": "and {{count}} earlier",
   "board_sent_today_one": "Sent once today",
-  "board_sent_today_other": "Sent {{count}} times today"
+  "board_sent_today_other": "Sent {{count}} times today",
+  "brand_name": "Notify",
+  "sidebar_topics_title": "Topics",
+  "sidebar_no_topics": "No topics yet. Subscribe to one to start getting alerts."
 }

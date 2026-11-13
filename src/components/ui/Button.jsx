@@ -6,7 +6,7 @@ const button = cva(
     "font-semibold select-none transition-all duration-150 ease-out",
     "rounded-sm", // = --radius-sm (14px)
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring",
-    "active:scale-[0.97]", // press feedback only; no hover lift
+    "active:scale-97", // press feedback only; no hover lift
     "motion-reduce:transition-none motion-reduce:active:scale-100",
     "disabled:pointer-events-none disabled:opacity-50",
   ],
